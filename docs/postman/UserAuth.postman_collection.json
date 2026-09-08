@@ -1,0 +1,63 @@
+{
+  "info": {
+    "name": "User Auth API",
+    "description": "Collection para perfil, login y registro",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /users/{id}/",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/users/1/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["users", "1", ""]
+        }
+      }
+    },
+    {
+      "name": "POST /login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"usuario1\",\n  \"password\": \"secret\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["login"]
+        }
+      }
+    },
+    {
+      "name": "POST /register",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"nuevoUsuario\",\n  \"password\": \"secret\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["register"]
+        }
+      }
+    }
+  ]
+}

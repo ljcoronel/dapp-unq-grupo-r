@@ -1,0 +1,111 @@
+openapi: 3.0.3
+info:
+  title: User Auth API
+  version: 1.0.0
+  description: API para perfil de usuario, login y registro.
+servers:
+  - url: http://localhost:8080
+paths:
+  /users/{id}/:
+    get:
+      summary: Obtener perfil del usuario por id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Identificador del usuario
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /login:
+    post:
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login exitoso
+          headers:
+            Authorization:
+              description: Token Bearer para requests autenticadas
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /register:
+    post:
+      summary: Registrar un nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Usuario registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Usuario existente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - nombre
+        - password
+      properties:
+        nombre:
+          type: string
+          example: usuario1
+        password:
+          type: string
+          format: password
+          example: secreto123
+    UserResponse:
+      type: object
+      required:
+        - nombre
+      properties:
+        nombre:
+          type: string
+          example: usuario1
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Usuario no encontrado
