@@ -32,12 +32,26 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-        return parseAllClaims(token).getSubject();
+        try {
+            return parseAllClaims(token).getSubject();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        if (token == null || token.isBlank() || userDetails == null) {
+            return false;
+        }
+
+        try {
+            String username = extractUsername(token);
+            return username != null
+                    && username.equals(userDetails.getUsername())
+                    && !isTokenExpired(token);
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     private boolean isTokenExpired(String token) {

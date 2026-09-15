@@ -59,44 +59,49 @@ specs/001-user-auth/
 
 ```text
 backend/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/dappunq/
-│   │   │       ├── config/
-│   │   │       ├── controller/
-│   │   │       │   ├── AuthControllerRest.java
-│   │   │       │   └── UserControllerRest.java
-│   │   │       ├── dto/
-│   │   │       │   ├── UserRequestDTO.java
-│   │   │       │   └── UserResponseDTO.java
-│   │   │       ├── exception/
-│   │   │       │   ├── GlobalExceptionHandler.java
-│   │   │       ├── model/
-│   │   │       ├── persistence/
-│   │   │       ├── security/
-│   │   │       └── service/
-│   │   └── resources/
-│   │       └── application-local.properties
-│   └── test/
-│       └── java/
-│           ├── integration/
-│           ├── unit/
-│           └── e2e/
-├── build.gradle
-├── gradlew
-└── docker-compose.yml
+|-- app/
+|   |-- build.gradle
+|   |-- src/
+|   |   |-- main/
+|   |   |   |-- java/
+|   |   |   |   `-- com/dappunq/
+|   |   |   |       |-- config/
+|   |   |   |       |-- controller/
+|   |   |   |       |   |-- AuthControllerRest.java
+|   |   |   |       |   `-- UserControllerRest.java
+|   |   |   |       |-- dto/
+|   |   |   |       |   |-- UserRequestDTO.java
+|   |   |   |       |   `-- UserResponseDTO.java
+|   |   |   |       |-- exception/
+|   |   |   |       |   `-- GlobalExceptionHandler.java
+|   |   |   |       |-- model/
+|   |   |   |       |-- persistence/
+|   |   |   |       |-- security/
+|   |   |   |       `-- service/
+|   |   |   `-- resources/
+|   |   |       |-- application.properties
+|   |   |       `-- application-local.properties
+|   |   `-- test/
+|   |       `-- java/
+|   |           |-- integration/
+|   |           |-- security/
+|   |           `-- e2e/
+|   `-- gradlew
+|-- gradle/
+|-- gradlew
+|-- gradlew.bat
+|-- settings.gradle
+|-- build.gradle
+|-- .dockerignore
 
 frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-├── package.json
-└── vite.config.js
+|-- src/
+|   |-- components/
+|   |-- pages/
+|   `-- services/
+|-- package.json
+`-- vite.config.js
 ```
-
-**Structure Decision**: This feature is implemented as a backend-first REST API inside a monorepo. The backend owns the domain, controllers, security, DTOs and persistence logic. The frontend remains an optional consumer of the API and is intentionally not part of the MVP contracts.
 
 ## Complexity Tracking
 

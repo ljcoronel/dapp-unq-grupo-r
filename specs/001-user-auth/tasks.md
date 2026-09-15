@@ -8,7 +8,7 @@
 
 **Purpose**: Inicializar la base del backend y la estructura del monorepo.
 
-- [X] T001 Create backend project structure per implementation plan in `backend/src/main/java/com/dappunq/`, `backend/src/test/java/com/dappunq/`, and `backend/src/main/resources/`
+- [X] T001 Create backend project structure per implementation plan in `backend/app/src/main/java/com/dappunq/`, `backend/app/src/test/java/com/dappunq/`, and `backend/app/src/main/resources/`
 - [X] T002 Initialize Java 25 + Spring Boot 4 project in `backend/build.gradle`, `backend/settings.gradle`, and `backend/gradlew`
 - [X] T003 [P] Configure shared project conventions and formatting in `backend/build.gradle` and `backend/.editorconfig`
 
@@ -18,12 +18,12 @@
 
 **Purpose**: Preparar infraestructura base que debe completarse antes de cualquier historia de usuario.
 
-- [X] T004 Configure local PostgreSQL profile and datasource settings in `backend/src/main/resources/application-local.properties`
-- [X] T005 [P] Create Testcontainers database bootstrap for integration tests in `backend/src/test/java/com/dappunq/config/TestcontainersConfig.java`
-- [X] T006 [P] Implement global API error mapping in `backend/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
-- [X] T007 Create persistent user entity and repository contracts in `backend/src/main/java/com/dappunq/model/User.java` and `backend/src/main/java/com/dappunq/persistence/UserRepository.java`
-- [X] T008 Implement JWT and password security infrastructure in `backend/src/main/java/com/dappunq/security/JwtService.java`, `backend/src/main/java/com/dappunq/security/JwtAuthenticationFilter.java`, and `backend/src/main/java/com/dappunq/security/SecurityConfig.java`
-- [X] T009 Add application bootstrapping and environment readiness checks in `backend/src/main/java/com/dappunq/DappApplication.java` and `backend/src/main/resources/application.properties`
+- [X] T004 Configure local PostgreSQL profile and datasource settings in `backend/app/src/main/resources/application-local.properties`
+- [X] T005 [P] Create Testcontainers database bootstrap for integration tests in `backend/app/src/test/java/com/dappunq/config/TestcontainersConfig.java`
+- [X] T006 [P] Implement global API error mapping in `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
+- [X] T007 Create persistent user entity and repository contracts in `backend/app/src/main/java/com/dappunq/model/User.java` and `backend/app/src/main/java/com/dappunq/persistence/UserRepository.java`
+- [X] T008 Implement JWT and password security infrastructure in `backend/app/src/main/java/com/dappunq/security/JwtService.java`, `backend/app/src/main/java/com/dappunq/security/JwtAuthenticationFilter.java`, and `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java`
+- [X] T009 Add application bootstrapping and environment readiness checks in `backend/app/src/main/java/com/dappunq/DappApplication.java` and `backend/app/src/main/resources/application.properties`
 
 **Checkpoint**: La base funcional y de infraestructura está lista para que comiencen las historias de usuario.
 
@@ -37,15 +37,15 @@
 
 ### Tests for User Story 1
 
-- [X] T010 [P] [US1] Add integration test for profile lookup in `backend/src/test/java/com/dappunq/integration/UserProfileIntegrationTest.java`
+- [X] T010 [P] [US1] Add integration test for profile lookup in `backend/app/src/test/java/com/dappunq/integration/UserProfileIntegrationTest.java`
 
 ### Implementation for User Story 1
 
-- [X] T011 [P] [US1] Create `UserResponseDTO` record in `backend/src/main/java/com/dappunq/dto/UserResponseDTO.java`
-- [X] T012 [P] [US1] Create user lookup service contract in `backend/src/main/java/com/dappunq/service/UserService.java`
-- [X] T013 [US1] Implement profile retrieval logic and not-found handling in `backend/src/main/java/com/dappunq/service/UserService.java`
-- [X] T014 [US1] Implement REST endpoint in `backend/src/main/java/com/dappunq/controller/UserControllerRest.java`
-- [X] T015 [US1] Add domain exceptions and controller mapping for missing user cases in `backend/src/main/java/com/dappunq/exception/UserNotFoundException.java` and `backend/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
+- [X] T011 [P] [US1] Create `UserResponseDTO` record in `backend/app/src/main/java/com/dappunq/dto/UserResponseDTO.java`
+- [X] T012 [P] [US1] Create user lookup service contract in `backend/app/src/main/java/com/dappunq/service/UserService.java`
+- [X] T013 [US1] Implement profile retrieval logic and not-found handling in `backend/app/src/main/java/com/dappunq/service/UserService.java`
+- [X] T014 [US1] Implement REST endpoint in `backend/app/src/main/java/com/dappunq/controller/UserControllerRest.java`
+- [X] T015 [US1] Add domain exceptions and controller mapping for missing user cases in `backend/app/src/main/java/com/dappunq/exception/UserNotFoundException.java` and `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
 
 **Checkpoint**: User Story 1 queda funcional y verificable de forma independiente.
 
@@ -59,15 +59,15 @@
 
 ### Tests for User Story 2
 
-- [X] T016 [P] [US2] Add login integration test in `backend/src/test/java/com/dappunq/integration/AuthLoginIntegrationTest.java`
+- [X] T016 [P] [US2] Add login integration test in `backend/app/src/test/java/com/dappunq/integration/AuthLoginIntegrationTest.java`
 
 ### Implementation for User Story 2
 
-- [X] T017 [P] [US2] Create request DTO for auth payloads in `backend/src/main/java/com/dappunq/dto/UserRequestDTO.java`
-- [X] T018 [P] [US2] Implement credential validation and BCrypt hashing in `backend/src/main/java/com/dappunq/service/AuthService.java`
-- [X] T019 [US2] Implement JWT generation and token claims in `backend/src/main/java/com/dappunq/security/JwtService.java`
-- [X] T020 [US2] Implement authentication controller in `backend/src/main/java/com/dappunq/controller/AuthControllerRest.java`
-- [X] T021 [US2] Add invalid credentials and validation exception mapping in `backend/src/main/java/com/dappunq/exception/InvalidCredentialsException.java` and `backend/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
+- [X] T017 [P] [US2] Create request DTO for auth payloads in `backend/app/src/main/java/com/dappunq/dto/UserRequestDTO.java`
+- [X] T018 [P] [US2] Implement credential validation and BCrypt hashing in `backend/app/src/main/java/com/dappunq/service/AuthService.java`
+- [X] T019 [US2] Implement JWT generation and token claims in `backend/app/src/main/java/com/dappunq/security/JwtService.java`
+- [X] T020 [US2] Implement authentication controller in `backend/app/src/main/java/com/dappunq/controller/AuthControllerRest.java`
+- [X] T021 [US2] Add invalid credentials and validation exception mapping in `backend/app/src/main/java/com/dappunq/exception/InvalidCredentialsException.java` and `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
 
 **Checkpoint**: User Story 2 quedó habilitado y puede probarse sin depender de otras historias.
 
@@ -81,14 +81,14 @@
 
 ### Tests for User Story 3
 
-- [X] T022 [P] [US3] Add registration integration test in `backend/src/test/java/com/dappunq/integration/AuthRegisterIntegrationTest.java`
+- [X] T022 [P] [US3] Add registration integration test in `backend/app/src/test/java/com/dappunq/integration/AuthRegisterIntegrationTest.java`
 
 ### Implementation for User Story 3
 
-- [X] T023 [P] [US3] Add domain validation rules for unique usernames and password hashing in `backend/src/main/java/com/dappunq/model/User.java`
-- [X] T024 [US3] Implement registration flow in `backend/src/main/java/com/dappunq/service/AuthService.java`
-- [X] T025 [US3] Add duplicate-user checks and error handling in `backend/src/main/java/com/dappunq/exception/UserAlreadyExistsException.java` and `backend/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
-- [X] T026 [US3] Ensure request sanitization and empty input validation in `backend/src/main/java/com/dappunq/dto/UserRequestDTO.java` and `backend/src/main/java/com/dappunq/controller/AuthControllerRest.java`
+- [X] T023 [P] [US3] Add domain validation rules for unique usernames and password hashing in `backend/app/src/main/java/com/dappunq/model/User.java`
+- [X] T024 [US3] Implement registration flow in `backend/app/src/main/java/com/dappunq/service/AuthService.java`
+- [X] T025 [US3] Add duplicate-user checks and error handling in `backend/app/src/main/java/com/dappunq/exception/UserAlreadyExistsException.java` and `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
+- [X] T026 [US3] Ensure request sanitization and empty input validation in `backend/app/src/main/java/com/dappunq/dto/UserRequestDTO.java` and `backend/app/src/main/java/com/dappunq/controller/AuthControllerRest.java`
 
 **Checkpoint**: Las tres historias de usuario quedan funcionales y cada una puede validarse por separado.
 
@@ -98,10 +98,10 @@
 
 **Purpose**: Validación final, documentación y calidad transversal.
 
-- [X] T027 [P] Add end-to-end API smoke coverage in `backend/src/test/java/com/dappunq/e2e/UserAuthE2ETest.java`
+- [X] T027 [P] Add end-to-end API smoke coverage in `backend/app/src/test/java/com/dappunq/e2e/UserAuthE2ETest.java`
 - [X] T028 [P] Update the API contract and local validation doc in `docs/postman/UserAuth.postman_collection.json` and `backend/README.md`
 - [X] T029 Run the full backend validation with `./gradlew test` and quickstart smoke checks from `specs/001-user-auth/quickstart.md`
-- [X] T030 Refine code quality, naming, logging, and final cleanup across `backend/src/main/java/com/dappunq/` and `backend/src/test/java/com/dappunq/`
+- [X] T030 Refine code quality, naming, logging, and final cleanup across `backend/app/src/main/java/com/dappunq/` and `backend/app/src/test/java/com/dappunq/`
 
 ---
 
@@ -135,9 +135,9 @@
 
 ```bash
 # Run profile tests and DTO creation in parallel after Phase 2:
-Task: "Add integration test for profile lookup in backend/src/test/java/com/dappunq/integration/UserProfileIntegrationTest.java"
-Task: "Create UserResponseDTO record in backend/src/main/java/com/dappunq/dto/UserResponseDTO.java"
-Task: "Create user lookup service contract in backend/src/main/java/com/dappunq/service/UserService.java"
+Task: "Add integration test for profile lookup in backend/app/src/test/java/com/dappunq/integration/UserProfileIntegrationTest.java"
+Task: "Create UserResponseDTO record in backend/app/src/main/java/com/dappunq/dto/UserResponseDTO.java"
+Task: "Create user lookup service contract in backend/app/src/main/java/com/dappunq/service/UserService.java"
 ```
 
 ---
@@ -176,4 +176,10 @@ Task: "Create user lookup service contract in backend/src/main/java/com/dappunq/
 - Story tasks are intentionally designed to be independently testable.
 - Validation must happen against local PostgreSQL for dev and Testcontainers for automated tests.
 - The implementation must keep controller logic thin and business logic in services/domain models per the constitution.
+
+## Phase 7: Convergence
+
+- [X] T031 Fix JwtService to correctly generate and validate JWTs using the project's JJWT version; ensure JwtAuthenticationFilter accepts/validates tokens and add unit tests per FR-004 (partial)
+- [X] T032 Reconcile backend module layout vs planned paths: align code locations or update plan/tasks to reflect backend/app/ module so file references in plan.md and tasks.md are accurate (partial)
+- [X] T033 Add or document local development database credentials in application-local.properties (postgres/root) and quickstart.md to satisfy FR-012 (partial)
 
