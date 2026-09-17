@@ -27,6 +27,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
     }
 
+    @ExceptionHandler(JugadorNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleJugadorNotFound(JugadorNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidPlayerDataException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPlayerData(InvalidPlayerDataException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(DuplicatePlayerException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicatePlayer(DuplicatePlayerException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
         FieldError fieldError = ex.getBindingResult().getFieldErrors().stream().findFirst().orElse(null);

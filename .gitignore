@@ -12,3 +12,21 @@ backend/**/build/
 
 # Logs
 *.log
+
+# Java / Gradle
+.gradle/
+build/
+**/build/
+*.class
+*.jar
+*.war
+*.ear
+
+# Node / Frontend
+frontend/node_modules/
+node_modules/
+dist/
+
+# Env
+.env
+.env.*

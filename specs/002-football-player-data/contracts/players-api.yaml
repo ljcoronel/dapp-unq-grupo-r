@@ -1,0 +1,105 @@
+openapi: 3.0.3
+info:
+  title: Football Players API
+  description: API REST para consultar y mantener el catálogo de jugadores de fútbol.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /players:
+    get:
+      summary: Listado de jugadores con filtros
+      parameters:
+        - in: query
+          name: liga
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: equipo
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: posicion
+          schema:
+            type: string
+          required: false
+      responses:
+        '200':
+          description: Lista de jugadores que cumplen los filtros
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JugadorResponseDTO'
+  /players/{id}:
+    get:
+      summary: Detalle de un jugador por id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Jugador encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JugadorResponseDTO'
+        '404':
+          description: Jugador no encontrado
+components:
+  schemas:
+    JugadorResponseDTO:
+      type: object
+      required:
+        - id
+        - nombre
+        - equipo
+        - pases
+        - tiros
+        - intercepciones
+        - calificaciones
+        - minutosJugados
+        - goles
+        - asistencias
+        - tirosAlArco
+        - pasesRealizados
+        - tarjetasAmarillas
+        - tarjetasRojas
+        - ratingGeneral
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        equipo:
+          type: string
+        pases:
+          type: string
+        tiros:
+          type: string
+        intercepciones:
+          type: string
+        calificaciones:
+          type: string
+        minutosJugados:
+          type: string
+        goles:
+          type: string
+        asistencias:
+          type: string
+        tirosAlArco:
+          type: string
+        pasesRealizados:
+          type: string
+        tarjetasAmarillas:
+          type: string
+        tarjetasRojas:
+          type: string
+        ratingGeneral:
+          type: string
