@@ -29,11 +29,11 @@ Un usuario sin cuenta desea registrarse completando un formulario con un nombre 
 
 ### User Story 2 - Iniciar sesión con una cuenta existente (Priority: P1)
 
-Un usuario con una cuenta creada desea acceder a la aplicación con sus credenciales. La interfaz debe ser igual en estructura y validación a la de creación, mostrar las restricciones durante todo el proceso, incluir el botón de acción específico y ofrecer una opción para crear la cuenta si aún no existe.
+Un usuario con una cuenta creada desea acceder a la aplicación con sus credenciales. La interfaz debe ser igual en estructura y validación a la de creación, mostrar las restricciones durante todo el proceso, incluir el botón de acción específico y ofrecer una opción para crear la cuenta si aún no existe. Cuando las credenciales sean correctas, el usuario debe ser redirigido a la pantalla de Home.
 
-**Why this priority**: El acceso es el flujo de acceso principal para usuarios recurrentes y debe ser equivalente en claridad y validación a la creación de cuenta para evitar errores y confusión.
+**Why this priority**: El acceso es el flujo de acceso principal para usuarios recurrentes y debe ser equivalente en claridad y validación a la creación de cuenta para evitar errores y confusión. La redirección al Home completa el ciclo de autenticación y permite al usuario entrar al sistema con una experiencia coherente.
 
-**Independent Test**: Puede validarse completando los campos con un nombre de usuario y contraseña que cumplan las condiciones, verificando que el botón de iniciar sesión está presente y que el usuario puede dirigirse a la pantalla de registro si aún no tiene cuenta.
+**Independent Test**: Puede validarse completando los campos con un nombre de usuario y contraseña que cumplan las condiciones, verificando que el botón de iniciar sesión está presente, que se muestra el mensaje de error para credenciales inválidas y que el usuario es redirigido a Home cuando la autenticación es correcta.
 
 **Acceptance Scenarios**:
 
@@ -42,6 +42,7 @@ Un usuario con una cuenta creada desea acceder a la aplicación con sus credenci
 3. **Given** el usuario todavía no tiene una cuenta, **When** presiona el botón para dirigirse a la pantalla de creación de cuenta, **Then** debe visualizar la pantalla correspondiente.
 4. **Given** el usuario está en la pantalla de inicio de sesión, **When** observa el formulario, **Then** debe ver claramente el botón con la leyenda "iniciar sesión" y las restricciones de validación visibles durante todo el proceso.
 5. **Given** el usuario intenta iniciar sesión con un nombre de usuario o contraseña inexistentes, **When** presiona el botón de iniciar sesión, **Then** debe mostrarse la leyenda "Nombre de usuario o contraseña incorrectos".
+6. **Given** el usuario ingresa credenciales válidas, **When** presiona el botón de iniciar sesión, **Then** debe ser redirigido a la pantalla de Home.
 
 ---
 
@@ -59,6 +60,23 @@ Un usuario puede alternar entre la pantalla de creación de cuenta y la pantalla
 2. **Given** el usuario se encuentra en la pantalla de inicio de sesión, **When** acciona el botón de crear cuenta, **Then** debe mostrar la pantalla de registro.
 3. **Given** el usuario está en la pantalla de creación de cuenta, **When** observa el formulario, **Then** debe ver claramente el botón con la leyenda "Crear cuenta".
 4. **Given** el usuario está en la pantalla de inicio de sesión, **When** observa el formulario, **Then** debe ver claramente el botón con la leyenda "iniciar sesión".
+
+---
+
+### User Story 4 - Navegación dentro de la pantalla de Home (Priority: P2)
+
+Un usuario autenticado ingresa a Home y visualiza un navbar con un menú de perfil configurado para cerrar sesión. El resto de la pantalla queda vacío y la interacción del perfil solo afecta la sesión activa.
+
+**Why this priority**: Home es la pantalla posterior al inicio de sesión y debe proporcionar una base visual minimalista con acceso inmediato a la gestión de la sesión sin distraer al usuario con contenido no requerido.
+
+**Independent Test**: Puede validarse iniciando sesión exitosamente y verificando que se accede a Home, que el navbar aparece en la parte superior, que el menú del perfil se abre con dos opciones y que cerrar sesión lo devuelve a la pantalla de inicio de sesión.
+
+**Acceptance Scenarios**:
+
+1. **Given** el usuario ha iniciado sesión correctamente, **When** es redirigido a Home, **Then** debe ver un navbar con un icono genérico de perfil en el extremo derecho.
+2. **Given** el usuario presiona el icono de perfil en el navbar, **When** se abre el menú, **Then** debe mostrarse la opción "Ir a mi Perfil" y la opción "Cerrar sesión".
+3. **Given** el usuario presiona la opción "Cerrar sesión", **When** confirma la acción, **Then** debe ser redirigido a la pantalla de inicio de sesión.
+4. **Given** el usuario entra a Home, **When** observa el contenido principal, **Then** debe ver la pantalla prácticamente sin contenido y con el navbar como único elemento funcional visible.
 
 ### Edge Cases
 
@@ -88,7 +106,12 @@ Un usuario puede alternar entre la pantalla de creación de cuenta y la pantalla
 - **FR-014**: El sistema MUST presentar una indicación clara cuando el usuario ingresa un valor que no cumple con la longitud o formato requerido.
 - **FR-015**: Cuando un usuario crea su cuenta exitosamente, el sistema MUST redirigirlo a la pantalla de inicio de sesión.
 - **FR-016**: Cuando el usuario intenta iniciar sesión con un nombre de usuario o contraseña inexistentes, el sistema MUST mostrar la leyenda "Nombre de usuario o contraseña incorrectos".
-- **FR-017**: El sistema MUST permitir que el usuario acceda a la otra pantalla de autenticación sin perder el flujo principal de la tarea que desea realizar.
+- **FR-017**: Cuando el usuario inicia sesión exitosamente, el sistema MUST redirigirlo a la pantalla de Home.
+- **FR-018**: Home MUST mostrar un navbar con un icono genérico de perfil en el extremo derecho.
+- **FR-019**: Al presionar el icono de perfil, el sistema MUST abrir un menú con las opciones "Ir a mi Perfil" y "Cerrar sesión".
+- **FR-020**: La opción "Ir a mi Perfil" MUST estar presente en el menú, aunque actualmente no realice ninguna acción.
+- **FR-021**: Cuando el usuario presiona "Cerrar sesión", el sistema MUST redirigirlo a la pantalla de inicio de sesión.
+- **FR-022**: El sistema MUST permitir que el usuario acceda a la otra pantalla de autenticación sin perder el flujo principal de la tarea que desea realizar.
 
 ### Key Entities *(include if feature involves data)*
 
