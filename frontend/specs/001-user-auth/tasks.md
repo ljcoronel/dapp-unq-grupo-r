@@ -23,10 +23,10 @@ description: "Task list for implementing frontend user authentication"
 
 **Purpose**: Add the libraries and styling foundation required by the React SPA.
 
-- [ ] T001 Add `axios`, `react-router`, `tailwindcss`, `postcss`, and `autoprefixer` dependencies in `frontend/package.json` and refresh `frontend/package-lock.json`
-- [ ] T002 [P] Configure Tailwind content scanning for `frontend/index.html` and `frontend/src/**/*.{js,jsx}` in `frontend/tailwind.config.js`
-- [ ] T003 [P] Configure PostCSS with TailwindCSS and Autoprefixer plugins in `frontend/postcss.config.js`
-- [ ] T004 [P] Replace starter Vite styles with Tailwind entry directives and base layout styles in `frontend/src/index.css`
+- [x] T001 Add `axios`, `react-router`, `tailwindcss`, `postcss`, and `autoprefixer` dependencies in `frontend/package.json` and refresh `frontend/package-lock.json`
+- [x] T002 [P] Configure Tailwind content scanning for `frontend/index.html` and `frontend/src/**/*.{js,jsx}` in `frontend/tailwind.config.js`
+- [x] T003 [P] Configure PostCSS with TailwindCSS and Autoprefixer plugins in `frontend/postcss.config.js`
+- [x] T004 [P] Replace starter Vite styles with Tailwind entry directives and base layout styles in `frontend/src/index.css`
 
 ---
 
@@ -36,13 +36,13 @@ description: "Task list for implementing frontend user authentication"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 Create the Axios client with base URL `http://localhost:8080` and JSON defaults in `frontend/src/services/apiClient.js`
-- [ ] T006 [P] Implement shared credential validation in `frontend/src/utils/validation.js`, enforcing `nombre` as required, 4-16 characters inclusive, and no spaces, and `password` as required and 4-16 characters inclusive with all character types accepted
-- [ ] T007 [P] Create the shared authentication service module boundary in `frontend/src/services/authService.js`, keeping all login and registration HTTP calls outside presentation components
-- [ ] T008 Create the global authentication context in `frontend/src/context/AuthContext.jsx`, initializing `authToken` from `localStorage`, exposing `isAuthenticated`, `isLoading`, `error`, login, registration, and logout operations, and surfacing network, HTTP, null-response, and missing-token failures
-- [ ] T009 [P] Create the reusable authentication form shell in `frontend/src/components/AuthForm.jsx`, rendering username/password fields, always-visible rules, submit loading state, validation feedback, and a configurable primary action
-- [ ] T010 [P] Create the protected-route wrapper in `frontend/src/components/ProtectedRoute.jsx`, redirecting unauthenticated users to `/login` and rendering protected content only when a token exists
-- [ ] T011 Remove starter component wiring and mount the authentication provider and router entry point from `frontend/src/main.jsx`
+- [x] T005 Create the Axios client with base URL `http://localhost:8080` and JSON defaults in `frontend/src/services/apiClient.js`
+- [x] T006 [P] Implement shared credential validation in `frontend/src/utils/validation.js`, enforcing `nombre` as required, 4-16 characters inclusive, and no spaces, and `password` as required and 4-16 characters inclusive with all character types accepted
+- [x] T007 [P] Create the shared authentication service module boundary in `frontend/src/services/authService.js`, keeping all login and registration HTTP calls outside presentation components
+- [x] T008 Create the global authentication context in `frontend/src/context/AuthContext.jsx`, initializing `authToken` from `localStorage`, exposing `isAuthenticated`, `isLoading`, `error`, login, registration, and logout operations, and surfacing network, HTTP, null-response, and missing-token failures
+- [x] T009 [P] Create the reusable authentication form shell in `frontend/src/components/AuthForm.jsx`, rendering username/password fields, always-visible rules, submit loading state, validation feedback, and a configurable primary action
+- [x] T010 [P] Create the protected-route wrapper in `frontend/src/components/ProtectedRoute.jsx`, redirecting unauthenticated users to `/login` and rendering protected content only when a token exists
+- [x] T011 Remove starter component wiring and mount the authentication provider and router entry point from `frontend/src/main.jsx`
 
 **Checkpoint**: Shared API, validation, session, form, and route infrastructure are ready for independent story implementation.
 
