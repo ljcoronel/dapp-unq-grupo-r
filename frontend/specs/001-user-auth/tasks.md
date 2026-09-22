@@ -56,10 +56,10 @@ description: "Task list for implementing frontend user authentication"
 
 ### Implementation for User Story 1
 
-- [ ] T012 [US1] Implement `register(nombre, password)` in `frontend/src/services/authService.js` as `POST /register` with JSON `{ nombre, password }`, returning the expected `UserResponse` and preserving Axios failures for the UI
-- [ ] T013 [US1] Create the registration page in `frontend/src/pages/RegisterPage.jsx` using `AuthForm`, shared validation, visible Spanish rules, a `Crear cuenta` submit action, loading feedback, and actionable validation/backend error messages
-- [ ] T014 [US1] Add the existing-account navigation control from `frontend/src/pages/RegisterPage.jsx` to `/login` without a full page reload
-- [ ] T015 [US1] Wire registration submission in `frontend/src/pages/RegisterPage.jsx` through `AuthContext` and navigate to `/login` only after a successful response without creating an authenticated session
+- [x] T012 [US1] Implement `register(nombre, password)` in `frontend/src/services/authService.js` as `POST /register` with JSON `{ nombre, password }`, returning the expected `UserResponse` and preserving Axios failures for the UI
+- [x] T013 [US1] Create the registration page in `frontend/src/pages/RegisterPage.jsx` using `AuthForm`, shared validation, visible Spanish rules, a `Crear cuenta` submit action, loading feedback, and actionable validation/backend error messages
+- [x] T014 [US1] Add the existing-account navigation control from `frontend/src/pages/RegisterPage.jsx` to `/login` without a full page reload
+- [x] T015 [US1] Wire registration submission in `frontend/src/pages/RegisterPage.jsx` through `AuthContext` and navigate to `/login` only after a successful response without creating an authenticated session
 
 **Checkpoint**: Registration is independently usable, rejects invalid input locally, calls the real backend only for valid input, and redirects to login on success.
 
