@@ -7,6 +7,15 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const { login, isLoading, error, setError } = useAuth()
 
+  const handleRegisterNavigation = (event) => {
+    if (isLoading) {
+      event.preventDefault()
+      return
+    }
+
+    setError('')
+  }
+
   const handleSubmit = async (nombre, password) => {
     setError('')
 
@@ -24,15 +33,20 @@ export default function LoginPage() {
         <AuthForm
           title="Iniciar sesión"
           subtitle="Ingresa tus credenciales para acceder a tu cuenta."
-          submitLabel="Iniciar sesión"
+          submitLabel="iniciar sesión"
           isLoading={isLoading}
           error={error}
           onSubmit={handleSubmit}
         />
 
         <p className="mt-4 text-center text-sm text-slate-600">
-          ¿No tienes cuenta?{' '}
-          <Link to="/register" className="font-medium text-sky-600 hover:text-sky-700">
+          ¿Todavía no tienes una cuenta?{' '}
+          <Link
+            to="/register"
+            onClick={handleRegisterNavigation}
+            aria-disabled={isLoading}
+            className="font-medium text-sky-600 hover:text-sky-700"
+          >
             Crear cuenta
           </Link>
         </p>

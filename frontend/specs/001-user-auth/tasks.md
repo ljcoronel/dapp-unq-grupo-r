@@ -91,9 +91,9 @@ description: "Task list for implementing frontend user authentication"
 
 ### Implementation for User Story 3
 
-- [ ] T021 [US3] Configure client-side routes for `/register` and `/login`, including a sensible default route, in `frontend/src/App.jsx`
-- [ ] T022 [US3] Align the register and login page headings, explanatory text, alternate-flow labels, and submit labels in `frontend/src/pages/RegisterPage.jsx` and `frontend/src/pages/LoginPage.jsx` so each screen is clearly distinguishable while retaining identical field rules
-- [ ] T023 [US3] Verify route transitions preserve SPA behavior and do not submit or retain unfinished form operations when switching screens in `frontend/src/pages/RegisterPage.jsx` and `frontend/src/pages/LoginPage.jsx`
+- [X] T021 [US3] Configure client-side routes for `/register` and `/login`, including a sensible default route, in `frontend/src/App.jsx`
+- [X] T022 [US3] Align the register and login page headings, explanatory text, alternate-flow labels, and submit labels in `frontend/src/pages/RegisterPage.jsx` and `frontend/src/pages/LoginPage.jsx` so each screen is clearly distinguishable while retaining identical field rules
+- [X] T023 [US3] Verify route transitions preserve SPA behavior and do not submit or retain unfinished form operations when switching screens in `frontend/src/pages/RegisterPage.jsx` and `frontend/src/pages/LoginPage.jsx`
 
 **Checkpoint**: Users can move between both access screens from either direction with clear actions and no full reload.
 

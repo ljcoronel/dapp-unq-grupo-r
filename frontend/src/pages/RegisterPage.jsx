@@ -7,6 +7,15 @@ export default function RegisterPage() {
   const navigate = useNavigate()
   const { registration, isLoading, error, setError } = useAuth()
 
+  const handleLoginNavigation = (event) => {
+    if (isLoading) {
+      event.preventDefault()
+      return
+    }
+
+    setError('')
+  }
+
   const handleSubmit = async (nombre, password) => {
     setError('')
 
@@ -31,8 +40,13 @@ export default function RegisterPage() {
         />
 
         <p className="mt-4 text-center text-sm text-slate-600">
-          ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="font-medium text-sky-600 hover:text-sky-700">
+          ¿Ya tienes una cuenta?{' '}
+          <Link
+            to="/login"
+            onClick={handleLoginNavigation}
+            aria-disabled={isLoading}
+            className="font-medium text-sky-600 hover:text-sky-700"
+          >
             Inicia sesión
           </Link>
         </p>
