@@ -1,4 +1,4 @@
-# Quickstart: Validación del frontend de autenticación
+# Quickstart: Validacion del frontend de autenticacion
 
 ## Prerrequisitos
 
@@ -6,7 +6,7 @@
 - Backend levantado en `http://localhost:8080`.
 - Un usuario existente para probar login, o posibilidad de registrarlo en el backend.
 
-## Instalación y ejecución
+## Instalacion y ejecucion
 
 Desde `frontend/`:
 
@@ -17,23 +17,24 @@ npm run dev
 
 Abrir la URL que informa Vite.
 
-## Validación funcional
+## Validacion funcional
 
-1. Visitar `/register`; confirmar que se muestran las reglas de nombre y contraseña de forma permanente.
-2. Intentar enviar campos vacíos, un nombre con espacios, o valores de longitud menor a 4 o mayor a 16; verificar que se bloquea el request y se muestran errores claros.
-3. Registrar credenciales válidas; verificar que el request sea `POST http://localhost:8080/register` y que la aplicación navegue a `/login`.
+1. Visitar `/register`; confirmar que se muestran las reglas de nombre y contrasena de forma permanente.
+2. Intentar enviar campos vacios, un nombre con espacios, o valores de longitud menor a 4 o mayor a 16; verificar que se bloquea el request y se muestran errores claros.
+3. Registrar credenciales validas; verificar que el request sea `POST http://localhost:8080/register` y que la aplicacion navegue a `/login`.
 4. Desde `/login`, usar el enlace de registro y volver sin recarga completa.
-5. Iniciar sesión con credenciales válidas; verificar `POST http://localhost:8080/login`, header `Authorization: Bearer ...`, existencia de `localStorage.authToken` y navegación a Home.
-6. Recargar Home; confirmar que la sesión persiste y la ruta continúa protegida.
-7. Abrir el menú del perfil; verificar "Ir a mi Perfil" y "Cerrar sesión".
-8. Cerrar sesión; confirmar eliminación de `localStorage.authToken`, redirección a `/login` y bloqueo de acceso directo a Home.
-9. Probar credenciales inválidas, usuario duplicado y backend detenido; verificar mensajes visibles en español y finalización del estado de carga.
+5. Iniciar sesion con credenciales validas; verificar `POST http://localhost:8080/login`, que la respuesta incluya un header `Authorization` con un token valido, que ese valor se guarde unicamente en `localStorage.authToken` y que la aplicacion navegue a `/home`.
+6. Recargar `/home`; confirmar que la sesion se rehidrata desde `localStorage` y la ruta continua protegida.
+7. Abrir el menu del perfil; verificar `Ir a mi Perfil` y `Cerrar sesion`, y confirmar que la primera opcion es intencionalmente inerte.
+8. Cerrar sesion; confirmar eliminacion de `localStorage.authToken`, limpieza del estado en memoria, redireccion a `/login` y bloqueo de acceso directo a `/home`.
+9. Probar credenciales invalidas, usuario duplicado y backend detenido; verificar, respectivamente, el mensaje `Nombre de usuario o contrasena incorrectos`, un error de registro accionable y el mensaje de conexion fallida, siempre con finalizacion del estado de carga.
+10. Eliminar manualmente `localStorage.authToken` e intentar abrir `/home`; confirmar la redireccion automatica a `/login` sin mostrar contenido protegido.
 
-## Validación técnica
+## Validacion tecnica
 
 ```powershell
 npm run lint
 npm run build
 ```
 
-Los comandos deben finalizar correctamente. El contrato detallado de requests y responses está en [`contracts/auth-api.yaml`](contracts/auth-api.yaml).
+Los comandos deben finalizar correctamente. El contrato detallado de requests y responses esta en [`contracts/auth-api.yaml`](contracts/auth-api.yaml).

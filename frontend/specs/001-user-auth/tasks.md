@@ -121,10 +121,10 @@ description: "Task list for implementing frontend user authentication"
 
 **Purpose**: Validate the completed flow and align documentation/configuration with the implemented behavior.
 
-- [ ] T029 [P] Update `frontend/src/App.css` and any affected `frontend/src/index.css` rules to remove starter Vite styling and ensure the auth screens, navbar, menu, validation errors, and loading states remain readable and responsive with TailwindCSS
-- [ ] T030 [P] Update `frontend/specs/001-user-auth/quickstart.md` with the final route names, token-header behavior, Spanish error states, and Home/logout checks if implementation details differ from the documented flow
-- [ ] T031 Run `npm run lint` from `frontend/` and resolve all lint errors in changed source files
-- [ ] T032 Run `npm run build` from `frontend/` and resolve any production bundling or route integration errors
+- [X] T029 [P] Update `frontend/src/App.css` and any affected `frontend/src/index.css` rules to remove starter Vite styling and ensure the auth screens, navbar, menu, validation errors, and loading states remain readable and responsive with TailwindCSS
+- [X] T030 [P] Update `frontend/specs/001-user-auth/quickstart.md` with the final route names, token-header behavior, Spanish error states, and Home/logout checks if implementation details differ from the documented flow
+- [X] T031 Run `npm run lint` from `frontend/` and resolve all lint errors in changed source files
+- [X] T032 Run `npm run build` from `frontend/` and resolve any production bundling or route integration errors
 - [ ] T033 Execute every manual scenario in `frontend/specs/001-user-auth/quickstart.md` against the local backend, including invalid input, duplicate user, invalid credentials, missing token, network failure, persistence after reload, and logout
 
 ---
