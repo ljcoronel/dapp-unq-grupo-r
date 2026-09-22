@@ -19,8 +19,8 @@ function getErrorMessage(error) {
     return 'Ocurrió un error inesperado.'
   }
 
-  if (error.message === 'La respuesta del servidor no incluye un token válido.') {
-    return 'No se recibió un token válido en la respuesta del servidor.'
+  if (error.message === 'AUTH_TOKEN_INVALID') {
+    return 'No se pudo completar el inicio de sesión. Intente nuevamente.'
   }
 
   if (error.response?.data?.message) {
@@ -28,6 +28,13 @@ function getErrorMessage(error) {
   }
 
   if (error.response?.status === 401) {
+    return 'Nombre de usuario o contraseña incorrectos.'
+  }
+
+  if (
+    error.response?.status === 400 &&
+    error.response?.data?.message?.toLowerCase().includes('credencial')
+  ) {
     return 'Nombre de usuario o contraseña incorrectos.'
   }
 

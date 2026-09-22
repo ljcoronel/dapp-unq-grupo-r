@@ -73,11 +73,11 @@ description: "Task list for implementing frontend user authentication"
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Implement `login(nombre, password)` in `frontend/src/services/authService.js` as `POST /login` with JSON `{ nombre, password }`, extracting the JWT from the `Authorization` response header and rejecting missing or malformed token responses
-- [ ] T017 [US2] Add login state transitions to `frontend/src/context/AuthContext.jsx`, persisting only the extracted token under `localStorage.authToken`, deriving `isAuthenticated`, and mapping invalid-credential, network, HTTP, and missing-token errors to visible Spanish messages
-- [ ] T018 [US2] Create the login page in `frontend/src/pages/LoginPage.jsx` using `AuthForm`, shared validation, always-visible rules, an `iniciar sesión` submit action, loading feedback, and the required invalid-credentials message
-- [ ] T019 [US2] Add the new-user navigation control from `frontend/src/pages/LoginPage.jsx` to `/register` without a full page reload
-- [ ] T020 [US2] Wire successful login navigation from `frontend/src/pages/LoginPage.jsx` to the protected Home route and prevent duplicate submissions while `isLoading` is true
+- [x] T016 [US2] Implement `login(nombre, password)` in `frontend/src/services/authService.js` as `POST /login` with JSON `{ nombre, password }`, extracting the JWT from the `Authorization` response header and rejecting missing or malformed token responses
+- [x] T017 [US2] Add login state transitions to `frontend/src/context/AuthContext.jsx`, persisting only the extracted token under `localStorage.authToken`, deriving `isAuthenticated`, and mapping invalid-credential, network, HTTP, and missing-token errors to visible Spanish messages
+- [x] T018 [US2] Create the login page in `frontend/src/pages/LoginPage.jsx` using `AuthForm`, shared validation, always-visible rules, an `iniciar sesión` submit action, loading feedback, and the required invalid-credentials message
+- [x] T019 [US2] Add the new-user navigation control from `frontend/src/pages/LoginPage.jsx` to `/register` without a full page reload
+- [x] T020 [US2] Wire successful login navigation from `frontend/src/pages/LoginPage.jsx` to the protected Home route and prevent duplicate submissions while `isLoading` is true
 
 **Checkpoint**: Login is independently usable, persists a valid token from the response header, reports failures visibly, and reaches protected Home only after successful authentication.
 

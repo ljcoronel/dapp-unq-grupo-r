@@ -1,25 +1,31 @@
 import apiClient from './apiClient'
 
-export async function login(nombre, password) {
-  const response = await apiClient.post('/login', { nombre, password })
+const INVALID_TOKEN_ERROR = 'AUTH_TOKEN_INVALID'
+
+function extractToken(response) {
   const authorizationHeader =
     response.headers?.authorization || response.headers?.Authorization
 
-  if (!authorizationHeader) {
-    throw new Error('La respuesta del servidor no incluye un token válido.')
+  if (typeof authorizationHeader !== 'string' || !authorizationHeader.startsWith('Bearer ')) {
+    throw new Error(INVALID_TOKEN_ERROR)
   }
 
-  const token = authorizationHeader.startsWith('Bearer ')
-    ? authorizationHeader.slice('Bearer '.length).trim()
-    : authorizationHeader.trim()
+  const token = authorizationHeader.slice('Bearer '.length).trim()
+  const tokenParts = token.split('.')
 
-  if (!token) {
-    throw new Error('La respuesta del servidor no incluye un token válido.')
+  if (!token || tokenParts.length !== 3 || tokenParts.some((part) => !part)) {
+    throw new Error(INVALID_TOKEN_ERROR)
   }
+
+  return token
+}
+
+export async function login(nombre, password) {
+  const response = await apiClient.post('/login', { nombre, password })
 
   return {
     user: response.data,
-    token,
+    token: extractToken(response),
   }
 }
 
