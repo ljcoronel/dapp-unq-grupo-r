@@ -8,6 +8,8 @@ export default function AuthForm({
   submitLabel,
   isLoading = false,
   error = '',
+  showCredentialRequirements = true,
+  showValidationErrors = true,
   onSubmit,
 }) {
   const [formData, setFormData] = useState({ nombre: '', password: '' })
@@ -56,7 +58,9 @@ export default function AuthForm({
             placeholder="Ingrese su nombre"
             autoComplete="username"
           />
-          {nombreError ? <p className="mt-2 text-sm text-red-600">{nombreError}</p> : null}
+          {showValidationErrors && nombreError ? (
+            <p className="mt-2 text-sm text-red-600">{nombreError}</p>
+          ) : null}
         </div>
 
         <div>
@@ -73,14 +77,18 @@ export default function AuthForm({
             placeholder="Ingrese su contraseña"
             autoComplete="current-password"
           />
-          {passwordError ? <p className="mt-2 text-sm text-red-600">{passwordError}</p> : null}
+          {showValidationErrors && passwordError ? (
+            <p className="mt-2 text-sm text-red-600">{passwordError}</p>
+          ) : null}
         </div>
 
-        <ul className="space-y-1 text-sm text-slate-600">
-          <li>• El nombre debe tener entre 4 y 16 caracteres.</li>
-          <li>• El nombre no puede contener espacios.</li>
-          <li>• La contraseña debe tener entre 4 y 16 caracteres.</li>
-        </ul>
+        {showCredentialRequirements ? (
+          <ul className="space-y-1 text-sm text-slate-600">
+            <li>• El nombre debe tener entre 4 y 16 caracteres.</li>
+            <li>• El nombre no puede contener espacios.</li>
+            <li>• La contraseña debe tener entre 4 y 16 caracteres.</li>
+          </ul>
+        ) : null}
 
         {error ? (
           <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">

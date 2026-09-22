@@ -36,6 +36,8 @@ export default function LoginPage() {
           submitLabel="iniciar sesión"
           isLoading={isLoading}
           error={error}
+          showCredentialRequirements={false}
+          showValidationErrors={false}
           onSubmit={handleSubmit}
         />
 

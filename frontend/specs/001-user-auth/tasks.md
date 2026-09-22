@@ -125,7 +125,7 @@ description: "Task list for implementing frontend user authentication"
 - [X] T030 [P] Update `frontend/specs/001-user-auth/quickstart.md` with the final route names, token-header behavior, Spanish error states, and Home/logout checks if implementation details differ from the documented flow
 - [X] T031 Run `npm run lint` from `frontend/` and resolve all lint errors in changed source files
 - [X] T032 Run `npm run build` from `frontend/` and resolve any production bundling or route integration errors
-- [ ] T033 Execute every manual scenario in `frontend/specs/001-user-auth/quickstart.md` against the local backend, including invalid input, duplicate user, invalid credentials, missing token, network failure, persistence after reload, and logout
+- [X] T033 Execute every manual scenario in `frontend/specs/001-user-auth/quickstart.md` against the local backend, including invalid input, duplicate user, invalid credentials, missing token, network failure, persistence after reload, and logout
 
 ---
 
