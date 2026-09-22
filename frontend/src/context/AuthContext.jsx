@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router'
 
 import { login as loginRequest, register as registerRequest } from '../services/authService'
 
@@ -46,6 +47,7 @@ function getErrorMessage(error) {
 }
 
 export function AuthProvider({ children }) {
+  const navigate = useNavigate()
   const [authToken, setAuthToken] = useState(() => getStoredToken())
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -103,7 +105,8 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(() => {
     clearSession()
-  }, [clearSession])
+    navigate('/login', { replace: true })
+  }, [clearSession, navigate])
 
   const value = useMemo(
     () => ({

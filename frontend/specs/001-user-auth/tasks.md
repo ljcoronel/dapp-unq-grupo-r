@@ -107,11 +107,11 @@ description: "Task list for implementing frontend user authentication"
 
 ### Implementation for User Story 4
 
-- [ ] T024 [P] [US4] Create the profile menu component in `frontend/src/components/ProfileMenu.jsx`, exposing a generic profile icon and menu options `Ir a mi Perfil` and `Cerrar sesión`, with the profile option intentionally inert
-- [ ] T025 [US4] Create the minimal Home page in `frontend/src/pages/HomePage.jsx` with a top navbar, right-aligned `ProfileMenu`, and no unrelated main content
-- [ ] T026 [US4] Implement logout in `frontend/src/context/AuthContext.jsx` to remove `localStorage.authToken`, clear in-memory authentication/error state, and navigate to `/login`
-- [ ] T027 [US4] Register the protected `/home` route in `frontend/src/App.jsx` through `ProtectedRoute` and ensure the authenticated login flow targets that route
-- [ ] T028 [US4] Add the protected-route fallback and authenticated-session rehydration behavior in `frontend/src/App.jsx` and `frontend/src/context/AuthContext.jsx`, including redirecting direct unauthenticated Home access to `/login`
+- [X] T024 [P] [US4] Create the profile menu component in `frontend/src/components/ProfileMenu.jsx`, exposing a generic profile icon and menu options `Ir a mi Perfil` and `Cerrar sesión`, with the profile option intentionally inert
+- [X] T025 [US4] Create the minimal Home page in `frontend/src/pages/HomePage.jsx` with a top navbar, right-aligned `ProfileMenu`, and no unrelated main content
+- [X] T026 [US4] Implement logout in `frontend/src/context/AuthContext.jsx` to remove `localStorage.authToken`, clear in-memory authentication/error state, and navigate to `/login`
+- [X] T027 [US4] Register the protected `/home` route in `frontend/src/App.jsx` through `ProtectedRoute` and ensure the authenticated login flow targets that route
+- [X] T028 [US4] Add the protected-route fallback and authenticated-session rehydration behavior in `frontend/src/App.jsx` and `frontend/src/context/AuthContext.jsx`, including redirecting direct unauthenticated Home access to `/login`
 
 **Checkpoint**: Authenticated users reach a minimal protected Home, can inspect the profile menu, and can end the session safely.
 
