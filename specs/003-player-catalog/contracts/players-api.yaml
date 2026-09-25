@@ -1,0 +1,53 @@
+openapi: 3.0.3
+info:
+  title: Catálogo de jugadores
+  version: 1.0.0
+  description: Consulta el snapshot de jugadores almacenado localmente.
+servers:
+  - url: http://localhost:8080
+paths:
+  /players:
+    get:
+      summary: Obtener jugadores agrupados por liga
+      description: >
+        Devuelve siempre cinco listas en el orden fijo de ligas. La lectura usa
+        exclusivamente el snapshot de PostgreSQL; no dispara requests externas.
+        Este endpoint es público y no requiere token JWT.
+      responses:
+        '200':
+          description: Cinco listas de hasta diez jugadores cada una
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 5
+                maxItems: 5
+                items:
+                  type: array
+                  maxItems: 10
+                  items:
+                    $ref: '#/components/schemas/Player'
+        '503':
+          description: El catálogo no está disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Player:
+      type: object
+      required: [nombre, equipo]
+      properties:
+        nombre: { type: string }
+        seccion: { type: string, nullable: true }
+        equipo: { type: string }
+        partidosJugados: { type: integer, nullable: true }
+        goles: { type: integer, nullable: true }
+        asistencias: { type: integer, nullable: true }
+        penaltis: { type: integer, nullable: true }
+    Error:
+      type: object
+      required: [mensaje]
+      properties:
+        mensaje: { type: string }
