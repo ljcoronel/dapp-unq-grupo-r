@@ -7,6 +7,7 @@ public record PlayerResponse(
         String nombre,
         String seccion,
         String equipo,
+        LeagueResponse liga,
         Integer partidosJugados,
         Integer goles,
         Integer asistencias,
@@ -14,7 +15,7 @@ public record PlayerResponse(
 ) {
     public static PlayerResponse from(Player player) {
         var statistics = player.statisticsOrEmpty();
-        return new PlayerResponse(player.id(), player.name(), player.section(), player.team(),
+        return new PlayerResponse(player.id(), player.name(), player.section(), player.team(), null,
                 statistics.playedMatches(), statistics.goals(), statistics.assists(), statistics.penalties());
     }
 }

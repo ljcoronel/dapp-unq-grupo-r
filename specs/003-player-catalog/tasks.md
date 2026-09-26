@@ -52,18 +52,18 @@ description: "Lista de tareas para implementar el catálogo de jugadores por lig
 
 ### Tests for User Story 1
 
-- [ ] T014 [P] [US1] Add unit tests for external payload mapping, invalid player filtering, ten-player truncation and null-versus-zero preservation in `backend/app/src/test/java/com/dappunq/unit/PlayerMapperTest.java`
-- [ ] T015 [P] [US1] Add MockMvc contract tests for public `GET /players`, fixed five-list ordering, empty leagues and response field shape in `backend/app/src/test/java/com/dappunq/e2e/PlayerCatalogE2ETest.java`
-- [ ] T016 [P] [US1] Add PostgreSQL Testcontainers tests for league/player persistence and ordered reads in `backend/app/src/test/java/com/dappunq/integration/PlayerCatalogPersistenceIntegrationTest.java`
+- [X] T014 [P] [US1] Add unit tests for external payload mapping, invalid player filtering, ten-player truncation and null-versus-zero preservation in `backend/app/src/test/java/com/dappunq/unit/PlayerMapperTest.java`
+- [X] T015 [P] [US1] Add MockMvc contract tests for public `GET /players`, fixed five-list ordering, empty leagues and response field shape in `backend/app/src/test/java/com/dappunq/e2e/PlayerCatalogE2ETest.java`
+- [X] T016 [P] [US1] Add PostgreSQL Testcontainers tests for league/player persistence and ordered reads in `backend/app/src/test/java/com/dappunq/integration/PlayerCatalogPersistenceIntegrationTest.java`
 
 ### Implementation for User Story 1
 
-- [ ] T017 Implement `RestClient` football-data client with HTTPS base URL, finite timeouts, configured `X-Auth-Token`, `/competitions/{code}/scorers` requests and explicit non-2xx/deserialization failures in `backend/app/src/main/java/com/dappunq/service/FootballDataClient.java`
-- [ ] T018 Implement snapshot refresh service that processes all five leagues, discards invalid records, limits valid players to ten and atomically replaces only successful non-empty league snapshots in `backend/app/src/main/java/com/dappunq/service/PlayerCatalogRefreshService.java`
-- [ ] T019 Implement PostgreSQL-only read service returning all five leagues in fixed order and mapping entities to `PlayerResponse` without invoking the external client in `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java`
-- [ ] T020 Implement public `GET /players` controller with response serialization and catalog-unavailable error mapping in `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java`
-- [ ] T021 Implement `ApplicationRunner` startup synchronization with per-league failure logging, snapshot preservation and no credential values in logs in `backend/app/src/main/java/com/dappunq/service/PlayerCatalogStartupRunner.java`
-- [ ] T022 [P] [US1] Update the Postman collection with a public `GET /players` request and representative five-list response expectations in `docs/postman/UserAuth.postman_collection.json`
+- [X] T017 Implement `RestClient` football-data client with HTTPS base URL, finite timeouts, configured `X-Auth-Token`, `/competitions/{code}/scorers` requests and explicit non-2xx/deserialization failures in `backend/app/src/main/java/com/dappunq/service/FootballDataClient.java`
+- [X] T018 Implement snapshot refresh service that processes all five leagues, discards invalid records, limits valid players to ten and atomically replaces only successful non-empty league snapshots in `backend/app/src/main/java/com/dappunq/service/PlayerCatalogRefreshService.java`
+- [X] T019 Implement PostgreSQL-only read service returning all five leagues in fixed order and mapping entities to `PlayerResponse` without invoking the external client in `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java`
+- [X] T020 Implement public `GET /players` controller with response serialization and catalog-unavailable error mapping in `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java`
+- [X] T021 Implement `ApplicationRunner` startup synchronization with per-league failure logging, snapshot preservation and no credential values in logs in `backend/app/src/main/java/com/dappunq/service/PlayerCatalogStartupRunner.java`
+- [X] T022 [P] [US1] Update the Postman collection with a public `GET /players` request and representative five-list response expectations in `docs/postman/UserAuth.postman_collection.json`
 
 **Checkpoint**: `GET /players` is a complete independently testable MVP and startup refresh does not make the endpoint depend on football-data availability.
 

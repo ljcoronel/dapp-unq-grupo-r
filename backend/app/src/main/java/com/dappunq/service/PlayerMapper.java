@@ -1,6 +1,7 @@
 package com.dappunq.service;
 
 import com.dappunq.dto.PlayerResponse;
+import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.footballdata.ScorerPayload;
 import com.dappunq.model.Player;
 import com.dappunq.model.PlayerStatistics;
@@ -53,6 +54,7 @@ public final class PlayerMapper {
 
     public static PlayerResponse toResponse(PlayerEntity entity) {
         return new PlayerResponse(entity.getId(), entity.getName(), entity.getSection(), entity.getTeam(),
+                LeagueResponse.from(entity.getLeague()),
                 entity.getPlayedMatches(), entity.getGoals(), entity.getAssists(), entity.getPenalties());
     }
 

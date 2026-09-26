@@ -65,7 +65,7 @@ components:
   schemas:
     Player:
       type: object
-      required: [id, nombre, equipo]
+      required: [id, nombre, equipo, liga]
       properties:
         id:
           type: integer
@@ -75,6 +75,13 @@ components:
         nombre: { type: string }
         seccion: { type: string, nullable: true }
         equipo: { type: string }
+        liga:
+          type: object
+          required: [codigo, nombre, pais]
+          properties:
+            codigo: { type: string }
+            nombre: { type: string }
+            pais: { type: string }
         partidosJugados: { type: integer, nullable: true }
         goles: { type: integer, nullable: true }
         asistencias: { type: integer, nullable: true }

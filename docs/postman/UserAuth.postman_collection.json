@@ -58,6 +58,34 @@
           "path": ["register"]
         }
       }
+    },
+    {
+      "name": "GET /players",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/players",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["players"]
+        }
+      }
+    },
+    {
+      "name": "GET /players/{id}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/players/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["players", "1"]
+        }
+      }
     }
   ]
 }
