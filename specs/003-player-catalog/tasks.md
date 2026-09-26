@@ -96,14 +96,14 @@ description: "Lista de tareas para implementar el catálogo de jugadores por lig
 
 ### Tests for User Story 3
 
-- [ ] T026 [P] [US3] Add unit tests for null, empty and zero statistic mapping and required name/team rejection in `backend/app/src/test/java/com/dappunq/unit/PlayerIncompleteDataTest.java`
-- [ ] T027 [P] [US3] Add MockMvc tests for null-versus-zero JSON output and a comprehensible unavailable-catalog error in `backend/app/src/test/java/com/dappunq/e2e/PlayerIncompleteDataE2ETest.java`
+- [X] T026 [P] [US3] Add unit tests for null, empty and zero statistic mapping and required name/team rejection in `backend/app/src/test/java/com/dappunq/unit/PlayerIncompleteDataTest.java`
+- [X] T027 [P] [US3] Add MockMvc tests for null-versus-zero JSON output and a comprehensible unavailable-catalog error in `backend/app/src/test/java/com/dappunq/e2e/PlayerIncompleteDataE2ETest.java`
 
 ### Implementation for User Story 3
 
-- [ ] T028 [US3] Normalize blank/uninterpretable external values to nullable domain fields while retaining integer zero in `backend/app/src/main/java/com/dappunq/service/PlayerMapper.java`
-- [ ] T029 [US3] Ensure `PlayerResponse` JSON includes nullable statistics and required identity fields without substituting display dashes in the backend in `backend/app/src/main/java/com/dappunq/dto/PlayerResponse.java`
-- [ ] T030 [US3] Add catalog failure response with Spanish message and no partial-success payload in `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
+- [X] T028 [US3] Normalize blank/uninterpretable external values to nullable domain fields while retaining integer zero in `backend/app/src/main/java/com/dappunq/service/PlayerMapper.java`
+- [X] T029 [US3] Ensure `PlayerResponse` JSON includes nullable statistics and required identity fields without substituting display dashes in the backend in `backend/app/src/main/java/com/dappunq/dto/PlayerResponse.java`
+- [X] T030 [US3] Add catalog failure response with Spanish message and no partial-success payload in `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
 
 **Checkpoint**: Consumers can render `null` as `-` and numeric zero as `0` without ambiguity or malformed rows.
 
@@ -117,16 +117,16 @@ description: "Lista de tareas para implementar el catálogo de jugadores por lig
 
 ### Tests for User Story 4
 
-- [ ] T031 [P] [US4] Add MockMvc tests for public `GET /players/{id}`, exact external ID propagation, unknown ID 404 and invalid path IDs in `backend/app/src/test/java/com/dappunq/e2e/PlayerByIdE2ETest.java`
-- [ ] T032 [P] [US4] Add integration tests for repository lookup by non-generated player primary key and no external-client fallback in `backend/app/src/test/java/com/dappunq/integration/PlayerByIdIntegrationTest.java`
+- [X] T031 [P] [US4] Add MockMvc tests for public `GET /players/{id}`, exact external ID propagation, unknown ID 404 and invalid path IDs in `backend/app/src/test/java/com/dappunq/e2e/PlayerByIdE2ETest.java`
+- [X] T032 [P] [US4] Add integration tests for repository lookup by non-generated player primary key and no external-client fallback in `backend/app/src/test/java/com/dappunq/integration/PlayerByIdIntegrationTest.java`
 
 ### Implementation for User Story 4
 
-- [ ] T033 [US4] Implement PostgreSQL-only player lookup by positive integer ID and explicit not-found exception in `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java`
-- [ ] T034 [US4] Add `GET /players/{id}` controller route with positive-ID validation, public access and `PlayerResponse` serialization in `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java`
-- [ ] T035 [US4] Map missing players to HTTP 404 and invalid identifiers to the existing Spanish error response in `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
-- [ ] T036 [P] [US4] Add a public `GET /players/{id}` request without Authorization headers to `docs/postman/UserAuth.postman_collection.json`
-- [ ] T037 [P] [US4] Extend the OpenAPI contract with positive integer validation, 404 response and exact `id` semantics for `GET /players/{id}` in `specs/003-player-catalog/contracts/players-api.yaml`
+- [X] T033 [US4] Implement PostgreSQL-only player lookup by positive integer ID and explicit not-found exception in `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java`
+- [X] T034 [US4] Add `GET /players/{id}` controller route with positive-ID validation, public access and `PlayerResponse` serialization in `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java`
+- [X] T035 [US4] Map missing players to HTTP 404 and invalid identifiers to the existing Spanish error response in `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
+- [X] T036 [P] [US4] Add a public `GET /players/{id}` request without Authorization headers to `docs/postman/UserAuth.postman_collection.json`
+- [X] T037 [P] [US4] Extend the OpenAPI contract with positive integer validation, 404 response and exact `id` semantics for `GET /players/{id}` in `specs/003-player-catalog/contracts/players-api.yaml`
 
 **Checkpoint**: Both public endpoints use the persisted external identity and remain independent from football-data after startup.
 

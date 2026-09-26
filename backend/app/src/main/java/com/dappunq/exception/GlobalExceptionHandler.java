@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -43,6 +44,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPlayerIdException.class)
     public ResponseEntity<ErrorResponse> handleInvalidPlayerId(InvalidPlayerIdException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handlePathTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse("El identificador del jugador debe ser un número entero positivo"));
     }
 
     @ExceptionHandler(PlayerNotFoundException.class)

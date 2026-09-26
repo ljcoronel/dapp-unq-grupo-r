@@ -67,6 +67,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '400':
+          description: El identificador no es un entero positivo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Player:
@@ -75,7 +81,7 @@ components:
       properties:
         id:
           type: integer
-          format: int64
+          format: int32
           minimum: 1
           description: Valor de player.id recibido desde football-data y usado como PRIMARY KEY
         nombre: { type: string }
