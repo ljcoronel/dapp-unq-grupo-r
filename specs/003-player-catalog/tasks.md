@@ -136,11 +136,11 @@ description: "Lista de tareas para implementar el catálogo de jugadores por lig
 
 **Purpose**: Complete quality gates, documentation and delivery validation across all stories.
 
-- [ ] T038 [P] Verify `GET /players` and `GET /players/{id}` remain permitted without JWT while the football-data token is restricted to internal client configuration in `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java`
-- [ ] T039 [P] Add startup refresh failure, empty-response preservation, non-empty replacement and obsolete-player deletion coverage in `backend/app/src/test/java/com/dappunq/integration/PlayerCatalogRefreshIntegrationTest.java`
-- [ ] T040 [P] Update backend API and environment-variable usage documentation, excluding credentials and tokens, in `backend/README.md`
-- [ ] T041 Run the feature quickstart and backend test suite from `backend/gradlew.bat` and record any required local PostgreSQL/Testcontainers setup in `specs/003-player-catalog/quickstart.md`
-- [ ] T042 Review all feature code, tests and documentation for Spanish messages, layer separation, no generated player IDs, no secret literals and constitution compliance in `backend/` and `specs/003-player-catalog/`
+- [X] T038 [P] Verify `GET /players` and `GET /players/{id}` remain permitted without JWT while the football-data token is restricted to internal client configuration in `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java`
+- [X] T039 [P] Add startup refresh failure, empty-response preservation, non-empty replacement and obsolete-player deletion coverage in `backend/app/src/test/java/com/dappunq/integration/PlayerCatalogRefreshIntegrationTest.java`
+- [X] T040 [P] Update backend API and environment-variable usage documentation, excluding credentials and tokens, in `backend/README.md`
+- [X] T041 Run the feature quickstart and backend test suite from `backend/gradlew.bat` and record any required local PostgreSQL/Testcontainers setup in `specs/003-player-catalog/quickstart.md`
+- [X] T042 Review all feature code, tests and documentation for Spanish messages, layer separation, no generated player IDs, no secret literals and constitution compliance in `backend/` and `specs/003-player-catalog/`
 
 ---
 
