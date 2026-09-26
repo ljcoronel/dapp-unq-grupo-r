@@ -24,9 +24,9 @@ conservará entre cero y diez jugadores según la respuesta recibida.
 
 **Testing**: JUnit 5, Spring Boot Test, MockMvc, Testcontainers PostgreSQL; Mockito for isolated client/service tests
 
-**Target Platform**: Backend Spring Boot on the existing development/runtime environment; React/Vite frontend consumes the REST endpoint
+**Target Platform**: Backend Spring Boot on the existing development/runtime environment
 
-**Project Type**: Monorepo web application (Spring REST backend plus React frontend)
+**Project Type**: Backend REST web service within the existing monorepo
 
 **Performance Goals**: `GET /players` performs only one database read path and never calls football-data; startup performs one request per configured league
 
@@ -38,7 +38,8 @@ conservará entre cero y diez jugadores según la respuesta recibida.
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- **Monorepo**: PASS. Changes remain under `backend/`, `frontend/` only where consumption is needed, and `specs/`.
+- **Monorepo**: PASS. This implementation changes only `backend/` and the
+  feature documentation under `specs/`; no frontend source code is in scope.
 - **Arquitectura en capas**: PASS. External records/client, service, domain model, persistence entities/repositories, controller and response DTOs stay separated.
 - **Modelo rico**: PASS. Domain objects enforce valid league/player invariants and expose the truncation/normalization behavior without framework dependencies.
 - **Validacion por niveles**: PASS. External payload validation/mapping occurs at the integration boundary; service validates availability and refresh policy; domain validates non-empty identity and bounded collections.
@@ -76,14 +77,13 @@ backend/
             ├── integration/       # service/repository + Testcontainers
             └── e2e/               # MockMvc endpoint tests
 
-frontend/
-└── src/                          # existing React app; catalog consumer if required by UI scope
-
 ```
 
-**Structure Decision**: Mantener el monorepo existente. El backend concentra la
-integración, dominio, persistencia y contrato REST; el frontend consume el contrato
-sin conocer football-data. Los archivos de especificación y contrato viven en
+**Structure Decision**: Mantener el monorepo existente, pero limitar esta
+implementación a `backend/`. El backend concentra la integración, dominio,
+persistencia, pruebas y contrato REST. El frontend queda fuera del alcance y no
+se modificarán sus archivos; el contrato documentado queda disponible para un
+consumidor futuro. Los archivos de especificación viven en
 `specs/003-player-catalog/`.
 
 ## Complexity Tracking

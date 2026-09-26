@@ -44,8 +44,8 @@
 - `GET /players` lee todas las ligas en un orden fijo y arma una lista de cinco
   listas, incluyendo listas vacías. El controller no conoce el cliente externo.
 - Exponer un DTO/record propio, no el payload de football-data ni entidades JPA.
-  Los valores `null` se conservan en JSON para que el frontend pueda mostrarlos
-  como `-`; el cero se conserva como cero.
+  Los valores `null` se conservan en JSON para que el consumidor pueda
+  mostrarlos como `-`; el cero se conserva como cero.
 
 ### Calidad y seguridad
 

@@ -1,4 +1,4 @@
-# Validación rápida
+# Validación rápida del backend
 
 ## Prerrequisitos
 
@@ -56,7 +56,7 @@ Desde `backend/`:
 .\gradlew.bat :app:test
 ```
 
-La suite debe incluir: unit tests del mapping y reglas de límite, integración
+La suite backend debe incluir: unit tests del mapping y reglas de límite, integración
 con PostgreSQL Testcontainers para refresh/lectura, y tests MockMvc que
 comprueben las respuestas de `GET /players` y `GET /players/{id}`, ligas vacías,
 identificadores inexistentes, correspondencia entre `player.id` y la clave
