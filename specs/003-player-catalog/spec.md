@@ -10,7 +10,8 @@
 
 **Corrección técnica**: Las requests a football-data deben utilizar HTTPS. La URL
 base es `https://api.football-data.org/v4/competitions` y cada request se
-realiza contra `/competitions/{CODIGOLIGA}/scorers`.
+realiza contra `/competitions/{CODIGOLIGA}/scorers`. Del objeto `player` también
+debe conservarse su campo `id`, que será la clave primaria del jugador.
 
 ## Escenarios de usuario y pruebas
 
@@ -91,6 +92,9 @@ Como visitante, quiero identificar claramente cuándo un dato no está disponibl
 - **RF-014**: Las requests a football-data DEBEN utilizar el protocolo HTTPS y la URL `https://api.football-data.org/v4/competitions/{CODIGOLIGA}/scorers`.
 - **RF-015**: El endpoint `GET /players` DEBE ser público y funcionar sin requerir un token JWT. El token `X-Auth-Token` se utiliza únicamente en las requests internas hacia football-data.
 - **RF-016**: En cada arranque de la aplicación, los datos obtenidos exitosamente de football-data para cada liga DEBEN reemplazar los jugadores previamente almacenados para esa liga. Si la respuesta no contiene jugadores, no se deben crear ni eliminar registros; si la request falla, se debe conservar el snapshot anterior.
+- **RF-017**: El sistema DEBE exponer `GET /players/{id}`, donde `id` es un número entero positivo que identifica unívocamente a un jugador almacenado.
+- **RF-018**: `GET /players/{id}` DEBE ser público, no requerir token JWT y retornar los datos del jugador identificado, incluyendo su `id`. Si no existe un jugador con ese identificador, DEBE responder con HTTP 404.
+- **RF-019**: La clave primaria de cada jugador DEBE ser el valor entero del campo `id` presente en `player` dentro de la respuesta de football-data. El sistema NO DEBE generar un identificador alternativo para el jugador.
 
 ### Entidades principales
 
@@ -111,11 +115,13 @@ Como visitante, quiero identificar claramente cuándo un dato no está disponibl
 - **CS-007**: Al menos el 95% de los visitantes que cuentan con datos cargados pueden identificar la liga, el jugador y sus estadísticas principales sin explicación adicional.
 - **CS-008**: Cuando ocurre un fallo de carga, el 100% de los casos muestra un mensaje de error comprensible y no muestra información parcial como catálogo completo.
 - **CS-009**: Después de cada arranque con respuestas exitosas no vacías, la base de datos contiene únicamente los jugadores obtenidos en ese arranque para cada liga actualizada, sin conservar jugadores obsoletos.
+- **CS-010**: Para cada jugador almacenado, una request pública a `GET /players/{id}` retorna exactamente ese jugador; un identificador inexistente retorna HTTP 404.
+- **CS-011**: El `id` expuesto por cada jugador en ambos endpoints coincide exactamente con el `player.id` recibido desde football-data y se utiliza como su clave primaria persistida.
 
 ## Supuestos
 
 - El catálogo se consulta desde la aplicación existente y recibe datos de jugadores ya normalizados por la fuente disponible.
-- La versión inicial muestra una lista fija de cinco ligas; no incluye alta, baja, edición, paginación ni filtros adicionales.
+- La versión inicial muestra una lista fija de cinco ligas; no incluye alta, baja, edición, paginación ni filtros adicionales. El único acceso individual es la consulta por `id`.
 - “Sección” representa la posición o grupo del jugador, por ejemplo defensa, mediocampo o delantero.
 - “Asistencia” y “Penaltis” se muestran como estadísticas independientes; “Penaltis” representa la métrica entregada por la fuente sin inferir un subtipo no especificado.
 - Los nombres de las ligas y los encabezados se muestran en español según la descripción funcional.

@@ -33,10 +33,20 @@ football-data durante el arranque.
 
 La respuesta exitosa debe ser un array exterior de cinco arrays, en orden fijo,
 con los datos del último refresh exitoso de cada liga.
-Cada jugador solo contiene los siete campos definidos en
+Cada jugador contiene su `id` entero proveniente de `player.id` en football-data
+y los siete campos definidos en
 [contracts/players-api.yaml](contracts/players-api.yaml), y cada array interior
 tiene como máximo diez elementos. Repetir el `curl` no debe generar requests al
 proveedor externo.
+
+Para consultar un jugador específico:
+
+```powershell
+curl.exe http://localhost:8080/players/1
+```
+
+Esta request tampoco debe incluir `Authorization` ni token JWT. Si el jugador
+no existe, debe responder HTTP 404.
 
 ## Validación automatizada
 
@@ -48,6 +58,7 @@ Desde `backend/`:
 
 La suite debe incluir: unit tests del mapping y reglas de límite, integración
 con PostgreSQL Testcontainers para refresh/lectura, y tests MockMvc que
-comprueben la respuesta de `GET /players`, ligas vacías y valores `null` frente
-a cero. La colección Postman del proyecto debe contener la request `GET
-/players`.
+comprueben las respuestas de `GET /players` y `GET /players/{id}`, ligas vacías,
+identificadores inexistentes, correspondencia entre `player.id` y la clave
+primaria, y valores `null` frente a cero. La colección
+Postman del proyecto debe contener ambas requests.

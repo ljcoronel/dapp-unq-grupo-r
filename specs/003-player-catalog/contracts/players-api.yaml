@@ -33,12 +33,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /players/{id}:
+    get:
+      summary: Obtener un jugador por identificador
+      description: >
+        Devuelve un único jugador almacenado en PostgreSQL. El endpoint es
+        público y no requiere token JWT.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador entero positivo del jugador
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Jugador encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '404':
+          description: No existe un jugador con ese identificador
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Player:
       type: object
-      required: [nombre, equipo]
+      required: [id, nombre, equipo]
       properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Valor de player.id recibido desde football-data y usado como PRIMARY KEY
         nombre: { type: string }
         seccion: { type: string, nullable: true }
         equipo: { type: string }

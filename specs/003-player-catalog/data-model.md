@@ -14,6 +14,8 @@ fijo de cinco ligas; la colección nunca supera diez elementos.
 
 ### Jugador
 
+- `id`: identificador entero positivo recibido desde `player.id` en
+  football-data; es la identidad del jugador y no se genera localmente.
 - `nombre`: nombre completo no vacío; es obligatorio para publicar la fila.
 - `seccion`: posición/grupo recibido, opcional.
 - `equipo`: nombre del equipo, obligatorio para publicar la fila según la
@@ -29,11 +31,12 @@ campos opcionales se conservan como `null`, sin convertirlos en cero.
 `FootballDataResponse(CompetitionPayload competition, List<ScorerPayload> scorers)`,
 `CompetitionPayload(String name)`, `ScorerPayload(PlayerPayload player,
 TeamPayload team, Integer playedMatches, Integer goals, Integer assists,
-Integer penalties)`, `PlayerPayload(String name, String section)` y
+Integer penalties)`, `PlayerPayload(Integer id, String name, String section)` y
 `TeamPayload(String name)`.
 
 El mapper descarta todo campo no listado y asocia el código/pais de la
-configuración de la request, no datos no confiables del payload.
+configuración de la request, no datos no confiables del payload. El `id` se
+propaga desde `player.id` sin reemplazo ni transformación.
 
 ## Persistencia
 
@@ -47,13 +50,15 @@ configuración de la request, no datos no confiables del payload.
 
 ### `JugadorEntity`
 
-- `id`: UUID o Long generado.
+- `id`: entero recibido de `player.id`, `PRIMARY KEY`, único y no nulo; no usa
+  generación automática de PostgreSQL/JPA.
 - `liga_id`: foreign key no nula.
 - `nombre`, `seccion`, `equipo`: columnas de texto; nombre y equipo no nulos.
 - `partidos_jugados`, `goles`, `asistencias`, `penaltis`: columnas enteras
   anulables.
 - índice por `liga_id` y restricción de unicidad opcional sobre `(liga_id, id)`
   solo como integridad de relación, no por nombre (los homónimos son válidos).
+  Como `id` es la clave primaria, su unicidad es global entre ligas.
 
 El servicio mapea dominio a entidades antes de guardar y entidades a DTOs al
 leer. El orden de jugadores debe persistirse explícitamente (por ejemplo,
@@ -73,6 +78,13 @@ snapshot anterior.
 
 Lista exterior fija de cinco elementos, en el orden:
 Premier League, Bundesliga, Primera División, Serie A, Ligue 1.
-Cada elemento es una lista de objetos jugador con `nombre`, `seccion`,
+Cada elemento es una lista de objetos jugador con `id`, `nombre`, `seccion`,
 `equipo`, `partidosJugados`, `goles`, `asistencias` y `penaltis`.
 Una liga vacía se representa como `[]`; no se crean filas ficticias.
+
+## Respuesta de `GET /players/{id}`
+
+Retorna un único objeto jugador con los mismos campos de `GET /players`,
+incluyendo el `id` entero que identifica el registro. Un `id` positivo que no
+exista responde `404 Not Found`; valores no enteros o no positivos no
+identifican jugadores válidos y deben rechazarse como una request inválida.

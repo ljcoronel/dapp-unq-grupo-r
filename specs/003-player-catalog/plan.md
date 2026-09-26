@@ -30,9 +30,9 @@ conservará entre cero y diez jugadores según la respuesta recibida.
 
 **Performance Goals**: `GET /players` performs only one database read path and never calls football-data; startup performs one request per configured league
 
-**Constraints**: `X-Auth-Token` must come from an environment-backed configuration property; no token in source control; requests to football-data must use HTTPS; each successful non-empty startup response replaces the existing snapshot for that league; failures preserve the previous snapshot; empty responses do not alter stored rows; numeric zero remains distinct from null
+**Constraints**: `X-Auth-Token` must come from an environment-backed configuration property; no token in source control; requests to football-data must use HTTPS; each successful non-empty startup response replaces the existing snapshot for that league; the persisted player primary key is the external `player.id` and is never generated locally; failures preserve the previous snapshot; empty responses do not alter stored rows; numeric zero remains distinct from null
 
-**Scale/Scope**: Five fixed leagues, up to 50 player rows per refresh, seven display fields per player, one public read endpoint without JWT authentication
+**Scale/Scope**: Five fixed leagues, up to 50 player rows per refresh, seven display fields plus integer identity, and two public read endpoints without JWT authentication
 
 ## Constitution Check
 
@@ -43,7 +43,7 @@ conservará entre cero y diez jugadores según la respuesta recibida.
 - **Modelo rico**: PASS. Domain objects enforce valid league/player invariants and expose the truncation/normalization behavior without framework dependencies.
 - **Validacion por niveles**: PASS. External payload validation/mapping occurs at the integration boundary; service validates availability and refresh policy; domain validates non-empty identity and bounded collections.
 - **Testing y calidad**: PASS. Unit tests cover mapping/rules, integration tests use Testcontainers PostgreSQL, and MockMvc E2E tests cover `GET /players`; Postman collection is updated.
-- **Acceso público**: PASS. `GET /players` no requiere JWT; el token queda restringido al cliente interno de football-data.
+- **Acceso público**: PASS. `GET /players` y `GET /players/{id}` no requieren JWT; el token queda restringido al cliente interno de football-data.
 
 ## Project Structure
 
@@ -96,7 +96,8 @@ No hay violaciones de la constitución que requieran justificación.
   repositorios, servicio y controller tienen ubicaciones y responsabilidades
   separadas.
 - **Modelo y validación**: PASS. `Integer` conserva `null` frente a cero, el
-  agregado limita a diez jugadores y se descartan identidades no publicables.
+  agregado limita a diez jugadores, valida el `player.id` externo y descarta
+  identidades no publicables.
 - **Persistencia y disponibilidad**: PASS. El endpoint lee solo PostgreSQL,
   reemplaza snapshots por liga en cada arranque exitoso, conserva ligas vacías y
   mantiene snapshots anteriores cuando falla una liga.

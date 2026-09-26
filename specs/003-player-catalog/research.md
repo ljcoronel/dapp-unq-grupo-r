@@ -16,9 +16,9 @@
   obligatoria como `${FOOTBALL_DATA_AUTH_TOKEN}`. Nunca incluir credenciales en
   código, pruebas, Postman, logs o excepciones.
 - Deserializar la respuesta con records Java anidados que representen
-  `competition`, `scorers`, `player` y `team`. La integración debe seleccionar
-  únicamente `name`, `section`, `team.name`, `playedMatches`, `goals`,
-  `assists` y `penalties`.
+  `competition`, `scorers`, `player` y `team`. El record `PlayerPayload` debe
+  incluir `id` y la integración debe seleccionar `player.id`, `name`,
+  `section`, `team.name`, `playedMatches`, `goals`, `assists` y `penalties`.
 - Ejecutar un `ApplicationRunner` al arrancar. Una excepción de una liga debe
   registrarse y conservar su snapshot anterior; `GET /players` nunca vuelve a
   consultar la API externa.
@@ -31,6 +31,10 @@
 - Modelar `Liga` y `Jugador` como dominio sin anotaciones JPA, y usar entidades
   de persistencia separadas (`LigaEntity`, `JugadorEntity`) con relación
   uno-a-muchos y repositorios Spring Data.
+- Usar el `player.id` entero de football-data como identidad del agregado
+  `Jugador` y como `PRIMARY KEY` de `JugadorEntity`; no generar un ID local.
+  Un jugador sin `id`, con un `id` no positivo o con un conflicto de identidad
+  no debe publicarse como registro válido.
 - En cada arranque, una respuesta exitosa no vacía reemplaza completamente el
   snapshot de esa liga con los jugadores válidos recibidos, limitados a diez:
   primero se eliminan los jugadores anteriores de esa liga y luego se insertan
@@ -53,6 +57,10 @@
   `SecurityConfig`; actualizar la collection de Postman sin agregar un header
   `Authorization` a esta request. El `X-Auth-Token` solo pertenece al cliente
   interno que consume football-data.
+- Mantener también `GET /players/{id}` público y sin token JWT. El controller
+  valida el identificador entero, el service consulta PostgreSQL por la
+  identidad persistida y devuelve 404 cuando no existe; nunca debe hacer
+  fallback hacia football-data.
 
 ## Alternativas consideradas
 
