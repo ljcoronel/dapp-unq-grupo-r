@@ -77,12 +77,12 @@ description: "Lista de tareas para implementar el catálogo de jugadores por lig
 
 ### Tests for User Story 2
 
-- [ ] T023 [P] [US2] Add MockMvc assertions that every successful catalog response contains all five fixed league positions, including empty arrays, in `backend/app/src/test/java/com/dappunq/e2e/PlayerCatalogGroupingE2ETest.java`
+- [X] T023 [P] [US2] Add MockMvc assertions that every successful catalog response contains all five fixed league positions, including empty arrays, in `backend/app/src/test/java/com/dappunq/e2e/PlayerCatalogGroupingE2ETest.java`
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Keep league ordering and empty-list representation explicit in the read service and controller contract in `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java` and `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java`
-- [ ] T025 [US2] Document five independent initially-expanded sections, league-name toggle behavior and accessibility state requirements in `specs/003-player-catalog/contracts/players-api.yaml`
+- [X] T024 [US2] Keep league ordering and empty-list representation explicit in the read service and controller contract in `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java` and `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java`
+- [X] T025 [US2] Document five independent initially-expanded sections, league-name toggle behavior and accessibility state requirements in `specs/003-player-catalog/contracts/players-api.yaml`
 
 **Checkpoint**: The backend contract supplies stable independent league sections; frontend-only expand/collapse state remains outside the planned backend scope.
 

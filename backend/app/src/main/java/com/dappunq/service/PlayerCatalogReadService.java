@@ -26,15 +26,19 @@ public class PlayerCatalogReadService {
     public List<List<PlayerResponse>> findCatalog() {
         try {
             return LeagueCatalogProperties.leagues().stream()
-                    .map(definition -> leagueRepository.findByCode(definition.code())
-                            .map(league -> league.getPlayers().stream()
-                                    .map(PlayerMapper::toResponse)
-                                    .toList())
-                            .orElseGet(List::of))
+                    .map(this::readLeague)
                     .toList();
         } catch (RuntimeException exception) {
             throw new CatalogUnavailableException("No fue posible leer el catálogo de jugadores", exception);
         }
+    }
+
+    private List<PlayerResponse> readLeague(LeagueCatalogProperties.LeagueDefinition definition) {
+        return leagueRepository.findByCode(definition.code())
+                .map(league -> league.getPlayers().stream()
+                        .map(PlayerMapper::toResponse)
+                        .toList())
+                .orElseGet(List::of);
     }
 
     @Transactional(readOnly = true)

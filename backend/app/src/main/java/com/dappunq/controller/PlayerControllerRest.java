@@ -18,6 +18,7 @@ public class PlayerControllerRest {
     }
 
     @GetMapping
+    // The outer list always contains the five configured leagues in catalog order.
     public List<List<PlayerResponse>> getPlayers() {
         return readService.findCatalog();
     }

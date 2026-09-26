@@ -12,7 +12,13 @@ paths:
       description: >
         Devuelve siempre cinco listas en el orden fijo de ligas. La lectura usa
         exclusivamente el snapshot de PostgreSQL; no dispara requests externas.
-        Este endpoint es público y no requiere token JWT.
+        Este endpoint es público y no requiere token JWT. Cada lista representa
+        una sección independiente que el consumidor puede expandir o contraer
+        sin modificar las demás; todas deben iniciar expandidas. El control de
+        cada sección debe exponer su estado expandido mediante aria-expanded y
+        asociarse de forma accesible con el contenido de la liga. Las listas
+        vacías se mantienen como arrays vacíos para conservar las cinco
+        posiciones estables.
       responses:
         '200':
           description: Cinco listas de hasta diez jugadores cada una
