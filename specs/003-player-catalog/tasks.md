@@ -17,10 +17,10 @@ description: "Lista de tareas para implementar el catálogo de jugadores por lig
 
 **Purpose**: Preparar dependencias, configuración y estructura para la integración externa y persistencia del catálogo.
 
-- [ ] T001 [P] Add Spring Data JPA, PostgreSQL, validation, Jackson, Testcontainers y Mockito dependencies in `backend/app/build.gradle`
-- [ ] T002 [P] Configure PostgreSQL datasource, `ddl-auto=update`, football-data base URL and `${FOOTBALL_DATA_AUTH_TOKEN}` placeholder in `backend/app/src/main/resources/application.properties`
-- [ ] T003 [P] Configure local development datasource and football-data timeout/profile overrides without storing credentials in `backend/app/src/main/resources/application-local.properties`
-- [ ] T004 Create package structure for `controller`, `dto`, `model`, `persistence`, `service`, `config` and feature tests under `backend/app/src/main/java/com/dappunq` and `backend/app/src/test/java/com/dappunq`
+- [X] T001 [P] Add Spring Data JPA, PostgreSQL, validation, Jackson, Testcontainers y Mockito dependencies in `backend/app/build.gradle`
+- [X] T002 [P] Configure PostgreSQL datasource, `ddl-auto=update`, football-data base URL and `${FOOTBALL_DATA_AUTH_TOKEN}` placeholder in `backend/app/src/main/resources/application.properties`
+- [X] T003 [P] Configure local development datasource and football-data timeout/profile overrides without storing credentials in `backend/app/src/main/resources/application-local.properties`
+- [X] T004 Create package structure for `controller`, `dto`, `model`, `persistence`, `service`, `config` and feature tests under `backend/app/src/main/java/com/dappunq` and `backend/app/src/test/java/com/dappunq`
 
 ---
 
@@ -30,15 +30,15 @@ description: "Lista de tareas para implementar el catálogo de jugadores por lig
 
 **Critical**: No user story implementation can begin until this phase is complete.
 
-- [ ] T005 [P] Create immutable fixed-league configuration for `PL`, `BL1`, `PD`, `SA` and `FL1`, including Spanish display names and countries, in `backend/app/src/main/java/com/dappunq/config/LeagueCatalogProperties.java`
-- [ ] T006 [P] Create domain `PlayerStatistics` and `Player` value/domain objects with positive external ID, required name/team, nullable statistics and zero-preserving invariants in `backend/app/src/main/java/com/dappunq/model/Player.java` and `backend/app/src/main/java/com/dappunq/model/PlayerStatistics.java`
-- [ ] T007 [P] Create domain `League` aggregate enforcing non-empty identity and a maximum of ten ordered players in `backend/app/src/main/java/com/dappunq/model/League.java`
-- [ ] T008 Create external football-data records for competition, scorer, player and team payloads in `backend/app/src/main/java/com/dappunq/dto/footballdata`
-- [ ] T009 Create public `PlayerResponse` and error response records preserving nullable statistics and external `id` in `backend/app/src/main/java/com/dappunq/dto/PlayerResponse.java` and `backend/app/src/main/java/com/dappunq/dto/ErrorResponse.java`
-- [ ] T010 [P] Create `LeagueEntity` and `PlayerEntity` JPA mappings, including ordered one-to-many relationship, orphan removal, nullable statistics and player ID as non-generated primary key, in `backend/app/src/main/java/com/dappunq/persistence`
-- [ ] T011 [P] Create Spring Data repositories with ordered league/player queries and lookup by player ID in `backend/app/src/main/java/com/dappunq/persistence/LeagueRepository.java` and `backend/app/src/main/java/com/dappunq/persistence/PlayerRepository.java`
-- [ ] T012 Implement domain, persistence and external mapping utilities with explicit filtering of invalid records and preservation of null versus zero in `backend/app/src/main/java/com/dappunq/service/PlayerMapper.java`
-- [ ] T013 Extend shared exception handling for invalid positive IDs, missing players, external integration failures and unavailable catalog responses in `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
+- [X] T005 [P] Create immutable fixed-league configuration for `PL`, `BL1`, `PD`, `SA` and `FL1`, including Spanish display names and countries, in `backend/app/src/main/java/com/dappunq/config/LeagueCatalogProperties.java`
+- [X] T006 [P] Create domain `PlayerStatistics` and `Player` value/domain objects with positive external ID, required name/team, nullable statistics and zero-preserving invariants in `backend/app/src/main/java/com/dappunq/model/Player.java` and `backend/app/src/main/java/com/dappunq/model/PlayerStatistics.java`
+- [X] T007 [P] Create domain `League` aggregate enforcing non-empty identity and a maximum of ten ordered players in `backend/app/src/main/java/com/dappunq/model/League.java`
+- [X] T008 Create external football-data records for competition, scorer, player and team payloads in `backend/app/src/main/java/com/dappunq/dto/footballdata`
+- [X] T009 Create public `PlayerResponse` and error response records preserving nullable statistics and external `id` in `backend/app/src/main/java/com/dappunq/dto/PlayerResponse.java` and `backend/app/src/main/java/com/dappunq/dto/ErrorResponse.java`
+- [X] T010 [P] Create `LeagueEntity` and `PlayerEntity` JPA mappings, including ordered one-to-many relationship, orphan removal, nullable statistics and player ID as non-generated primary key, in `backend/app/src/main/java/com/dappunq/persistence`
+- [X] T011 [P] Create Spring Data repositories with ordered league/player queries and lookup by player ID in `backend/app/src/main/java/com/dappunq/persistence/LeagueRepository.java` and `backend/app/src/main/java/com/dappunq/persistence/PlayerRepository.java`
+- [X] T012 Implement domain, persistence and external mapping utilities with explicit filtering of invalid records and preservation of null versus zero in `backend/app/src/main/java/com/dappunq/service/PlayerMapper.java`
+- [X] T013 Extend shared exception handling for invalid positive IDs, missing players, external integration failures and unavailable catalog responses in `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java`
 
 **Checkpoint**: Domain, persistence mappings, public DTOs, configuration and error responses are ready for story implementation.
 
