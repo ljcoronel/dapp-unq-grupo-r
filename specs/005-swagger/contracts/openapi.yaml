@@ -1,0 +1,276 @@
+openapi: 3.0.3
+info:
+  title: SDD Project API
+  version: 1.0.0
+  description: Contrato publico del backend para autenticacion, usuarios y catalogo de jugadores.
+servers:
+  - url: /
+    description: Mismo origen donde se sirve la API.
+tags:
+  - name: Autenticacion
+    description: Inicio de sesion y registro de usuarios.
+  - name: Usuarios
+    description: Consulta del perfil de usuario.
+  - name: Jugadores
+    description: Consulta del catalogo persistido de jugadores.
+paths:
+  /login:
+    post:
+      tags: [Autenticacion]
+      summary: Iniciar sesion
+      description: Valida las credenciales y devuelve un JWT en la cabecera Authorization. La operacion es publica.
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: Inicio de sesion exitoso.
+          headers:
+            Authorization:
+              description: Token de acceso con esquema Bearer.
+              schema:
+                type: string
+                example: Bearer <token>
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Credenciales incorrectas o datos de entrada invalidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+        '500':
+          description: Error interno no controlado.
+  /register:
+    post:
+      tags: [Autenticacion]
+      summary: Registrar usuario
+      description: Crea una cuenta nueva. La prueba desde Swagger UI requiere confirmar antes del envio porque modifica datos.
+      operationId: register
+      security: []
+      x-confirmation-required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: Usuario registrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: El usuario ya existe o los datos de entrada son invalidos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+        '500':
+          description: Error interno no controlado.
+  /users/{id}/:
+    get:
+      tags: [Usuarios]
+      summary: Obtener perfil por identificador
+      description: Consulta el nombre del usuario. Es una operacion publica con la configuracion actual del backend.
+      operationId: getUserProfile
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador numerico positivo del usuario.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '200':
+          description: Perfil encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: El identificador no tiene un formato numerico valido; el manejador global actual devuelve el esquema PlayerError.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerError'
+        '404':
+          description: No existe un usuario con ese identificador.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+        '500':
+          description: Error interno no controlado.
+  /players:
+    get:
+      tags: [Jugadores]
+      summary: Obtener jugadores agrupados por liga
+      description: Devuelve las listas de jugadores de las ligas configuradas en el orden estable del catalogo. No requiere autenticacion.
+      operationId: getPlayers
+      security: []
+      responses:
+        '200':
+          description: Listas de jugadores agrupadas por liga; las listas sin jugadores permanecen vacias.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PlayerResponse'
+        '503':
+          description: No se pudo leer el catalogo de jugadores.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerError'
+        '500':
+          description: Error interno no controlado.
+  /players/{id}:
+    get:
+      tags: [Jugadores]
+      summary: Obtener jugador por identificador
+      description: Consulta un jugador persistido. No requiere autenticacion.
+      operationId: getPlayerById
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador entero positivo del jugador.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+      responses:
+        '200':
+          description: Jugador encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerResponse'
+        '400':
+          description: El identificador no es un entero positivo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerError'
+        '404':
+          description: No existe un jugador con ese identificador.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerError'
+        '500':
+          description: Error interno no controlado.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserRequest:
+      type: object
+      required: [nombre, password]
+      description: Credenciales requeridas para iniciar sesion o registrar una cuenta.
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          pattern: '^\S+$'
+          description: Nombre sin espacios internos; se recortan espacios exteriores.
+          example: usuario1
+        password:
+          type: string
+          format: password
+          minLength: 4
+          maxLength: 16
+          description: Contrasena de entre 4 y 16 caracteres.
+          example: secreto123
+    UserResponse:
+      type: object
+      required: [nombre]
+      properties:
+        nombre:
+          type: string
+          description: Nombre de usuario.
+          example: usuario1
+    PlayerResponse:
+      type: object
+      required: [id, nombre, equipo, liga]
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Identificador persistido del jugador.
+        nombre:
+          type: string
+          description: Nombre del jugador.
+        seccion:
+          type: string
+          nullable: true
+          description: Posicion o seccion cuando esta disponible.
+        equipo:
+          type: string
+          description: Equipo del jugador.
+        liga:
+          $ref: '#/components/schemas/LeagueResponse'
+        partidosJugados:
+          type: integer
+          nullable: true
+          description: Partidos jugados; null si el dato no esta disponible.
+        goles:
+          type: integer
+          nullable: true
+          description: Goles; null si el dato no esta disponible.
+        asistencias:
+          type: integer
+          nullable: true
+          description: Asistencias; null si el dato no esta disponible.
+        penaltis:
+          type: integer
+          nullable: true
+          description: Penaltis; null si el dato no esta disponible.
+    LeagueResponse:
+      type: object
+      required: [codigo, nombre, pais]
+      properties:
+        codigo:
+          type: string
+          description: Codigo de la liga.
+        nombre:
+          type: string
+          description: Nombre de la liga.
+        pais:
+          type: string
+          description: Pais asociado a la liga.
+    MessageError:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          description: Mensaje de error de autenticacion o perfil.
+    PlayerError:
+      type: object
+      required: [mensaje]
+      properties:
+        mensaje:
+          type: string
+          description: Mensaje de error del catalogo de jugadores.
