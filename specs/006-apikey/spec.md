@@ -20,7 +20,7 @@ As an authenticated API consumer, I want to use an API Key instead of a Bearer t
 
 **Acceptance Scenarios**:
 
-1. **Given** a valid API Key belonging to an existing user, **When** the user sends it in the `x-api-key` header to a protected endpoint, **Then** the system authenticates the user and permits the request according to the endpoint's normal protected access rules.
+1. **Given** a valid API Key belonging to an existing user, **When** the user sends it in the `x-api-key` header to a protected endpoint such as `GET /players`, **Then** the system authenticates the user and permits the request according to the endpoint's normal protected access rules.
 2. **Given** a request without an API Key, **When** the user sends a valid Bearer token to a protected endpoint, **Then** the existing Bearer-token authentication behavior remains unchanged.
 
 ---
@@ -61,14 +61,15 @@ As a system owner, I want API Key-authenticated requests blocked from authentica
 - A request with an empty, whitespace-only, malformed, expired, revoked, or otherwise unusable API Key is rejected and does not reach the protected endpoint.
 - A request includes the API Key header more than once; the system rejects the ambiguous credential rather than selecting one silently.
 - A request uses an API Key with an unsupported header value or casing; the system applies the same documented header parsing and validation rules consistently.
-- A valid API Key is presented to an endpoint that is not protected; the endpoint's existing public behavior is preserved, while the authentication-route exclusion still applies.
+- A valid API Key is presented to `POST /login` or `POST /register`; the request is rejected before either operation executes.
+- API Key management is attempted with an API Key rather than a Bearer token; the request is rejected to prevent a key from creating or revoking credentials.
 - API Key authentication is attempted for a user that no longer exists or is no longer eligible to authenticate; the request is rejected without exposing user details.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST generate an API Key associated with an existing eligible user and make the key available to that user through the existing credential-management flow.
+- **FR-001**: The system MUST generate an API Key associated with an existing eligible user and make the key available through authenticated API Key management operations.
 - **FR-002**: The system MUST accept an API Key supplied in the `x-api-key` header as an alternative to a Bearer token for protected endpoints.
 - **FR-003**: The system MUST resolve a valid API Key to its associated user before allowing access to a protected endpoint.
 - **FR-004**: The system MUST grant a successfully authenticated API Key the same protected-endpoint access scope as the associated user's standard authentication, except for the exclusions in FR-007 and FR-008.
@@ -80,6 +81,7 @@ As a system owner, I want API Key-authenticated requests blocked from authentica
 - **FR-010**: The system MUST apply one consistent precedence rule when a request contains both an API Key and a Bearer token, and MUST prevent credentials from being combined to obtain access beyond the authenticated user's permissions.
 - **FR-011**: The system MUST ensure that API Key authentication does not bypass the authorization rules that apply to the associated user on protected endpoints.
 - **FR-012**: The system MUST record security-relevant API Key events, including generation and rejected authentication attempts, without recording full secret key values.
+- **FR-013**: The system MUST require authentication for every route except `POST /login` and `POST /register`; protected routes MUST accept either a valid Bearer token or a valid API Key, while API Key management routes MUST require a Bearer token.
 
 ### Key Entities
 
@@ -96,12 +98,16 @@ As a system owner, I want API Key-authenticated requests blocked from authentica
 - **SC-003**: In acceptance testing, 100% of API Key requests to `POST /login` and `POST /register` are rejected, and zero login or registration side effects are created.
 - **SC-004**: At least 95% of valid API Key requests complete within the same response-time target as equivalent authenticated requests using the standard token.
 - **SC-005**: Security review confirms that no full API Key value appears in user-facing responses or security records.
+- **SC-006**: Requests without JWT or API Key credentials are rejected on every route except `POST /login` and `POST /register`.
 
 ## Assumptions
 
 - API Keys are generated only for users who already exist and are eligible for authenticated access.
-- The existing Bearer-token authentication and authorization behavior remains the default when no API Key is present.
-- `POST /login` and `POST /register` are the only explicitly excluded routes in this version; other routes follow their existing protection status.
+- The existing Bearer-token authentication remains supported on all protected routes.
+- `POST /login` and `POST /register` are the only routes that do not require authentication; documentation and API Key management routes are protected.
+- API Key management operations are available only to Bearer-authenticated users, and each operation is restricted to that user's own keys.
+- If a request supplies both a Bearer token and an API Key, the system rejects the ambiguous credentials rather than choosing one.
 - `401 Unauthorized` and `403 Forbidden` are both acceptable rejection statuses where the existing API convention does not prescribe one.
-- The API Key value is treated as a secret and is shown to the user only through the existing credential-management flow.
-- API Key generation, storage, expiration, revocation, and rotation follow the project's established security and credential-lifecycle policies.
+- The API Key value is treated as a secret and is shown to the user only in the successful creation response.
+- API Key generation, storage, expiration, and revocation follow the project's established security and credential-lifecycle policies.
+- Key rotation uses create, migrate, and revoke; it does not replace an active secret in place.
