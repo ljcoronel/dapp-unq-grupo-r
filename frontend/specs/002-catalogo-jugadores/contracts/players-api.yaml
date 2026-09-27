@@ -1,0 +1,81 @@
+openapi: 3.0.3
+info:
+  title: Contrato de consumo del catálogo de jugadores
+  version: 1.0.0
+  description: Contrato esperado por el frontend para cargar las tablas de jugadores en Home.
+servers:
+  - url: http://localhost:8080
+paths:
+  /players:
+    get:
+      summary: Obtener jugadores agrupados por liga
+      description: >
+        Endpoint público. No requiere token JWT. Devuelve cinco listas en orden
+        fijo, correspondientes a Premier League (Inglaterra), Bundesliga
+        (Alemania), Primera División (España), Serie A (Italia) y Ligue 1
+        (Francia). Cada lista contiene hasta diez jugadores; para cumplir la
+        experiencia requerida, se espera que la fuente provea diez por liga.
+      security: []
+      responses:
+        '200':
+          description: Jugadores agrupados en cinco listas por liga
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 5
+                maxItems: 5
+                items:
+                  type: array
+                  maxItems: 10
+                  items:
+                    $ref: '#/components/schemas/Player'
+        '503':
+          description: Catálogo temporalmente no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Player:
+      type: object
+      required: [id, nombre, equipo, liga]
+      properties:
+        id:
+          type: integer
+          format: int64
+        nombre:
+          type: string
+        seccion:
+          type: string
+          nullable: true
+        equipo:
+          type: string
+        liga:
+          type: object
+          required: [codigo, nombre, pais]
+          properties:
+            codigo:
+              type: string
+            nombre:
+              type: string
+            pais:
+              type: string
+        partidosJugados:
+          type: integer
+          nullable: true
+        goles:
+          type: integer
+          nullable: true
+        asistencias:
+          type: integer
+          nullable: true
+        penaltis:
+          type: integer
+          nullable: true
+    Error:
+      type: object
+      properties:
+        mensaje:
+          type: string
