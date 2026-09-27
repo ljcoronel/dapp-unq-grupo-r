@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: Contrato frontend de autenticacion
+  version: 1.0.0
+  description: Endpoints REST consumidos por el frontend desde el backend local.
+servers:
+  - url: http://localhost:8080
+paths:
+  /login:
+    post:
+      summary: Iniciar sesion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: Credenciales validas; el JWT llega en Authorization.
+          headers:
+            Authorization:
+              required: true
+              schema:
+                type: string
+                example: Bearer eyJ...
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Credenciales invalidas o request invalido.
+  /register:
+    post:
+      summary: Crear cuenta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: Cuenta creada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Usuario existente o request invalido.
+components:
+  schemas:
+    UserRequest:
+      type: object
+      required: [nombre, password]
+      properties:
+        nombre:
+          type: string
+          minLength: 4
+          maxLength: 16
+          description: Sin espacios.
+        password:
+          type: string
+          minLength: 4
+          maxLength: 16
+    UserResponse:
+      type: object
+      required: [nombre]
+      properties:
+        nombre:
+          type: string

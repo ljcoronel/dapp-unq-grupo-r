@@ -1,0 +1,17 @@
+# Git and editor metadata
+.git
+.gitignore
+.idea
+.vscode
+
+# Gradle and build output
+.gradle
+build
+**/build
+
+# Logs
+*.log
+
+# Local env files
+.env
+.env.*

@@ -1,0 +1,32 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+
+# Build outputs
+backend/.gradle/
+backend/**/build/
+
+# Logs
+*.log
+
+# Java / Gradle
+.gradle/
+build/
+**/build/
+*.class
+*.jar
+*.war
+*.ear
+
+# Node / Frontend
+frontend/node_modules/
+node_modules/
+dist/
+
+# Env
+.env
+.env.*
