@@ -17,10 +17,25 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        UserEntity entity = userMapper.toEntity(user);
+        if (user == null) {
+            throw new IllegalArgumentException("El usuario no puede ser nulo");
+        }
+        UserEntity entity;
+        if (user.getId() != null) {
+            Optional<UserEntity> existingOpt = jpaUserEntityRepository.findById(user.getId());
+            if (existingOpt.isPresent()) {
+                entity = existingOpt.get();
+                entity.setNombre(user.getNombre());
+                entity.setPasswordHash(user.getPasswordHash());
+            } else {
+                entity = userMapper.toEntity(user);
+            }
+        } else {
+            entity = userMapper.toEntity(user);
+        }
         UserEntity savedEntity = jpaUserEntityRepository.save(entity);
         User savedUser = userMapper.toDomain(savedEntity);
-        if (user != null && user.getId() == null && savedEntity.getId() != null) {
+        if (user.getId() == null && savedEntity.getId() != null) {
             user.setId(savedEntity.getId());
         }
         return savedUser;
@@ -28,11 +43,17 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findById(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
         return jpaUserEntityRepository.findById(id).map(userMapper::toDomain);
     }
 
     @Override
     public Optional<User> findByNombreIgnoreCase(String nombre) {
-        return jpaUserEntityRepository.findByNombreIgnoreCase(nombre).map(userMapper::toDomain);
+        if (nombre == null || nombre.isBlank()) {
+            return Optional.empty();
+        }
+        return jpaUserEntityRepository.findByNombreIgnoreCase(nombre.trim()).map(userMapper::toDomain);
     }
 }

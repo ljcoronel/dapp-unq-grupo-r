@@ -59,13 +59,13 @@
 
 ### Tests for User Story 2
 
-- [ ] T012 [P] [US2] Add mapper and repository save/retrieve coverage in `backend/app/src/test/java/com/dappunq/unit/UserMapperTest.java` and `backend/app/src/test/java/com/dappunq/integration/UserRepositoryIntegrationTest.java`
+- [X] T012 [P] [US2] Add mapper and repository save/retrieve coverage in `backend/app/src/test/java/com/dappunq/unit/UserMapperTest.java` and `backend/app/src/test/java/com/dappunq/integration/UserRepositoryIntegrationTest.java`
 
 ### Implementation for User Story 2
 
-- [ ] T013 [P] [US2] Implement the bidirectional mapping in `backend/app/src/main/java/com/dappunq/persistence/UserMapper.java` to carry identity, normalized name, and encoded credential across `User` and `UserEntity`
-- [ ] T014 [US2] Update `backend/app/src/main/java/com/dappunq/persistence/UserRepositoryImpl.java` and `backend/app/src/main/java/com/dappunq/persistence/JpaUserEntityRepository.java` so the repository adapter persists and reloads `UserEntity` while exposing the domain-facing contract to services
-- [ ] T015 [US2] Preserve persistence-only metadata and lifecycle behavior in `backend/app/src/main/java/com/dappunq/persistence/UserEntity.java` without exposing it in the domain model or response DTOs
+- [X] T013 [P] [US2] Implement the bidirectional mapping in `backend/app/src/main/java/com/dappunq/persistence/UserMapper.java` to carry identity, normalized name, and encoded credential across `User` and `UserEntity`
+- [X] T014 [US2] Update `backend/app/src/main/java/com/dappunq/persistence/UserRepositoryImpl.java` and `backend/app/src/main/java/com/dappunq/persistence/JpaUserEntityRepository.java` so the repository adapter persists and reloads `UserEntity` while exposing the domain-facing contract to services
+- [X] T015 [US2] Preserve persistence-only metadata and lifecycle behavior in `backend/app/src/main/java/com/dappunq/persistence/UserEntity.java` without exposing it in the domain model or response DTOs
 
 **Checkpoint**: User Story 2 should persist and reload `User` records without coupling the domain to persistence annotations or database lifecycle behavior.
 
