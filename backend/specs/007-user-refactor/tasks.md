@@ -12,9 +12,9 @@
 
 **Purpose**: Confirm the project baseline and prepare the domain/persistence/security package layout.
 
-- [ ] T001 [P] Confirm the governance gate and existing baseline in `backend/.specify/memory/constitution.md`, `backend/specs/007-user-refactor/plan.md`, and `backend/specs/007-user-refactor/spec.md`
-- [ ] T002 [P] Verify the package structure for `backend/app/src/main/java/com/dappunq/model/`, `backend/app/src/main/java/com/dappunq/persistence/`, `backend/app/src/main/java/com/dappunq/security/`, `backend/app/src/main/java/com/dappunq/service/`, and `backend/app/src/main/java/com/dappunq/controller/`
-- [ ] T003 [P] Review the current compatibility baseline in `backend/app/src/main/java/com/dappunq/model/User.java`, `backend/app/src/main/java/com/dappunq/persistence/UserRepository.java`, `backend/app/src/main/java/com/dappunq/service/AuthService.java`, and `backend/app/src/main/java/com/dappunq/controller/AuthControllerRest.java`
+- [X] T001 [P] Confirm the governance gate and existing baseline in `backend/.specify/memory/constitution.md`, `backend/specs/007-user-refactor/plan.md`, and `backend/specs/007-user-refactor/spec.md`
+- [X] T002 [P] Verify the package structure for `backend/app/src/main/java/com/dappunq/model/`, `backend/app/src/main/java/com/dappunq/persistence/`, `backend/app/src/main/java/com/dappunq/security/`, `backend/app/src/main/java/com/dappunq/service/`, and `backend/app/src/main/java/com/dappunq/controller/`
+- [X] T003 [P] Review the current compatibility baseline in `backend/app/src/main/java/com/dappunq/model/User.java`, `backend/app/src/main/java/com/dappunq/persistence/UserRepository.java`, `backend/app/src/main/java/com/dappunq/service/AuthService.java`, and `backend/app/src/main/java/com/dappunq/controller/AuthControllerRest.java`
 
 ---
 
@@ -24,11 +24,11 @@
 
 **Checkpoint**: The domain model is separated from persistence and security concerns, and the adapter boundary is ready for story-specific implementation.
 
-- [ ] T004 Create `backend/app/src/main/java/com/dappunq/persistence/UserEntity.java` with the existing `usuarios` table mapping, generated ID, `nombre`, `password_hash`, and `created_at` metadata, and the persistence lifecycle behavior
-- [ ] T005 [P] Implement `backend/app/src/main/java/com/dappunq/persistence/UserMapper.java` to convert between `User` and `UserEntity` without exposing persistence concerns to the domain model
-- [ ] T006 [P] Create `backend/app/src/main/java/com/dappunq/persistence/JpaUserEntityRepository.java` and `backend/app/src/main/java/com/dappunq/persistence/UserRepositoryImpl.java` to delegate persistence while keeping the domain-facing repository contract intact
-- [ ] T007 Create `backend/app/src/main/java/com/dappunq/security/UserPrincipal.java` to adapt a domain `User` to Spring Security's `UserDetails` contract without leaking framework dependencies into `User`
-- [ ] T008 Update `backend/app/src/main/java/com/dappunq/service/UserService.java` and `backend/app/src/main/java/com/dappunq/service/AuthService.java` to work with domain `User` values and preserve the existing authentication/service boundaries
+- [X] T004 Create `backend/app/src/main/java/com/dappunq/persistence/UserEntity.java` with the existing `usuarios` table mapping, generated ID, `nombre`, `password_hash`, and `created_at` metadata, and the persistence lifecycle behavior
+- [X] T005 [P] Implement `backend/app/src/main/java/com/dappunq/persistence/UserMapper.java` to convert between `User` and `UserEntity` without exposing persistence concerns to the domain model
+- [X] T006 [P] Create `backend/app/src/main/java/com/dappunq/persistence/JpaUserEntityRepository.java` and `backend/app/src/main/java/com/dappunq/persistence/UserRepositoryImpl.java` to delegate persistence while keeping the domain-facing repository contract intact
+- [X] T007 Create `backend/app/src/main/java/com/dappunq/security/UserPrincipal.java` to adapt a domain `User` to Spring Security's `UserDetails` contract without leaking framework dependencies into `User`
+- [X] T008 Update `backend/app/src/main/java/com/dappunq/service/UserService.java` and `backend/app/src/main/java/com/dappunq/service/AuthService.java` to work with domain `User` values and preserve the existing authentication/service boundaries
 
 ---
 

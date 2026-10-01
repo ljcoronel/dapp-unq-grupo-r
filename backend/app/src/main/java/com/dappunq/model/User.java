@@ -34,9 +34,14 @@ public class User implements UserDetails {
     protected User() {
     }
 
-    public User(String nombre, String passwordHash) {
+    public User(Long id, String nombre, String passwordHash) {
+        this.id = id;
         setNombre(nombre);
         setPasswordHash(passwordHash);
+    }
+
+    public User(String nombre, String passwordHash) {
+        this(null, nombre, passwordHash);
     }
 
     @PrePersist
@@ -48,6 +53,10 @@ public class User implements UserDetails {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNombre() {
