@@ -79,15 +79,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T016 [P] [US3] Add or update registration/login/profile integration tests in `backend/app/src/test/java/com/dappunq/integration/AuthRegisterIntegrationTest.java`, `backend/app/src/test/java/com/dappunq/integration/AuthLoginIntegrationTest.java`, and `backend/app/src/test/java/com/dappunq/integration/UserProfileIntegrationTest.java`
-- [ ] T017 [P] [US3] Validate the end-to-end user flow in `backend/app/src/test/java/com/dappunq/e2e/UserAuthE2ETest.java` using the existing MockMvc contract
+- [X] T016 [P] [US3] Add or update registration/login/profile integration tests in `backend/app/src/test/java/com/dappunq/integration/AuthRegisterIntegrationTest.java`, `backend/app/src/test/java/com/dappunq/integration/AuthLoginIntegrationTest.java`, and `backend/app/src/test/java/com/dappunq/integration/UserProfileIntegrationTest.java`
+- [X] T017 [P] [US3] Validate the end-to-end user flow in `backend/app/src/test/java/com/dappunq/e2e/UserAuthE2ETest.java` using the existing MockMvc contract
 
 ### Implementation for User Story 3
 
-- [ ] T018 [US3] Update `backend/app/src/main/java/com/dappunq/service/AuthService.java` to keep name normalization, duplicate detection, password hashing, and credential validation behavior exactly as before while using the new repository boundary
-- [ ] T019 [US3] Refactor `backend/app/src/main/java/com/dappunq/service/UserService.java` and `backend/app/src/main/java/com/dappunq/controller/UserControllerRest.java` to return and map domain `User` values to the established response DTOs without leaking persistence entities to controllers
-- [ ] T020 [US3] Adapt the security boundaries in `backend/app/src/main/java/com/dappunq/security/UserPrincipal.java`, `backend/app/src/main/java/com/dappunq/security/JwtService.java`, and related security config to keep login and token generation compatible with the current authentication flow
-- [ ] T021 [US3] Confirm the compatibility contract in `backend/specs/007-user-refactor/contracts/user-api.yaml` matches the existing external behavior for `/login`, `/register`, and `/users/{id}/`
+- [X] T018 [US3] Update `backend/app/src/main/java/com/dappunq/service/AuthService.java` to keep name normalization, duplicate detection, password hashing, and credential validation behavior exactly as before while using the new repository boundary
+- [X] T019 [US3] Refactor `backend/app/src/main/java/com/dappunq/service/UserService.java` and `backend/app/src/main/java/com/dappunq/controller/UserControllerRest.java` to return and map domain `User` values to the established response DTOs without leaking persistence entities to controllers
+- [X] T020 [US3] Adapt the security boundaries in `backend/app/src/main/java/com/dappunq/security/UserPrincipal.java`, `backend/app/src/main/java/com/dappunq/security/JwtService.java`, and related security config to keep login and token generation compatible with the current authentication flow
+- [X] T021 [US3] Confirm the compatibility contract in `backend/specs/007-user-refactor/contracts/user-api.yaml` matches the existing external behavior for `/login`, `/register`, and `/users/{id}/`
 
 **Checkpoint**: All user and auth flows should remain externally identical while the internal domain and persistence model is refactored.
 
