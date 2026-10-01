@@ -97,9 +97,9 @@
 
 **Purpose**: Validate the architecture and quality gates across the full refactor.
 
-- [ ] T022 [P] Run the focused domain and mapper checks from `backend/specs/007-user-refactor/quickstart.md` using `backend/gradlew.bat :app:test --tests "com.dappunq.unit.UserTest" --tests "com.dappunq.unit.UserMapperTest"`
-- [ ] T023 [P] Run the PostgreSQL-backed integration and MockMvc E2E checks from `backend/specs/007-user-refactor/quickstart.md`, then compile the backend module with `backend/gradlew.bat :app:compileJava` and `backend/gradlew.bat :app:test`
-- [ ] T024 [P] Review the final architectural safeguards across `backend/app/src/main/java/com/dappunq/model/User.java`, `backend/app/src/main/java/com/dappunq/persistence/UserEntity.java`, and `backend/app/src/main/java/com/dappunq/security/` to confirm no plaintext password persistence, no entity leakage, and no domain-layer persistence or security coupling
+- [X] T022 [P] Run the focused domain and mapper checks from `backend/specs/007-user-refactor/quickstart.md` using `backend/gradlew.bat :app:test --tests "com.dappunq.unit.UserTest" --tests "com.dappunq.unit.UserMapperTest"`
+- [X] T023 [P] Run the PostgreSQL-backed integration and MockMvc E2E checks from `backend/specs/007-user-refactor/quickstart.md`, then compile the backend module with `backend/gradlew.bat :app:compileJava` and `backend/gradlew.bat :app:test`
+- [X] T024 [P] Review the final architectural safeguards across `backend/app/src/main/java/com/dappunq/model/User.java`, `backend/app/src/main/java/com/dappunq/persistence/UserEntity.java`, and `backend/app/src/main/java/com/dappunq/security/` to confirm no plaintext password persistence, no entity leakage, and no domain-layer persistence or security coupling
 
 ---
 
