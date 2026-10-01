@@ -40,12 +40,12 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Add domain validation coverage in `backend/app/src/test/java/com/dappunq/unit/UserTest.java` for valid names, blank names, blank credentials, and whitespace normalization
+- [X] T009 [P] [US1] Add domain validation coverage in `backend/app/src/test/java/com/dappunq/unit/UserTest.java` for valid names, blank names, blank credentials, and whitespace normalization
 
 ### Implementation for User Story 1
 
-- [ ] T010 [P] [US1] Refactor `backend/app/src/main/java/com/dappunq/model/User.java` to remove persistence annotations and `UserDetails` coupling while retaining the domain invariants and normalized `nombre`/credential checks
-- [ ] T011 [US1] Add or adjust domain-specific validation and error handling in `backend/app/src/main/java/com/dappunq/model/User.java` and `backend/app/src/main/java/com/dappunq/exception/` so invalid persisted or constructed state is rejected consistently
+- [X] T010 [P] [US1] Refactor `backend/app/src/main/java/com/dappunq/model/User.java` to remove persistence annotations and `UserDetails` coupling while retaining the domain invariants and normalized `nombre`/credential checks
+- [X] T011 [US1] Add or adjust domain-specific validation and error handling in `backend/app/src/main/java/com/dappunq/model/User.java` and `backend/app/src/main/java/com/dappunq/exception/` so invalid persisted or constructed state is rejected consistently
 
 **Checkpoint**: User Story 1 should produce a domain-valid `User` independent of persistence or security contracts and fail fast on invalid input.
 
