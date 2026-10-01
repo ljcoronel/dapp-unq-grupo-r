@@ -1,12 +1,8 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 -> 1.1.0
+Version change: 1.1.0 -> 1.1.1
 Modified principles:
-- I. Monorepo -> I. Monorepo (translated into English)
-- II. Arquitectura en Capas -> II. Layered Architecture (translated; Service return and Controller mapping responsibilities made explicit)
-- III. Modelo Rico -> III. Rich Model (translated; framework-free POJO requirement made explicit)
-- IV. Validacion por Niveles -> IV. Layered Validation (translated into English)
-- V. Testing y Calidad -> V. Testing and Quality (translated into English)
+- II. Layered Architecture (clarified that Repository implementations map Model objects to persistence entities; the Service MUST NOT perform this mapping)
 Added sections: None
 Removed sections: None
 Follow-up TODOs: None
@@ -29,11 +25,12 @@ inputs and response outputs through the Service. The Service coordinates busines
 operations between the Model and Persistence, and MUST return Model objects to the
 Controller; it MUST NOT return Controller DTOs. The Controller, or its dedicated
 mappers, is solely responsible for transforming returned Model objects into output
-DTOs. Before persistence, the Service MUST map Model objects to separate persistence
-entities that carry persistence annotations. The Model encapsulates business rules and
-MUST NOT know about other layers. Persistence may access the Model but MUST NOT invoke
-its business logic. Layer boundaries are mandatory; responsibilities MUST NOT be mixed
-between the Service and Controller.
+DTOs. Before persistence, the Repository implementation (e.g., PlayerRepositoryImpl)
+MUST map Model objects to separate persistence entities that carry persistence
+annotations; the Service MUST NOT perform this mapping. The Model encapsulates
+business rules and MUST NOT know about other layers. Persistence may access the Model
+but MUST NOT invoke its business logic. Layer boundaries are mandatory;
+responsibilities MUST NOT be mixed between the Service and Controller.
 
 ### III. Rich Model
 Business logic MUST reside in Model objects, and each method MUST have a single
@@ -103,4 +100,4 @@ the code follows the layered architecture, rich-model, layered-validation, and t
 requirements in this constitution. Deviations MUST be addressed before the change is
 approved for delivery.
 
-**Version**: 1.1.0 | **Ratified**: 2026-09-05 | **Last Amended**: 2026-10-01
+**Version**: 1.1.1 | **Ratified**: 2026-09-05 | **Last Amended**: 2026-10-01
