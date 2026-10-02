@@ -38,7 +38,7 @@ and commands read the constitution at runtime and are not modified here.
 ## Pre-Execution Checks
 
 **Check for extension hooks (before constitution update)**:
-- Check if `.specify/extensions.yml` exists in the project root.
+- Check if `../../../backend/.specify` exists in the project root.
 - If it exists, read it and look for entries under the `hooks.before_constitution` key
 - If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
 - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
@@ -69,11 +69,11 @@ and commands read the constitution at runtime and are not modified here.
     Wait for the result of the hook command before proceeding to the Outline.
     ```
     After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- If no hooks are registered or `../../../backend/.specify` does not exist, skip silently
 
 ## Outline
 
-You are updating the project constitution at `.specify/memory/constitution.md`. The active
+You are updating the project constitution at `../../../backend/.specify`. The active
 constitution scaffold is resolved at command time from `constitution-template` through the Spec Kit
 preset/template resolution stack.
 
@@ -84,7 +84,7 @@ Follow this execution flow:
      before the core template fallback. It MUST succeed before continuing.
    - If it fails, stop and report the resolution error; do not continue with only one contributing
      template layer.
-   - If `.specify/memory/constitution.md` exists, load it as the source of current project-specific
+   - If `../../../backend/.specify` exists, load it as the source of current project-specific
      values and amendments. Preserve information that is still applicable when applying the newly
      resolved scaffold.
    - If it does not exist, use the resolved template as the initial document.
@@ -121,7 +121,7 @@ Follow this execution flow:
    - Dates ISO format YYYY-MM-DD.
    - Principles are declarative, testable, and free of vague language ("should" → replace with MUST/SHOULD rationale where appropriate).
 
-6. Write the completed constitution back to `.specify/memory/constitution.md` (overwrite).
+6. Write the completed constitution back to `../../../backend/.specify` (overwrite).
 
 7. Output a final summary to the user with:
    - New version and bump rationale.
@@ -140,12 +140,12 @@ If the user supplies partial updates (e.g., only one principle revision), still 
 
 If critical info missing (e.g., ratification date truly unknown), insert `TODO(<FIELD_NAME>): explanation` and include in the Sync Impact Report under deferred items.
 
-Write only `.specify/memory/constitution.md`; do not create or modify template source files.
+Write only `../../../backend/.specify`; do not create or modify template source files.
 
 ## Post-Execution Checks
 
 **Check for extension hooks (after constitution update)**:
-Check if `.specify/extensions.yml` exists in the project root.
+Check if `../../../backend/.specify` exists in the project root.
 - If it exists, read it and look for entries under the `hooks.after_constitution` key
 - If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
 - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
@@ -174,4 +174,4 @@ Check if `.specify/extensions.yml` exists in the project root.
     EXECUTE_COMMAND: {command}
     ```
     After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- If no hooks are registered or `../../../backend/.specify` does not exist, skip silently
