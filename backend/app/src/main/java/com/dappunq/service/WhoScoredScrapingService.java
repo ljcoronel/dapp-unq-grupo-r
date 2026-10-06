@@ -27,28 +27,21 @@ public class WhoScoredScrapingService {
         ArrayList<String> urls = new ArrayList<>(Arrays.asList(laLiga, bundesliga, serieA, premierLeague, ligue1));
 
         try (Playwright playwright = Playwright.create()) {
-            // Launch browser (set headless to false if you need to debug or bypass basic bot checks)
             BrowserType.LaunchOptions options = new BrowserType.LaunchOptions().setHeadless(true);
             Browser browser = playwright.chromium().launch(options);
 
-            // Create a browser context with a realistic user agent
             BrowserContext context = browser.newContext(new Browser.NewContextOptions()
                 .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"));
 
             Page page = context.newPage();
 
             urls.forEach(url -> {
-                // Navigate to each league's statistics page
                 page.navigate(baseURL + url);
 
-                // Wait for targeted elements to load (Adjust selectors based on WhoScored's current layout)
                 page.waitForSelector("table#top-player-stats-summary-grid");
 
-                // Example extraction logic (adjust selectors depending on the target table)
-                // This is a conceptual extraction template loop
                 Locator playerRows = page.locator("table#top-player-stats-summary-grid tbody tr");
                 int count = playerRows.count();
-                System.out.println("Number of player rows: " + count);
                 for (int i = 0; i < count; i++) {
                     Locator row = playerRows.nth(i);
 
@@ -66,40 +59,25 @@ public class WhoScoredScrapingService {
                     String passSuccessPercentage = row.locator("td").nth(9).textContent();
                     String aerialsWon = row.locator("td").nth(10).textContent();
                     String timesManOfTheMatch = row.locator("td").nth(11).textContent();
-                    System.out.println("************************************");
-                    System.out.println("Name: " + name);
-                    System.out.println("Team: " + team);
-                    System.out.println("Age: " + age);
-                    System.out.println("League: " + league);
-                    System.out.println("Appearances: " + appearances);
-                    System.out.println("Minutes Played: " + minutesPlayed);
-                    System.out.println("Goals: " + goals);
-                    System.out.println("Assists: " + assists);
-                    System.out.println("Yellow Cards: " + yellowCards);
-                    System.out.println("Red Cards: " + redCards);
-                    System.out.println("Avg Shots Per Game: " + avgShotsPerGame);
-                    System.out.println("Pass Success Percentage: " + passSuccessPercentage);
-                    System.out.println("Aerials Won: " + aerialsWon);
-                    System.out.println("Times Man of the Match: " + timesManOfTheMatch);
-                    System.out.println("************************************");
-//                    WhoScoredEntity player = new WhoScoredEntity();
-//                    player.setName(name != null ? name.trim() : "Unknown");
-//                    player.setTeam(team != null ? team.trim().substring(0, team.length() - 1) : "Unknown");
-//                    player.setAge(age != null ? age.trim() : "Unknown");
-//                    player.setLeague(league != null ? league.trim() : "Unknown");
-//                    player.setAppearances(appearances != null ? appearances.trim() : "Unknown");
-//                    player.setMinutesPlayed(minutesPlayed != null ? minutesPlayed.trim() : "Unknown");
-//                    player.setGoals(goals != null ? goals.trim() : "Unknown");
-//                    player.setAssists(assists != null ? assists.trim() : "Unknown");
-//                    player.setYellowCards(yellowCards != null ? yellowCards.trim() : "Unknown");
-//                    player.setRedCards(redCards != null ? redCards.trim() : "Unknown");
-//                    player.setAvgShotsPerGame(avgShotsPerGame != null ? avgShotsPerGame.trim() : "Unknown");
-//                    player.setPassSuccessPercentage(passSuccessPercentage != null ? passSuccessPercentage.trim() : "Unknown");
-//                    player.setAerialsWon(aerialsWon != null ? aerialsWon.trim() : "Unknown");
-//                    player.setTimesManOfTheMatch(timesManOfTheMatch != null ? timesManOfTheMatch.trim() : "Unknown");
-//
-//                    // Save the player data to the database
-//                    scrapperRepository.save(player);
+
+                    WhoScoredEntity player = new WhoScoredEntity();
+                    player.setName(name != null ? name.trim() : "Unknown");
+                    player.setTeam(team != null ? team.trim().substring(0, team.length() - 1) : "Unknown");
+                    player.setAge(age != null ? age.trim() : "Unknown");
+                    player.setLeague(league != null ? league.trim() : "Unknown");
+                    player.setAppearances(appearances != null ? appearances.trim() : "Unknown");
+                    player.setMinutesPlayed(minutesPlayed != null ? minutesPlayed.trim() : "Unknown");
+                    player.setGoals(goals != null ? goals.trim() : "Unknown");
+                    player.setAssists(assists != null ? assists.trim() : "Unknown");
+                    player.setYellowCards(yellowCards != null ? yellowCards.trim() : "Unknown");
+                    player.setRedCards(redCards != null ? redCards.trim() : "Unknown");
+                    player.setAvgShotsPerGame(avgShotsPerGame != null ? avgShotsPerGame.trim() : "Unknown");
+                    player.setPassSuccessPercentage(passSuccessPercentage != null ? passSuccessPercentage.trim() : "Unknown");
+                    player.setAerialsWon(aerialsWon != null ? aerialsWon.trim() : "Unknown");
+                    player.setTimesManOfTheMatch(timesManOfTheMatch != null ? timesManOfTheMatch.trim() : "Unknown");
+
+                    // Save the player data to the database
+                    scrapperRepository.save(player);
                 }
             });
             browser.close();
