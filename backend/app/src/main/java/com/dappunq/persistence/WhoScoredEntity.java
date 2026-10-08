@@ -3,14 +3,14 @@ package com.dappunq.persistence;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-@Entity
+
 public class WhoScoredEntity {
-    @Id
+
     private Long id;
     private String name;
     private String team;
     private String age;
-    private String league;
+    private NewLeagueEntity league;
     private String appearances;
     private String minutesPlayed;
     private String goals;
@@ -39,7 +39,7 @@ public class WhoScoredEntity {
     public void setAge(String age) {
         this.age = age;
     }
-    public void setLeague(String league) {
+    public void setLeague(NewLeagueEntity league) {
         this.league = league;
     }
 
