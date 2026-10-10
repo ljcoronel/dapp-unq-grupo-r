@@ -17,11 +17,11 @@ public class WhoScoredScrapingService {
     public WhoScoredScrapingService() {
     }
 
-    public void scrape() {
+    public void scrape(String numberOfPlayers) {
         String URL = "https://www.whoscored.com/statisticsfeed/1/getplayerstatistics?category=summary&subcategory=all&statsAccumulationType=" +
             "0&isCurrent=true&playerId=&teamIds=&matchId=&stageId=&tournamentOptions=2,3,4,5,22&sortBy=Rating&sortAscending=&age=" +
             "&ageComparisonType=&appearances=&appearancesComparisonType=&field=Overall&nationality=&positionOptions=&timeOfTheGameEnd=" +
-            "&timeOfTheGameStart=&isMinApp=true&page=&includeZeroValues=&numberOfPlayersToPick=10&incPens=";
+            "&timeOfTheGameStart=&isMinApp=true&page=&includeZeroValues=&numberOfPlayersToPick=" + numberOfPlayers + "&incPens=";
 
         try (Playwright playwright = Playwright.create()) {
             BrowserType.LaunchOptions options = new BrowserType.LaunchOptions().setHeadless(true);
@@ -73,7 +73,7 @@ public class WhoScoredScrapingService {
                     playerEntities.add(whoScoredEntity);
                 }
             );
-            // TODO: Save all leagueEntities in leagueEntities
+            // TODO: Save all leagues in leagueEntities
             // TODO: Save all teams in teamEntities
             // TODO: Save all players in playerEntities
         }

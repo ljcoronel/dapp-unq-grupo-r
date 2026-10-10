@@ -4,7 +4,7 @@ package com.dappunq.persistence;
 public class WhoScoredEntity {
 
     private Long id;
-    private Long external_id;
+    private Long externalId;
     private String name;
     private TeamEntity team;
     private NewLeagueEntity league;
@@ -23,13 +23,13 @@ public class WhoScoredEntity {
     private Float aerialsWon;
     private Integer timesManOfTheMatch;
 
-    public WhoScoredEntity(Long external_id, String name, TeamEntity teamEntity,
+    public WhoScoredEntity(Long externalId, String name, TeamEntity teamEntity,
                            NewLeagueEntity newLeagueEntity, Integer age,
                            Integer height, Integer weight, String position, Integer apps,
                            Integer minsPlayed, Integer goal, Integer assists,
                            Integer yellowCard, Integer redCard, Float shotsPerGame,
                            Float passSuccess, Float aerialsWonPerGame, Integer manOfTheMatch) {
-        this.external_id = external_id;
+        this.externalId = externalId;
         this.name = name;
         this.team = teamEntity;
         this.league = newLeagueEntity;
