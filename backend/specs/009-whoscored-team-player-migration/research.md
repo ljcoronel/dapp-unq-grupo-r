@@ -1,16 +1,16 @@
 # Research: Migracion a WhoScored
 
-## Decision: Persistencia JPA para las tres entidades
+## Decision: Persistencia JPA para las entidades activas
 
-`TeamEntity`, `NewLeagueEntity` y `WhoScoredEntity` usaran `@Entity`, `@Table`, `@Id`, `@GeneratedValue` y `@Column`. `externalId` sera `nullable = false` y `unique = true` en cada tabla. Las relaciones viviran solo desde `WhoScoredEntity`: `@ManyToOne(optional = false)` hacia equipo y liga, con `@JoinColumn` no nulo. No se agregaran campos de coleccion ni back-references a equipo o liga.
+`LeagueEntity`, `TeamEntity` y `PlayerEntity` usaran `@Entity`, `@Table`, `@Id`, `@GeneratedValue` y `@Column`. `externalId` sera `nullable = false` y `unique = true` en cada tabla activa. `PlayerEntity` conocera una liga y un equipo mediante relaciones `ManyToOne`; liga y equipo no tendran referencias inversas. Durante la migracion se respetara que no se agreguen variables de instancia no autorizadas a `NewLeagueEntity` ni `WhoScoredEntity`; si quedan referencias a esas clases, se eliminaran o marcaran deprecadas segun su uso.
 
-## Decision: Repositorios separados y persistencia por etapas
+## Decision: Upsert idempotente por identificador externo
 
-Se agregaran repositorios para equipo, liga WhoScored y jugador WhoScored, con busquedas por `externalId`. El servicio normalizara el JSON y usara `saveAll` en orden equipo/liga, jugador. Esto respeta la identidad unica y evita que `TeamEntity` o `NewLeagueEntity` conozcan otras entidades.
+Se agregaran repositorios para liga, equipo y jugador con `findByExternalId`. El servicio normalizara el JSON y resolvera cada registro existente por `externalId`, actualizando sus campos o creando uno nuevo. El orden sera liga/equipo, jugador, dentro de una transaccion. La restriccion unica y una prueba de repeticion del mismo lote garantizaran que el upsert no cree duplicados.
 
-## Decision: WhoScored como unica fuente activa
+## Decision: Eliminacion completa de FootballData
 
-`PlayerCatalogRefreshService` dejara de depender de `FootballDataClient` y de su mapper. El scraper sera el adaptador activo. `FootballDataClient`, sus DTOs y pruebas especificas permaneceran fisicamente y se marcaran `@Deprecated`, sin beans ni llamadas desde los flujos activos.
+Se eliminaran `PlayerCatalogStartupRunner.java`, `PlayerCatalogRefreshService.java`, `FootballDataClient.java`, `League.java`, `backend/app/src/main/java/com/dappunq/dto/footballdata/` y todos los tests especificos de FootballData. Tambien se eliminaran imports, configuracion y dependencias huérfanas. Cualquier archivo no relacionado que resulte innecesario se marcara `@Deprecated` y se retirara solo si no tiene referencias.
 
 ## Decision: Snapshot seguro y validacion
 
@@ -23,6 +23,6 @@ Se agregara una prueba de integracion del servicio que invoque la URL real de Wh
 ## Alternatives considered
 
 - Agregar listas `players` a equipo/liga: rechazado porque viola las restricciones de variables de instancia y hace bidireccionales relaciones que no son necesarias.
-- Reutilizar `LeagueEntity`/`PlayerEntity`: rechazado porque el nuevo proveedor requiere external ids y atributos propios, y mezclaria el modelo heredado con el nuevo.
-- Eliminar FootballData: rechazado por RF-010; la migracion exige deprecacion sin borrar archivos.
+- Reutilizar `LeagueEntity`/`PlayerEntity`: elegido; son las entidades activas que deben adaptarse al nuevo proveedor y soportar el upsert.
+- Mantener FootballData deprecado: rechazado por la rectificacion; se exige eliminar codigo y tests relacionados.
 - Proteger `/scrape` con JWT: rechazado explicitamente; la ruta debe permanecer publica.

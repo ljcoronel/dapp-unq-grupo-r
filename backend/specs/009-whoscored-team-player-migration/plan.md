@@ -4,7 +4,7 @@
 
 ## Summary
 
-Se convertiran `TeamEntity`, `NewLeagueEntity` y `WhoScoredEntity` en entidades JPA con identificadores internos generados y `externalId` unico. Se completara `WhoScoredScrapingService` para normalizar la respuesta real de WhoScored y persistir primero equipos y ligas, y luego jugadores con sus relaciones, sin agregar variables de instancia a las tres entidades. El flujo de catalogo dejara de inyectar o invocar FootballData; los componentes heredados permaneceran en el repositorio y quedaran deprecados. El endpoint `POST /scrape` continuara publico y se validara el caso feliz con la URL real y `numberOfPlayers=1`.
+Se adaptara el modelo activo de `LeagueEntity`, `TeamEntity` y `PlayerEntity` para representar la respuesta de WhoScored, manteniendo la restriccion de no agregar variables de instancia no autorizadas a `TeamEntity`, `NewLeagueEntity` y `WhoScoredEntity` mientras se completa la migracion de nombres. `WhoScoredScrapingService` normalizara la respuesta real y hara upsert por `externalId` de cada liga, equipo y jugador, persistiendo las relaciones sin duplicados. Todo lo relativo a FootballData se eliminara: clases, DTOs, configuracion, servicios, runners y tests relacionados. Los componentes que queden sin uso y no formen parte de FootballData se marcaran como deprecados. El endpoint `POST /scrape` continuara publico y se validara el caso feliz con la URL real y `numberOfPlayers=1`.
 
 ## Technical Context
 
@@ -22,9 +22,9 @@ Se convertiran `TeamEntity`, `NewLeagueEntity` y `WhoScoredEntity` en entidades 
 
 **Performance Goals**: Persistir un lote valido sin truncarlo artificialmente y sin hacer una consulta de existencia por cada jugador cuando pueda resolverse por lote
 
-**Constraints**: No agregar variables de instancia a `TeamEntity`, `NewLeagueEntity` ni `WhoScoredEntity`; `externalId` debe ser UNIQUE en las tres tablas; `/scrape` no requiere autenticacion; fallos o respuestas invalidas no deben sustituir el ultimo catalogo valido
+**Constraints**: No agregar variables de instancia a `TeamEntity`, `NewLeagueEntity` ni `WhoScoredEntity` sin permiso explicito; `externalId` debe ser UNIQUE en las tablas activas de liga, equipo y jugador; `/scrape` no requiere autenticacion; fallos o respuestas invalidas no deben sustituir el ultimo catalogo valido; el upsert debe ser idempotente por identificador externo
 
-**Scale/Scope**: Las cinco ligas configuradas y todos los registros validos devueltos por WhoScored para cada actualizacion; migracion acotada al catalogo y a los componentes FootballData relacionados
+**Scale/Scope**: Las cinco ligas configuradas y todos los registros validos devueltos por WhoScored para cada actualizacion; migracion del catalogo, modelos y servicios relacionados; eliminacion completa de FootballData
 
 ## Constitution Check
 
@@ -34,7 +34,7 @@ Se convertiran `TeamEntity`, `NewLeagueEntity` y `WhoScoredEntity` en entidades 
 - **Layered Architecture**: PASS WITH DESIGN ACTION. Los repositorios encapsularan acceso y mapeo de persistencia; el servicio coordinara scraping, validacion y persistencia sin exponer DTOs al controlador.
 - **Rich Model**: PASS. Las anotaciones se agregan exclusivamente a entidades de persistencia; no se agregan anotaciones a modelos de dominio.
 - **Layered Validation**: PASS. Se validaran identificadores, registros vacios y `numberOfPlayers`; la ausencia de un equipo confiable excluira el jugador.
-- **Testing and Quality**: PASS WITH DESIGN ACTION. Se agregaran pruebas de entidades/repositorios, servicio y MockMvc, conservando las pruebas existentes y agregando el escenario real solicitado.
+- **Testing and Quality**: PASS WITH DESIGN ACTION. Se agregaran pruebas de entidades/repositorios, servicio y MockMvc, se eliminara la suite especifica de FootballData y se agregara el escenario real solicitado.
 - **Spanish documentation**: PASS. Artefactos y mensajes nuevos se documentan en español; identificadores de codigo permanecen sin acentos.
 
 ## Project Structure
@@ -62,24 +62,21 @@ backend/
 │   │   ├── PlayerStatDTO.java
 │   │   └── PlayerStatisticsResponse.java
 │   ├── persistence/
-│   │   ├── NewLeagueEntity.java
+│   │   ├── LeagueEntity.java
 │   │   ├── TeamEntity.java
-│   │   ├── WhoScoredEntity.java
+│   │   ├── PlayerEntity.java
 │   │   └── *Repository.java
 │   └── service/
 │       ├── WhoScoredScrapingService.java
-│       ├── PlayerCatalogRefreshService.java
-│       └── FootballDataClient.java (deprecado, no usado)
+│       └── [servicios de catalogo adaptados]
 └── app/src/test/java/com/dappunq/
     ├── e2e/
     ├── integration/
     └── unit/
 ```
 
-**Structure Decision**: Se conserva la estructura existente de Spring Boot y se incorporan repositorios JPA junto a las tres entidades nuevas. Los contratos públicos se documentan dentro de la carpeta de la feature.
+**Structure Decision**: Se conserva la estructura existente de Spring Boot. `LeagueEntity`, `TeamEntity` y `PlayerEntity` son las entidades activas y sus repositorios implementan upsert por `externalId`. `PlayerCatalogStartupRunner.java`, `PlayerCatalogRefreshService.java`, `FootballDataClient.java`, `League.java`, `dto/footballdata/` y sus tests se eliminan. Todo archivo adicional que quede sin referencias se marca `@Deprecated` antes de retirarlo en una tarea posterior.
 
 ## Complexity Tracking
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|---|---|---|
-| Mantener `FootballDataClient` y DTOs heredados | RF-010 exige conservar archivos físicos para una migracion gradual | Eliminarlos impediria detectar referencias y migrar historicos posteriormente |
+No se identifican violaciones constitucionales que requieran complejidad adicional.

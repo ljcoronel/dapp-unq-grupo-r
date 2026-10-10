@@ -15,7 +15,7 @@ Desde `backend/`:
 .\gradlew :app:test
 ```
 
-La suite debe cubrir anotaciones y unicidad de `externalId`, relaciones unidireccionales, persistencia de lotes, rechazo de registros invalidos, conservacion del snapshot, ausencia de limite artificial y permisos publicos de `POST /scrape`.
+La suite debe cubrir anotaciones y unicidad de `externalId`, relaciones unidireccionales, upsert idempotente de ligas/equipos/jugadores, rechazo de registros invalidos, conservacion del snapshot, ausencia de limite artificial y permisos publicos de `POST /scrape`. Deben eliminarse los tests que importen o mockeen FootballData junto con las clases que prueban.
 
 ## Caso feliz real
 
@@ -29,7 +29,7 @@ Con la aplicacion iniciada:
 curl.exe -i -X POST "http://localhost:8080/scrape?numberOfPlayers=1"
 ```
 
-Debe responder sin token JWT y delegar al servicio con `numberOfPlayers=1`. Las respuestas vacias o invalidas no deben borrar datos existentes.
+Debe responder sin token JWT y delegar al servicio con `numberOfPlayers=1`. Repetir la misma solicitud no debe crear duplicados. Las respuestas vacias o invalidas no deben borrar datos existentes.
 
 ## Referencias
 

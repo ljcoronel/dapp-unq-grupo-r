@@ -6,7 +6,7 @@
 
 **Estado**: Borrador
 
-**Entrada**: Descripción del usuario: "Como desarrollador, quiero migrar el proveedor de datos del catálogo de jugadores de FootballData a WhoScored, introduciendo el modelo de Equipo y enriqueciendo la información del jugador, asegurando la deprecación segura del código anterior."
+**Entrada**: Descripción del usuario: "Como desarrollador, quiero migrar el proveedor de datos del catálogo de jugadores de FootballData a WhoScored, introduciendo el modelo de Equipo y enriqueciendo la información del jugador, eliminando el código anterior."
 
 ## Escenarios de usuario y pruebas
 
@@ -42,19 +42,19 @@ Como consumidor del catálogo, quiero consultar cada jugador relacionado con su 
 
 ---
 
-### Historia de usuario 3 - Retirar de forma segura FootballData (Prioridad: P2)
+### Historia de usuario 3 - Eliminar FootballData de forma segura (Prioridad: P2)
 
-Como mantenedor, quiero que el código anterior quede explícitamente obsoleto sin eliminar sus archivos para poder completar la transición sin romper referencias existentes.
+Como mantenedor, quiero eliminar todo el código y las pruebas de FootballData para completar la transición sin dejar referencias activas al proveedor anterior.
 
-**Por qué esta prioridad**: La deprecación visible permite una migración gradual y evita que el proveedor anterior vuelva a utilizarse accidentalmente.
+**Por qué esta prioridad**: La eliminación completa evita que el proveedor anterior vuelva a utilizarse accidentalmente.
 
-**Prueba independiente**: Revisar clases, adaptadores, configuración y pruebas relacionadas con FootballData y comprobar que están marcados como obsoletos, no participan en la ejecución activa y siguen presentes físicamente.
+**Prueba independiente**: Revisar el repositorio y comprobar que las clases, adaptadores, configuración y pruebas relacionadas con FootballData fueron eliminadas y que no quedan referencias activas.
 
 **Escenarios de aceptación**:
 
-1. **Dado** código específico de FootballData, **cuando** se inspecciona, **entonces** cada clase, adaptador o componente público correspondiente está marcado como obsoleto mediante el mecanismo del lenguaje.
+1. **Dado** código específico de FootballData, **cuando** se completa la migración, **entonces** sus archivos y pruebas son eliminados.
 2. **Dado** un arranque o actualización normal del catálogo, **cuando** se ejecuta el flujo, **entonces** no se requieren credenciales, solicitudes, fallback ni adaptadores de FootballData.
-3. **Dado** que existen archivos heredados de FootballData, **cuando** se completa la migración, **entonces** permanecen en el repositorio y pueden compilarse o migrarse posteriormente sin ser la fuente activa.
+3. **Dado** que existen archivos heredados de FootballData, **cuando** se completa la migración, **entonces** se eliminan junto con sus referencias, configuración y pruebas.
 
 ### Casos límite
 
@@ -78,7 +78,7 @@ Como mantenedor, quiero que el código anterior quede explícitamente obsoleto s
 - **RF-007**: Una respuesta vacía, inválida o fallida de WhoScored NO DEBE reemplazar el último catálogo válido; el fallo DEBE comunicarse mediante el mecanismo existente.
 - **RF-008**: El fallo de una competición NO DEBE invalidar los datos válidos de otras competiciones actualizadas en la misma operación.
 - **RF-009**: Los registros sin identificador de jugador o equipo confiable DEBEN rechazarse o excluirse sin crear entidades ficticias.
-- **RF-010**: Todo código, clase, adaptador y componente específico de FootballData DEBE estar marcado como obsoleto/deprecado según el lenguaje, sin eliminar sus archivos físicos.
+- **RF-010**: Todo código, clase, adaptador, configuración, dependencia y prueba específico de FootballData DEBE eliminarse, incluyendo `PlayerCatalogStartupRunner.java`, `PlayerCatalogRefreshService.java`, `FootballDataClient.java`, `League.java` y `dto/footballdata/`.
 - **RF-011**: El flujo activo NO DEBE realizar solicitudes, extracción, fallback ni requerir configuración o credenciales de FootballData.
 - **RF-012**: Las pruebas del catálogo DEBEN utilizar mocks o fixtures de WhoScored, y DEBEN existir pruebas unitarias para Equipo, la relación con Jugador y los atributos extendidos.
 - **RF-013**: La funcionalidad no relacionada con el proveedor de jugadores DEBE conservar su comportamiento actual.
@@ -87,7 +87,7 @@ Como mantenedor, quiero que el código anterior quede explícitamente obsoleto s
 
 - **Jugador**: Persona del catálogo identificada por un identificador estable, nombre, posición, competición, Equipo, atributos existentes y estadísticas adicionales provistas por WhoScored.
 - **Equipo**: Club asociado a jugadores, identificado de forma estable y con nombre y demás datos descriptivos disponibles desde WhoScored.
-- **Fuente de jugadores**: Proveedor externo que entrega registros normalizables; WhoScored es la fuente activa y FootballData queda obsoleta.
+- **Fuente de jugadores**: Proveedor externo que entrega registros normalizables; WhoScored es la fuente activa y FootballData se elimina.
 - **Catálogo válido**: Último conjunto de registros aceptados y consultables, conservado cuando una actualización falla.
 
 ## Criterios de éxito
@@ -99,7 +99,7 @@ Como mantenedor, quiero que el código anterior quede explícitamente obsoleto s
 - **CS-003**: El 100% de los Jugadores válidos con equipo queda relacionado con una entidad Equipo identificable y consistente.
 - **CS-004**: En el 100% de los fallos, respuestas vacías o respuestas inválidas de WhoScored, el último catálogo válido permanece consultable.
 - **CS-005**: El 100% de las pruebas de dominio cubre Equipo, su relación con Jugador y al menos un atributo extendido con casos presentes, ausentes y cero válido.
-- **CS-006**: Una revisión del repositorio encuentra todos los componentes específicos de FootballData marcados como obsoletos y ningún uso activo como fuente o dependencia de ejecución.
+- **CS-006**: Una revisión del repositorio no encuentra archivos, dependencias, configuración ni pruebas específicas de FootballData, ni usos activos como fuente o dependencia de ejecución.
 - **CS-007**: El 100% de las pruebas existentes del catálogo actualizadas al nuevo proveedor y de las pruebas no relacionadas con él continúa pasando.
 - **CS-008**: Al menos el 95% de las consultas de listado y detalle conserva su comportamiento de navegación, identificación y agrupación, incorporando los datos enriquecidos.
 
@@ -109,5 +109,5 @@ Como mantenedor, quiero que el código anterior quede explícitamente obsoleto s
 - Los nombres concretos de los atributos extendidos pueden variar entre respuestas; se conservan solo los atributos compatibles entregados, sin inventar valores.
 - La relación entre Jugador y Equipo se mantiene durante la normalización y en las respuestas públicas sin agregar nuevas pantallas o filtros.
 - La estrategia vigente de almacenamiento del último catálogo válido y los mecanismos existentes de error se reutilizan.
-- La deprecación permite mantener los archivos y referencias heredadas durante la transición, pero no autoriza su uso en el flujo activo.
-- No se eliminan históricos ni archivos físicos de FootballData como parte de esta funcionalidad.
+- La eliminación de FootballData incluye sus archivos y pruebas; cualquier archivo no relacionado que resulte innecesario podrá marcarse como deprecado.
+- No se migran históricos originados exclusivamente en FootballData para presentarlos como datos nuevos de WhoScored.

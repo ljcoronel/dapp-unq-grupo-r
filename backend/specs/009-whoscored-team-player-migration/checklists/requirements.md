@@ -32,5 +32,5 @@
 ## Notes
 
 - La especificación está lista para `/speckit-plan`.
-- Se conservaron los archivos físicos de FootballData como exige la deprecación segura.
+- Se definió la eliminación de archivos, dependencias y tests de FootballData.
 - La cobertura de pruebas incluye el nuevo dominio Equipo, la relación con Jugador y los atributos extendidos.
