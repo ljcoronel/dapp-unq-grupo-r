@@ -15,7 +15,7 @@ Desde `backend/`:
 .\gradlew :app:test
 ```
 
-La suite debe cubrir anotaciones y unicidad de `externalId`, relaciones unidireccionales, upsert idempotente de ligas/equipos/jugadores, rechazo de registros invalidos, conservacion del snapshot, ausencia de limite artificial y permisos publicos de `POST /scrape`. Deben eliminarse los tests que importen o mockeen FootballData junto con las clases que prueban.
+La suite debe cubrir anotaciones y unicidad de `externalId` en `NewLeagueEntity`, `TeamEntity` y `WhoScoredEntity`, relaciones unidireccionales, upsert idempotente de ligas/equipos/jugadores, rechazo de registros invalidos, conservacion del snapshot, ausencia de limite artificial y permisos publicos de `POST /scrape`. Deben eliminarse los tests que importen o mockeen FootballData junto con las clases que prueban.
 
 ## Caso feliz real
 
