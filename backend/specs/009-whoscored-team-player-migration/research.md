@@ -2,11 +2,11 @@
 
 ## Decision: Persistencia JPA para las entidades activas
 
-`LeagueEntity`, `TeamEntity` y `PlayerEntity` usaran `@Entity`, `@Table`, `@Id`, `@GeneratedValue` y `@Column`. `externalId` sera `nullable = false` y `unique = true` en cada tabla activa. `PlayerEntity` conocera una liga y un equipo mediante relaciones `ManyToOne`; liga y equipo no tendran referencias inversas. Durante la migracion se respetara que no se agreguen variables de instancia no autorizadas a `NewLeagueEntity` ni `WhoScoredEntity`; si quedan referencias a esas clases, se eliminaran o marcaran deprecadas segun su uso.
+`NewLeagueEntity`, `TeamEntity` y `PlayerEntity` usaran `@Entity`, `@Table`, `@Id`, `@GeneratedValue` y `@Column`. `externalId` sera `nullable = false` y `unique = true` en cada tabla activa. `PlayerEntity` conocera una liga y un equipo mediante relaciones `ManyToOne`; liga y equipo no tendran referencias inversas. `LeagueEntity.java` no se conservara en el resultado final.
 
 ## Decision: Upsert idempotente por identificador externo
 
-Se agregaran repositorios para liga, equipo y jugador con `findByExternalId`. El servicio normalizara el JSON y resolvera cada registro existente por `externalId`, actualizando sus campos o creando uno nuevo. El orden sera liga/equipo, jugador, dentro de una transaccion. La restriccion unica y una prueba de repeticion del mismo lote garantizaran que el upsert no cree duplicados.
+Se agregaran repositorios para `NewLeagueEntity`, `TeamEntity` y `PlayerEntity` con `findByExternalId`. El servicio normalizara el JSON y resolvera cada registro existente por `externalId`, actualizando sus campos o creando uno nuevo. El orden sera `NewLeagueEntity`/`TeamEntity`, luego `PlayerEntity`, dentro de una transaccion. La restriccion unica y una prueba de repeticion del mismo lote garantizaran que el upsert no cree duplicados.
 
 ## Decision: Eliminacion completa de FootballData
 
@@ -23,6 +23,6 @@ Se agregara una prueba de integracion del servicio que invoque la URL real de Wh
 ## Alternatives considered
 
 - Agregar listas `players` a equipo/liga: rechazado porque viola las restricciones de variables de instancia y hace bidireccionales relaciones que no son necesarias.
-- Reutilizar `LeagueEntity`/`PlayerEntity`: elegido; son las entidades activas que deben adaptarse al nuevo proveedor y soportar el upsert.
+- Reutilizar `LeagueEntity`: rechazado; el archivo no debe existir en la implementacion final. `NewLeagueEntity`, `TeamEntity` y `PlayerEntity` son las entidades activas del proveedor.
 - Mantener FootballData deprecado: rechazado por la rectificacion; se exige eliminar codigo y tests relacionados.
 - Proteger `/scrape` con JWT: rechazado explicitamente; la ruta debe permanecer publica.
