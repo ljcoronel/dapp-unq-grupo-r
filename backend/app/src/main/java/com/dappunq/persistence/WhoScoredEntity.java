@@ -143,6 +143,26 @@ public class WhoScoredEntity {
         this.league = league;
     }
 
+    public void updateFrom(WhoScoredEntity source) {
+        this.name = source.name;
+        this.team = source.team;
+        this.league = source.league;
+        this.age = source.age;
+        this.heightCM = source.heightCM;
+        this.weightKG = source.weightKG;
+        this.position = source.position;
+        this.appearances = source.appearances;
+        this.minutesPlayed = source.minutesPlayed;
+        this.goals = source.goals;
+        this.assists = source.assists;
+        this.yellowCards = source.yellowCards;
+        this.redCards = source.redCards;
+        this.avgShotsPerGame = source.avgShotsPerGame;
+        this.passSuccessPercentage = source.passSuccessPercentage;
+        this.aerialsWon = source.aerialsWon;
+        this.timesManOfTheMatch = source.timesManOfTheMatch;
+    }
+
     public Integer getAge() {
         return age;
     }

@@ -2,21 +2,34 @@ package com.dappunq.service;
 
 import com.dappunq.dto.whoscored.PlayerStatisticsResponse;
 import com.dappunq.persistence.NewLeagueEntity;
+import com.dappunq.persistence.NewLeagueRepository;
 import com.dappunq.persistence.TeamEntity;
+import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.WhoScoredEntity;
+import com.dappunq.persistence.WhoScoredRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
 public class WhoScoredScrapingService {
+    private final NewLeagueRepository leagueRepository;
+    private final TeamRepository teamRepository;
+    private final WhoScoredRepository playerRepository;
 
-    public WhoScoredScrapingService() {
+    public WhoScoredScrapingService(NewLeagueRepository leagueRepository,
+                                    TeamRepository teamRepository,
+                                    WhoScoredRepository playerRepository) {
+        this.leagueRepository = leagueRepository;
+        this.teamRepository = teamRepository;
+        this.playerRepository = playerRepository;
     }
 
+    @Transactional
     public void scrape(String numberOfPlayers) {
         String URL = "https://www.whoscored.com/statisticsfeed/1/getplayerstatistics?category=summary&subcategory=all&statsAccumulationType=" +
             "0&isCurrent=true&playerId=&teamIds=&matchId=&stageId=&tournamentOptions=2,3,4,5,22&sortBy=Rating&sortAscending=&age=" +
@@ -73,9 +86,39 @@ public class WhoScoredScrapingService {
                     playerEntities.add(whoScoredEntity);
                 }
             );
-            // TODO: Save all leagues in leagueEntities
-            // TODO: Save all teams in teamEntities
-            // TODO: Save all players in playerEntities
+
+            Map<Long, NewLeagueEntity> persistedLeagues = new HashMap<>();
+            leagueEntities.forEach((externalId, league) ->
+                persistedLeagues.put(externalId, leagueRepository.findByExternalId(externalId)
+                    .map(existing -> {
+                        existing.setName(league.getName());
+                        existing.setCountry(league.getCountry());
+                        return leagueRepository.save(existing);
+                    })
+                    .orElseGet(() -> leagueRepository.save(league)))
+            );
+
+            Map<Long, TeamEntity> persistedTeams = new HashMap<>();
+            teamEntities.forEach((externalId, team) ->
+                persistedTeams.put(externalId, teamRepository.findByExternalId(externalId)
+                    .map(existing -> {
+                        existing.setName(team.getName());
+                        return teamRepository.save(existing);
+                    })
+                    .orElseGet(() -> teamRepository.save(team)))
+            );
+
+            playerEntities.forEach(player -> {
+                player.setTeam(persistedTeams.get(player.getTeam().getExternalId()));
+                player.setLeague(persistedLeagues.get(player.getLeague().getExternalId()));
+
+                playerRepository.findByExternalId(player.getExternalId())
+                    .map(existing -> {
+                        existing.updateFrom(player);
+                        return playerRepository.save(existing);
+                    })
+                    .orElseGet(() -> playerRepository.save(player));
+            });
         }
 
     }
