@@ -4,7 +4,7 @@
 
 ## Summary
 
-Se adaptara el modelo activo de `NewLeagueEntity`, `TeamEntity` y `WhoScoredEntity` para representar la respuesta de WhoScored. `WhoScoredScrapingService` normalizara la respuesta real y hara upsert por `externalId` de cada `NewLeagueEntity`, `TeamEntity` y `WhoScoredEntity` creado, persistiendo las relaciones sin duplicados. `LeagueEntity.java` y `PlayerEntity.java` no formaran parte de la implementacion final. Todo lo relativo a FootballData se eliminara: clases, DTOs, configuracion, servicios, runners y tests relacionados. Los componentes que queden sin uso y no formen parte de FootballData se marcaran como deprecados. El endpoint `POST /scrape` continuara publico y se validara el caso feliz con la URL real y `numberOfPlayers=1`.
+Se adaptara el modelo activo de `LeagueEntity`, `TeamEntity` y `PlayerEntity` para representar la respuesta de WhoScored. `WhoScoredScrapingService` normalizara la respuesta real y hara upsert por `externalId` de cada `LeagueEntity`, `TeamEntity` y `PlayerEntity` creado, persistiendo las relaciones sin duplicados. `LeagueEntity.java` y `PlayerEntity.java` no formaran parte de la implementacion final. Todo lo relativo a FootballData se eliminara: clases, DTOs, configuracion, servicios, runners y tests relacionados. Los componentes que queden sin uso y no formen parte de FootballData se marcaran como deprecados. El endpoint `POST /scrape` continuara publico y se validara el caso feliz con la URL real y `numberOfPlayers=1`.
 
 ## Technical Context
 
@@ -22,7 +22,7 @@ Se adaptara el modelo activo de `NewLeagueEntity`, `TeamEntity` y `WhoScoredEnti
 
 **Performance Goals**: Persistir un lote valido sin truncarlo artificialmente y sin hacer una consulta de existencia por cada jugador cuando pueda resolverse por lote
 
-**Constraints**: No agregar variables de instancia a `TeamEntity`, `NewLeagueEntity` ni `WhoScoredEntity` sin permiso explicito; `externalId` (externalID) debe ser UNIQUE en las tablas de `NewLeagueEntity`, `TeamEntity` y `WhoScoredEntity`; `LeagueEntity.java` y `PlayerEntity.java` no deben existir en la implementacion final; `/scrape` no requiere autenticacion; fallos o respuestas invalidas no deben sustituir el ultimo catalogo valido; el upsert debe ser idempotente por identificador externo
+**Constraints**: No agregar variables de instancia a `TeamEntity`, `LeagueEntity` ni `PlayerEntity` sin permiso explicito; `externalId` (externalID) debe ser UNIQUE en las tablas de `LeagueEntity`, `TeamEntity` y `PlayerEntity`; `LeagueEntity.java` y `PlayerEntity.java` no deben existir en la implementacion final; `/scrape` no requiere autenticacion; fallos o respuestas invalidas no deben sustituir el ultimo catalogo valido; el upsert debe ser idempotente por identificador externo
 
 **Scale/Scope**: Las cinco ligas configuradas y todos los registros validos devueltos por WhoScored para cada actualizacion; migracion del catalogo, modelos y servicios relacionados; eliminacion completa de FootballData
 
@@ -75,7 +75,7 @@ backend/
     └── unit/
 ```
 
-**Structure Decision**: Se conserva la estructura existente de Spring Boot. `NewLeagueEntity`, `TeamEntity` y `WhoScoredEntity` son las entidades activas y sus repositorios implementan upsert por `externalId`, con restriccion `UNIQUE` en las tres tablas. `LeagueEntity.java`, `PlayerEntity.java`, `PlayerCatalogStartupRunner.java`, `PlayerCatalogRefreshService.java`, `FootballDataClient.java`, `League.java`, `dto/footballdata/` y sus tests se eliminan. Todo archivo adicional que quede sin referencias se marca `@Deprecated` antes de retirarlo en una tarea posterior.
+**Structure Decision**: Se conserva la estructura existente de Spring Boot. `LeagueEntity`, `TeamEntity` y `PlayerEntity` son las entidades activas y sus repositorios implementan upsert por `externalId`, con restriccion `UNIQUE` en las tres tablas. `LeagueEntity.java`, `PlayerEntity.java`, `PlayerCatalogStartupRunner.java`, `PlayerCatalogRefreshService.java`, `FootballDataClient.java`, `League.java`, `dto/footballdata/` y sus tests se eliminan. Todo archivo adicional que quede sin referencias se marca `@Deprecated` antes de retirarlo en una tarea posterior.
 
 ## Complexity Tracking
 

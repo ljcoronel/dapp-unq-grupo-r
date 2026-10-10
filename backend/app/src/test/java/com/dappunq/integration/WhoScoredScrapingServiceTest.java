@@ -1,8 +1,8 @@
 package com.dappunq.integration;
 
-import com.dappunq.persistence.NewLeagueRepository;
+import com.dappunq.persistence.LeagueRepository;
 import com.dappunq.persistence.TeamRepository;
-import com.dappunq.persistence.WhoScoredRepository;
+import com.dappunq.persistence.PlayerRepository;
 import com.dappunq.service.WhoScoredScrapingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +35,13 @@ class WhoScoredScrapingServiceTest {
     private WhoScoredScrapingService scrapingService;
 
     @Autowired
-    private NewLeagueRepository leagueRepository;
+    private LeagueRepository leagueRepository;
 
     @Autowired
     private TeamRepository teamRepository;
 
     @Autowired
-    private WhoScoredRepository playerRepository;
+    private PlayerRepository playerRepository;
 
     @Test
     void shouldScrapeOnePlayerFromWhoScoredAndPersistTheCatalog() {
@@ -55,9 +55,9 @@ class WhoScoredScrapingServiceTest {
     @Test
     void shouldRejectInvalidNumberOfPlayersWithoutNavigatingToWhoScored() {
         WhoScoredScrapingService service = new WhoScoredScrapingService(
-            org.mockito.Mockito.mock(NewLeagueRepository.class),
+            org.mockito.Mockito.mock(LeagueRepository.class),
             org.mockito.Mockito.mock(TeamRepository.class),
-            org.mockito.Mockito.mock(WhoScoredRepository.class)
+            org.mockito.Mockito.mock(PlayerRepository.class)
         );
 
         assertThatThrownBy(() -> service.scrape("0"))

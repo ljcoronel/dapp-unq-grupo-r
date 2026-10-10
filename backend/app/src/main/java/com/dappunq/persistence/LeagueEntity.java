@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "new_leagues")
-public class NewLeagueEntity {
+public class LeagueEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +24,10 @@ public class NewLeagueEntity {
     @Column(name = "country")
     private String country;
 
-    protected NewLeagueEntity() {
+    protected LeagueEntity() {
     }
 
-    public NewLeagueEntity(Long externalId, String name, String country) {
+    public LeagueEntity(Long externalId, String name, String country) {
         this.externalId = externalId;
         this.name = name;
         this.country = country;

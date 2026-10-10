@@ -1,12 +1,12 @@
 package com.dappunq.service;
 
 import com.dappunq.dto.whoscored.PlayerStatisticsResponse;
-import com.dappunq.persistence.NewLeagueEntity;
-import com.dappunq.persistence.NewLeagueRepository;
+import com.dappunq.persistence.LeagueEntity;
+import com.dappunq.persistence.LeagueRepository;
 import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.TeamRepository;
-import com.dappunq.persistence.WhoScoredEntity;
-import com.dappunq.persistence.WhoScoredRepository;
+import com.dappunq.persistence.PlayerEntity;
+import com.dappunq.persistence.PlayerRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.*;
@@ -17,13 +17,13 @@ import java.util.*;
 
 @Service
 public class WhoScoredScrapingService {
-    private final NewLeagueRepository leagueRepository;
+    private final LeagueRepository leagueRepository;
     private final TeamRepository teamRepository;
-    private final WhoScoredRepository playerRepository;
+    private final PlayerRepository playerRepository;
 
-    public WhoScoredScrapingService(NewLeagueRepository leagueRepository,
+    public WhoScoredScrapingService(LeagueRepository leagueRepository,
                                     TeamRepository teamRepository,
-                                    WhoScoredRepository playerRepository) {
+                                    PlayerRepository playerRepository) {
         this.leagueRepository = leagueRepository;
         this.teamRepository = teamRepository;
         this.playerRepository = playerRepository;
@@ -56,15 +56,15 @@ public class WhoScoredScrapingService {
                 throw new RuntimeException(e);
             }
 
-            Map<Long, NewLeagueEntity> leagueEntities = new HashMap<>();
-            List<WhoScoredEntity> playerEntities = new ArrayList<>();
+            Map<Long, LeagueEntity> leagueEntities = new HashMap<>();
+            List<PlayerEntity> playerEntities = new ArrayList<>();
             Map<Long, TeamEntity> teamEntities = new HashMap<>();
 
             data.playerTableStats().forEach(
                 player -> {
                     TeamEntity teamEntity = teamEntities.computeIfAbsent(player.teamId(), id -> new TeamEntity(id, player.teamName()));
-                    NewLeagueEntity leagueEntity = leagueEntities.computeIfAbsent(player.tournamentId(), id -> new NewLeagueEntity(id, player.tournamentName(), player.tournamentRegionName()));
-                    WhoScoredEntity whoScoredEntity = new WhoScoredEntity(
+                    LeagueEntity leagueEntity = leagueEntities.computeIfAbsent(player.tournamentId(), id -> new LeagueEntity(id, player.tournamentName(), player.tournamentRegionName()));
+                    PlayerEntity playerEntity = new PlayerEntity(
                         player.playerId(),
                         player.name(),
                         teamEntity,
@@ -84,26 +84,26 @@ public class WhoScoredScrapingService {
                         (float) (int) (player.aerialWonPerGame() * 10) / 10f,
                         player.manOfTheMatch()
                     );
-                    playerEntities.add(whoScoredEntity);
+                    playerEntities.add(playerEntity);
                 }
             );
 
-            Map<Long, NewLeagueEntity> persistedLeagues = upsertLeagues(leagueEntities);
+            Map<Long, LeagueEntity> persistedLeagues = upsertLeagues(leagueEntities);
             Map<Long, TeamEntity> persistedTeams = upsertTeams(teamEntities);
             upsertPlayers(playerEntities, persistedTeams, persistedLeagues);
         }
 
     }
 
-    private Map<Long, NewLeagueEntity> upsertLeagues(Map<Long, NewLeagueEntity> scrapedLeagues) {
-        Map<Long, NewLeagueEntity> persisted = scrapedLeagues.isEmpty()
+    private Map<Long, LeagueEntity> upsertLeagues(Map<Long, LeagueEntity> scrapedLeagues) {
+        Map<Long, LeagueEntity> persisted = scrapedLeagues.isEmpty()
             ? new HashMap<>()
             : leagueRepository.findByExternalIdIn(scrapedLeagues.keySet()).stream()
-                .collect(java.util.stream.Collectors.toMap(NewLeagueEntity::getExternalId, league -> league));
+                .collect(java.util.stream.Collectors.toMap(LeagueEntity::getExternalId, league -> league));
 
-        List<NewLeagueEntity> newLeagues = new ArrayList<>();
+        List<LeagueEntity> newLeagues = new ArrayList<>();
         scrapedLeagues.forEach((externalId, scraped) -> {
-            NewLeagueEntity existing = persisted.get(externalId);
+            LeagueEntity existing = persisted.get(externalId);
             if (existing == null) {
                 newLeagues.add(scraped);
                 persisted.put(externalId, scraped);
@@ -136,24 +136,24 @@ public class WhoScoredScrapingService {
         return persisted;
     }
 
-    private void upsertPlayers(List<WhoScoredEntity> scrapedPlayers,
+    private void upsertPlayers(List<PlayerEntity> scrapedPlayers,
                                Map<Long, TeamEntity> teams,
-                               Map<Long, NewLeagueEntity> leagues) {
+                               Map<Long, LeagueEntity> leagues) {
         scrapedPlayers.forEach(player -> {
             player.setTeam(teams.get(player.getTeam().getExternalId()));
             player.setLeague(leagues.get(player.getLeague().getExternalId()));
         });
 
-        Map<Long, WhoScoredEntity> persisted = scrapedPlayers.isEmpty()
+        Map<Long, PlayerEntity> persisted = scrapedPlayers.isEmpty()
             ? new HashMap<>()
             : playerRepository.findByExternalIdIn(scrapedPlayers.stream()
-                    .map(WhoScoredEntity::getExternalId)
+                    .map(PlayerEntity::getExternalId)
                     .collect(java.util.stream.Collectors.toSet())).stream()
-                .collect(java.util.stream.Collectors.toMap(WhoScoredEntity::getExternalId, player -> player));
+                .collect(java.util.stream.Collectors.toMap(PlayerEntity::getExternalId, player -> player));
 
-        List<WhoScoredEntity> newPlayers = new ArrayList<>();
+        List<PlayerEntity> newPlayers = new ArrayList<>();
         scrapedPlayers.forEach(scraped -> {
-            WhoScoredEntity existing = persisted.get(scraped.getExternalId());
+            PlayerEntity existing = persisted.get(scraped.getExternalId());
             if (existing == null) {
                 newPlayers.add(scraped);
             } else {

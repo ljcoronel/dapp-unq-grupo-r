@@ -32,9 +32,9 @@ description: "Tareas ejecutables para migrar el catálogo de jugadores a WhoScor
 - [x] T004 [P] Ajustar `backend/app/src/main/java/com/dappunq/persistence/NewLeagueEntity.java` para mantener la entidad activa de WhoScored, hacer `externalId` obligatorio y único y conservar nombre y región sin métricas heredadas
 - [x] T005 [P] Ajustar `backend/app/src/main/java/com/dappunq/persistence/TeamEntity.java` con tabla `teams`, `externalId` obligatorio y único, nombre obligatorio y ningún estado adicional innecesario
 - [x] T006 [P] Ajustar `backend/app/src/main/java/com/dappunq/persistence/WhoScoredEntity.java` para conservar sus campos actuales, hacer único y obligatorio `externalId`, aceptar `null` en estadísticas opcionales y agregar relaciones `ManyToOne` obligatorias a liga y equipo
-- [x] T007 [P] Crear el repositorio Spring Data de `NewLeagueEntity` en `backend/app/src/main/java/com/dappunq/persistence/NewLeagueRepository.java` con búsqueda por `externalId`
+- [x] T007 [P] Crear el repositorio Spring Data de `LeagueEntity` en `backend/app/src/main/java/com/dappunq/persistence/NewLeagueRepository.java` con búsqueda por `externalId`
 - [x] T008 [P] Crear el repositorio Spring Data de `TeamEntity` en `backend/app/src/main/java/com/dappunq/persistence/TeamRepository.java` con búsqueda por `externalId`
-- [x] T009 [P] Crear o adaptar el repositorio de `WhoScoredEntity` en `backend/app/src/main/java/com/dappunq/persistence/WhoScoredRepository.java` con búsqueda por `externalId` y operaciones de consulta del catálogo
+- [x] T009 [P] Crear o adaptar el repositorio de `PlayerEntity` en `backend/app/src/main/java/com/dappunq/persistence/WhoScoredRepository.java` con búsqueda por `externalId` y operaciones de consulta del catálogo
 - [x] T010 Adaptar `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java` y `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java` para leer las entidades activas WhoScored y exponer sus relaciones sin depender de `LeagueEntity` o `PlayerEntity`
 - [x] T011 Definir en `backend/app/src/main/java/com/dappunq/exception/CatalogUnavailableException.java` y `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java` la propagación consistente de lotes vacíos, respuestas inválidas y fallos externos sin borrar el snapshot válido
 
@@ -85,7 +85,7 @@ description: "Tareas ejecutables para migrar el catálogo de jugadores a WhoScor
 ### Implementation for User Story 2
 
 - [x] T027 [US2] Actualizar `backend/app/src/main/java/com/dappunq/dto/PlayerResponse.java` y `backend/app/src/main/java/com/dappunq/service/PlayerMapper.java` para incluir equipo, liga y atributos extendidos sin convertir ausencias en valores inventados
-- [x] T028 [US2] Adaptar `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java` para consultas de listado, detalle y agrupación basadas en `WhoScoredRepository`, preservando las reglas públicas de identificación
+- [x] T028 [US2] Adaptar `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java` para consultas de listado, detalle y agrupación basadas en `PlayerRepository`, preservando las reglas públicas de identificación
 - [x] T029 [US2] Adaptar `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java` para exponer la relación equipo-jugador y los nuevos campos sin cambiar autenticación ni contratos no relacionados
 - [x] T030 [US2] Verificar y ajustar `backend/app/src/main/java/com/dappunq/persistence/WhoScoredEntity.java`, `backend/app/src/main/java/com/dappunq/persistence/TeamEntity.java` y sus repositorios para reutilizar una única identidad de equipo por `externalId` dentro y fuera de cada lote
 
@@ -122,7 +122,7 @@ description: "Tareas ejecutables para migrar el catálogo de jugadores a WhoScor
 **Purpose**: Validar la solución completa, su compatibilidad y los criterios de éxito de la feature.
 
 - [x] T039 [P] Revisar anotaciones, nombres de tablas y restricciones `UNIQUE` de `externalId` en `backend/app/src/main/java/com/dappunq/persistence/NewLeagueEntity.java`, `TeamEntity.java` y `WhoScoredEntity.java`
-- [x] T040 [P] Revisar que no se hayan agregado variables de instancia prohibidas a `NewLeagueEntity`, `TeamEntity` o `WhoScoredEntity` y que las relaciones permanezcan unidireccionales
+- [x] T040 [P] Revisar que no se hayan agregado variables de instancia prohibidas a `LeagueEntity`, `TeamEntity` o `PlayerEntity` y que las relaciones permanezcan unidireccionales
 - [x] T041 Ejecutar `backend/gradlew :app:test` y corregir fallos de compilación, unitarios, integración, E2E o Testcontainers introducidos por la migración
 - [x] T042 Ejecutar el caso de validación de `backend/specs/009-whoscored-team-player-migration/quickstart.md`, incluyendo `POST /scrape?numberOfPlayers=1`, repetición idempotente y conservación del catálogo ante respuesta inválida
 - [x] T043 Actualizar `backend/specs/009-whoscored-team-player-migration/quickstart.md` y `backend/specs/009-whoscored-team-player-migration/plan.md` si los comandos, nombres de clases o decisiones finales difieren de la implementación
@@ -130,7 +130,7 @@ description: "Tareas ejecutables para migrar el catálogo de jugadores a WhoScor
 ## Phase 7: Convergence
 
 - [x] T044 Eliminar el código heredado de FootballData del backend para dejar solo la fuente WhoScored y cumplir RF-010, RF-011 y la arquitectura de capas y pruebas de la Constitución II/V per FR-010 + Constitution II/V (contradicts)
-- [x] T045 Eliminar el modelo de persistencia heredado `LeagueEntity` y `PlayerEntity` y actualizar los servicios y repositorios restantes para reutilizar `NewLeagueEntity`, `TeamEntity` y `WhoScoredEntity` sin dependencias activas de los modelos antiguos per RF-010 / plan: storage decision (partial)
+- [x] T045 Eliminar el modelo de persistencia heredado `LeagueEntity` y `PlayerEntity` y actualizar los servicios y repositorios restantes para reutilizar `LeagueEntity`, `TeamEntity` y `PlayerEntity` sin dependencias activas de los modelos antiguos per RF-010 / plan: storage decision (partial)
 - [x] T046 Reemplazar pruebas y documentación obsoletas que aún importan `footballdata` o el flujo de `PlayerCatalogRefreshService`, y ejecutar `backend/gradlew :app:test` para validar la suite WhoScored-only per RF-012 / CS-007 / plan: testing decision (partial)
 
 ## Dependencies & Execution Order

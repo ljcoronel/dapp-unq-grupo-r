@@ -5,10 +5,10 @@ import com.dappunq.dto.PlayerResponse;
 import com.dappunq.exception.CatalogUnavailableException;
 import com.dappunq.exception.InvalidPlayerIdException;
 import com.dappunq.exception.PlayerNotFoundException;
-import com.dappunq.persistence.NewLeagueEntity;
-import com.dappunq.persistence.NewLeagueRepository;
-import com.dappunq.persistence.WhoScoredEntity;
-import com.dappunq.persistence.WhoScoredRepository;
+import com.dappunq.persistence.LeagueEntity;
+import com.dappunq.persistence.LeagueRepository;
+import com.dappunq.persistence.PlayerEntity;
+import com.dappunq.persistence.PlayerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +16,10 @@ import java.util.List;
 
 @Service
 public class PlayerCatalogReadService {
-    private final NewLeagueRepository leagueRepository;
-    private final WhoScoredRepository playerRepository;
+    private final LeagueRepository leagueRepository;
+    private final PlayerRepository playerRepository;
 
-    public PlayerCatalogReadService(NewLeagueRepository leagueRepository, WhoScoredRepository playerRepository) {
+    public PlayerCatalogReadService(LeagueRepository leagueRepository, PlayerRepository playerRepository) {
         this.leagueRepository = leagueRepository;
         this.playerRepository = playerRepository;
     }
@@ -35,7 +35,7 @@ public class PlayerCatalogReadService {
         }
     }
 
-    private List<PlayerResponse> readLeague(NewLeagueEntity league) {
+    private List<PlayerResponse> readLeague(LeagueEntity league) {
         return playerRepository.findByLeagueOrderByIdAsc(league).stream()
                 .map(this::toResponse)
                 .toList();
@@ -51,7 +51,7 @@ public class PlayerCatalogReadService {
                 .orElseThrow(() -> new PlayerNotFoundException(id));
     }
 
-    private PlayerResponse toResponse(WhoScoredEntity entity) {
+    private PlayerResponse toResponse(PlayerEntity entity) {
         return new PlayerResponse(
                 entity.getExternalId() != null ? entity.getExternalId().intValue() : null,
                 entity.getName(),

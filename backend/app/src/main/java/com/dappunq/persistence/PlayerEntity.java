@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "whoscored_players")
-public class WhoScoredEntity {
+public class PlayerEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +30,7 @@ public class WhoScoredEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "league_id", nullable = false)
-    private NewLeagueEntity league;
+    private LeagueEntity league;
 
     @Column(name = "age")
     private Integer age;
@@ -74,19 +74,19 @@ public class WhoScoredEntity {
     @Column(name = "times_man_of_the_match")
     private Integer timesManOfTheMatch;
 
-    protected WhoScoredEntity() {
+    protected PlayerEntity() {
     }
 
-    public WhoScoredEntity(Long externalId, String name, TeamEntity teamEntity,
-                           NewLeagueEntity newLeagueEntity, Integer age,
-                           Integer height, Integer weight, String position, Integer apps,
-                           Integer minsPlayed, Integer goal, Integer assists,
-                           Integer yellowCard, Integer redCard, Float shotsPerGame,
-                           Float passSuccess, Float aerialsWonPerGame, Integer manOfTheMatch) {
+    public PlayerEntity(Long externalId, String name, TeamEntity teamEntity,
+                        LeagueEntity leagueEntity, Integer age,
+                        Integer height, Integer weight, String position, Integer apps,
+                        Integer minsPlayed, Integer goal, Integer assists,
+                        Integer yellowCard, Integer redCard, Float shotsPerGame,
+                        Float passSuccess, Float aerialsWonPerGame, Integer manOfTheMatch) {
         this.externalId = externalId;
         this.name = name;
         this.team = teamEntity;
-        this.league = newLeagueEntity;
+        this.league = leagueEntity;
         this.age = age;
         this.heightCM = height;
         this.weightKG = weight;
@@ -135,15 +135,15 @@ public class WhoScoredEntity {
         this.team = team;
     }
 
-    public NewLeagueEntity getLeague() {
+    public LeagueEntity getLeague() {
         return league;
     }
 
-    public void setLeague(NewLeagueEntity league) {
+    public void setLeague(LeagueEntity league) {
         this.league = league;
     }
 
-    public void updateFrom(WhoScoredEntity source) {
+    public void updateFrom(PlayerEntity source) {
         this.name = source.name;
         this.team = source.team;
         this.league = source.league;
