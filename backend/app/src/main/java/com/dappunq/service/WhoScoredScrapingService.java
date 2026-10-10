@@ -31,6 +31,7 @@ public class WhoScoredScrapingService {
 
     @Transactional
     public void scrape(String numberOfPlayers) {
+        validateNumberOfPlayers(numberOfPlayers);
         String URL = "https://www.whoscored.com/statisticsfeed/1/getplayerstatistics?category=summary&subcategory=all&statsAccumulationType=" +
             "0&isCurrent=true&playerId=&teamIds=&matchId=&stageId=&tournamentOptions=2,3,4,5,22&sortBy=Rating&sortAscending=&age=" +
             "&ageComparisonType=&appearances=&appearancesComparisonType=&field=Overall&nationality=&positionOptions=&timeOfTheGameEnd=" +
@@ -87,40 +88,88 @@ public class WhoScoredScrapingService {
                 }
             );
 
-            Map<Long, NewLeagueEntity> persistedLeagues = new HashMap<>();
-            leagueEntities.forEach((externalId, league) ->
-                persistedLeagues.put(externalId, leagueRepository.findByExternalId(externalId)
-                    .map(existing -> {
-                        existing.setName(league.getName());
-                        existing.setCountry(league.getCountry());
-                        return leagueRepository.save(existing);
-                    })
-                    .orElseGet(() -> leagueRepository.save(league)))
-            );
-
-            Map<Long, TeamEntity> persistedTeams = new HashMap<>();
-            teamEntities.forEach((externalId, team) ->
-                persistedTeams.put(externalId, teamRepository.findByExternalId(externalId)
-                    .map(existing -> {
-                        existing.setName(team.getName());
-                        return teamRepository.save(existing);
-                    })
-                    .orElseGet(() -> teamRepository.save(team)))
-            );
-
-            playerEntities.forEach(player -> {
-                player.setTeam(persistedTeams.get(player.getTeam().getExternalId()));
-                player.setLeague(persistedLeagues.get(player.getLeague().getExternalId()));
-
-                playerRepository.findByExternalId(player.getExternalId())
-                    .map(existing -> {
-                        existing.updateFrom(player);
-                        return playerRepository.save(existing);
-                    })
-                    .orElseGet(() -> playerRepository.save(player));
-            });
+            Map<Long, NewLeagueEntity> persistedLeagues = upsertLeagues(leagueEntities);
+            Map<Long, TeamEntity> persistedTeams = upsertTeams(teamEntities);
+            upsertPlayers(playerEntities, persistedTeams, persistedLeagues);
         }
 
     }
 
+    private Map<Long, NewLeagueEntity> upsertLeagues(Map<Long, NewLeagueEntity> scrapedLeagues) {
+        Map<Long, NewLeagueEntity> persisted = scrapedLeagues.isEmpty()
+            ? new HashMap<>()
+            : leagueRepository.findByExternalIdIn(scrapedLeagues.keySet()).stream()
+                .collect(java.util.stream.Collectors.toMap(NewLeagueEntity::getExternalId, league -> league));
+
+        List<NewLeagueEntity> newLeagues = new ArrayList<>();
+        scrapedLeagues.forEach((externalId, scraped) -> {
+            NewLeagueEntity existing = persisted.get(externalId);
+            if (existing == null) {
+                newLeagues.add(scraped);
+                persisted.put(externalId, scraped);
+            } else {
+                existing.setName(scraped.getName());
+                existing.setCountry(scraped.getCountry());
+            }
+        });
+        leagueRepository.saveAll(newLeagues);
+        return persisted;
+    }
+
+    private Map<Long, TeamEntity> upsertTeams(Map<Long, TeamEntity> scrapedTeams) {
+        Map<Long, TeamEntity> persisted = scrapedTeams.isEmpty()
+            ? new HashMap<>()
+            : teamRepository.findByExternalIdIn(scrapedTeams.keySet()).stream()
+                .collect(java.util.stream.Collectors.toMap(TeamEntity::getExternalId, team -> team));
+
+        List<TeamEntity> newTeams = new ArrayList<>();
+        scrapedTeams.forEach((externalId, scraped) -> {
+            TeamEntity existing = persisted.get(externalId);
+            if (existing == null) {
+                newTeams.add(scraped);
+                persisted.put(externalId, scraped);
+            } else {
+                existing.setName(scraped.getName());
+            }
+        });
+        teamRepository.saveAll(newTeams);
+        return persisted;
+    }
+
+    private void upsertPlayers(List<WhoScoredEntity> scrapedPlayers,
+                               Map<Long, TeamEntity> teams,
+                               Map<Long, NewLeagueEntity> leagues) {
+        scrapedPlayers.forEach(player -> {
+            player.setTeam(teams.get(player.getTeam().getExternalId()));
+            player.setLeague(leagues.get(player.getLeague().getExternalId()));
+        });
+
+        Map<Long, WhoScoredEntity> persisted = scrapedPlayers.isEmpty()
+            ? new HashMap<>()
+            : playerRepository.findByExternalIdIn(scrapedPlayers.stream()
+                    .map(WhoScoredEntity::getExternalId)
+                    .collect(java.util.stream.Collectors.toSet())).stream()
+                .collect(java.util.stream.Collectors.toMap(WhoScoredEntity::getExternalId, player -> player));
+
+        List<WhoScoredEntity> newPlayers = new ArrayList<>();
+        scrapedPlayers.forEach(scraped -> {
+            WhoScoredEntity existing = persisted.get(scraped.getExternalId());
+            if (existing == null) {
+                newPlayers.add(scraped);
+            } else {
+                existing.updateFrom(scraped);
+            }
+        });
+        playerRepository.saveAll(newPlayers);
+    }
+
+    private void validateNumberOfPlayers(String numberOfPlayers) {
+        try {
+            if (numberOfPlayers == null || Integer.parseInt(numberOfPlayers) <= 0) {
+                throw new IllegalArgumentException("numberOfPlayers must be a positive integer");
+            }
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("numberOfPlayers must be a positive integer", exception);
+        }
+    }
 }
