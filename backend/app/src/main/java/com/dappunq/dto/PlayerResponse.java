@@ -1,7 +1,5 @@
 package com.dappunq.dto;
 
-import com.dappunq.model.Player;
-
 public record PlayerResponse(
         Integer id,
         String nombre,
@@ -13,9 +11,4 @@ public record PlayerResponse(
         Integer asistencias,
         Integer penaltis
 ) {
-    public static PlayerResponse from(Player player) {
-        var statistics = player.statisticsOrEmpty();
-        return new PlayerResponse(player.id(), player.name(), player.section(), player.team(), null,
-                statistics.playedMatches(), statistics.goals(), statistics.assists(), statistics.penalties());
-    }
 }

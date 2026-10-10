@@ -57,10 +57,7 @@ public class PlayerCatalogReadService {
                 entity.getName(),
                 null,
                 entity.getTeam() != null ? entity.getTeam().getName() : null,
-                entity.getLeague() != null ? new LeagueResponse(
-                        entity.getLeague().getExternalId() != null ? String.valueOf(entity.getLeague().getExternalId()) : null,
-                        entity.getLeague().getName(),
-                        entity.getLeague().getCountry()) : null,
+                entity.getLeague() != null ? LeagueResponse.from(entity.getLeague()) : null,
                 entity.getAppearances(),
                 entity.getGoals(),
                 entity.getAssists(),
