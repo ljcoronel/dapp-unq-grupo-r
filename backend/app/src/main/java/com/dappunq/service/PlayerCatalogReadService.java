@@ -1,12 +1,14 @@
 package com.dappunq.service;
 
-import com.dappunq.config.LeagueCatalogProperties;
+import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.PlayerResponse;
 import com.dappunq.exception.CatalogUnavailableException;
 import com.dappunq.exception.InvalidPlayerIdException;
 import com.dappunq.exception.PlayerNotFoundException;
-import com.dappunq.persistence.LeagueRepository;
-import com.dappunq.persistence.PlayerRepository;
+import com.dappunq.persistence.NewLeagueEntity;
+import com.dappunq.persistence.NewLeagueRepository;
+import com.dappunq.persistence.WhoScoredEntity;
+import com.dappunq.persistence.WhoScoredRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +16,10 @@ import java.util.List;
 
 @Service
 public class PlayerCatalogReadService {
-    private final LeagueRepository leagueRepository;
-    private final PlayerRepository playerRepository;
+    private final NewLeagueRepository leagueRepository;
+    private final WhoScoredRepository playerRepository;
 
-    public PlayerCatalogReadService(LeagueRepository leagueRepository, PlayerRepository playerRepository) {
+    public PlayerCatalogReadService(NewLeagueRepository leagueRepository, WhoScoredRepository playerRepository) {
         this.leagueRepository = leagueRepository;
         this.playerRepository = playerRepository;
     }
@@ -25,7 +27,7 @@ public class PlayerCatalogReadService {
     @Transactional(readOnly = true)
     public List<List<PlayerResponse>> findCatalog() {
         try {
-            return LeagueCatalogProperties.leagues().stream()
+            return leagueRepository.findAllByOrderByIdAsc().stream()
                     .map(this::readLeague)
                     .toList();
         } catch (RuntimeException exception) {
@@ -33,12 +35,10 @@ public class PlayerCatalogReadService {
         }
     }
 
-    private List<PlayerResponse> readLeague(LeagueCatalogProperties.LeagueDefinition definition) {
-        return leagueRepository.findByCode(definition.code())
-                .map(league -> league.getPlayers().stream()
-                        .map(PlayerMapper::toResponse)
-                        .toList())
-                .orElseGet(List::of);
+    private List<PlayerResponse> readLeague(NewLeagueEntity league) {
+        return playerRepository.findByLeagueOrderByIdAsc(league).stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -46,8 +46,25 @@ public class PlayerCatalogReadService {
         if (id == null || id <= 0) {
             throw new InvalidPlayerIdException("El identificador del jugador debe ser positivo");
         }
-        return playerRepository.findById(id)
-                .map(PlayerMapper::toResponse)
+        return playerRepository.findByExternalId(Long.valueOf(id))
+                .map(this::toResponse)
                 .orElseThrow(() -> new PlayerNotFoundException(id));
+    }
+
+    private PlayerResponse toResponse(WhoScoredEntity entity) {
+        return new PlayerResponse(
+                entity.getExternalId() != null ? entity.getExternalId().intValue() : null,
+                entity.getName(),
+                null,
+                entity.getTeam() != null ? entity.getTeam().getName() : null,
+                entity.getLeague() != null ? new LeagueResponse(
+                        entity.getLeague().getExternalId() != null ? String.valueOf(entity.getLeague().getExternalId()) : null,
+                        entity.getLeague().getName(),
+                        entity.getLeague().getCountry()) : null,
+                entity.getAppearances(),
+                entity.getGoals(),
+                entity.getAssists(),
+                null
+        );
     }
 }
