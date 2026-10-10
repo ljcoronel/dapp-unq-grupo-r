@@ -1,26 +1,53 @@
 package com.dappunq.persistence;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
 
 public class WhoScoredEntity {
 
     private Long id;
+    private Long external_id;
     private String name;
-    private String team;
-    private String age;
+    private TeamEntity team;
     private NewLeagueEntity league;
-    private String appearances;
-    private String minutesPlayed;
-    private String goals;
-    private String assists;
-    private String yellowCards;
-    private String redCards;
-    private String avgShotsPerGame;
-    private String passSuccessPercentage;
-    private String aerialsWon;
-    private String timesManOfTheMatch;
+    private Integer age;
+    private Integer heightCM;
+    private Integer weightKG;
+    private String position;
+    private Integer appearances;
+    private Integer minutesPlayed;
+    private Integer goals;
+    private Integer assists;
+    private Integer yellowCards;
+    private Integer redCards;
+    private Float avgShotsPerGame;
+    private Float passSuccessPercentage;
+    private Float aerialsWon;
+    private Integer timesManOfTheMatch;
+
+    public WhoScoredEntity(Long external_id, String name, TeamEntity teamEntity,
+                           NewLeagueEntity newLeagueEntity, Integer age,
+                           Integer height, Integer weight, String position, Integer apps,
+                           Integer minsPlayed, Integer goal, Integer assists,
+                           Integer yellowCard, Integer redCard, Float shotsPerGame,
+                           Float passSuccess, Float aerialsWonPerGame, Integer manOfTheMatch) {
+        this.external_id = external_id;
+        this.name = name;
+        this.team = teamEntity;
+        this.league = newLeagueEntity;
+        this.age = age;
+        this.heightCM = height;
+        this.weightKG = weight;
+        this.position = position;
+        this.appearances = apps;
+        this.minutesPlayed = minsPlayed;
+        this.goals = goal;
+        this.assists = assists;
+        this.yellowCards = yellowCard;
+        this.redCards = redCard;
+        this.avgShotsPerGame = shotsPerGame;
+        this.passSuccessPercentage = passSuccess;
+        this.aerialsWon = aerialsWonPerGame;
+        this.timesManOfTheMatch = manOfTheMatch;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -32,91 +59,11 @@ public class WhoScoredEntity {
         this.name = name;
     }
 
-    public void setTeam(String team) {
+    public void setTeam(TeamEntity team) {
         this.team = team;
     }
 
-    public void setAge(String age) {
-        this.age = age;
-    }
     public void setLeague(NewLeagueEntity league) {
         this.league = league;
     }
-
-    public void setAppearances(String appearances) {
-        this.appearances = appearances;
-    }
-
-    public String getAppearances() {
-        return appearances;
-    }
-
-    public void setMinutesPlayed(String minutesPlayed) {
-        this.minutesPlayed = minutesPlayed;
-    }
-
-    public String getMinutesPlayed() {
-        return minutesPlayed;
-    }
-
-    public void setGoals(String goals) {
-        this.goals = goals;
-    }
-
-    public String getGoals() {
-        return goals;
-    }
-
-    public void setAssists(String assists) {
-        this.assists = assists;
-    }
-
-    public String getAssists() {
-        return assists;
-    }
-
-    public void setYellowCards(String yellowCards) {
-        this.yellowCards = yellowCards;
-    }
-
-    public String getYellowCards() {
-        return yellowCards;
-    }
-
-    public void setRedCards(String redCards) {
-        this.redCards = redCards;
-    }
-
-    public String getRedCards() {
-        return redCards;
-    }
-
-    public void setAvgShotsPerGame(String avgShotsPerGame) {
-        this.avgShotsPerGame = avgShotsPerGame;
-    }
-
-    public String getAvgShotsPerGame() {
-        return avgShotsPerGame;
-    }
-
-    public void setPassSuccessPercentage(String passSuccessPercentage) {
-        this.passSuccessPercentage = passSuccessPercentage;
-    }
-
-    public String getPassSuccessPercentage() {
-        return passSuccessPercentage;
-    }
-
-    public void setAerialsWon(String aerialsWon) {
-        this.aerialsWon = aerialsWon;
-    }
-
-    public void setTimesManOfTheMatch(String timesManOfTheMatch) {
-        this.timesManOfTheMatch = timesManOfTheMatch;
-    }
-
-    public String getTimesManOfTheMatch() {
-        return timesManOfTheMatch;
-    }
-
 }
