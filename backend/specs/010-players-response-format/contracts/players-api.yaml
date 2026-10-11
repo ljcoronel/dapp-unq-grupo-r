@@ -1,0 +1,83 @@
+openapi: 3.0.3
+info:
+  title: Contrato de jugadores
+  version: 1.0.0
+paths:
+  /players:
+    get:
+      summary: Obtener el catalogo plano de jugadores
+      security: []
+      responses:
+        '200':
+          description: Lista plana; sin jugadores devuelve [].
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerResponse'
+        '503':
+          description: El catalogo no esta disponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerError'
+  /players/{id}:
+    get:
+      summary: Obtener un jugador por identificador publico
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Jugador encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerResponse'
+components:
+  schemas:
+    PlayerResponse:
+      type: object
+      required: [externalId, name, team, league]
+      properties:
+        externalId: {type: integer, format: int64}
+        name: {type: string}
+        team: {$ref: '#/components/schemas/TeamResponse'}
+        league: {$ref: '#/components/schemas/LeagueResponse'}
+        age: {type: integer, nullable: true}
+        heightCM: {type: integer, nullable: true}
+        weightKG: {type: integer, nullable: true}
+        position: {type: string, nullable: true}
+        appearances: {type: integer, nullable: true}
+        minutesPlayed: {type: integer, nullable: true}
+        goals: {type: integer, nullable: true}
+        assists: {type: integer, nullable: true}
+        yellowCards: {type: integer, nullable: true}
+        redCards: {type: integer, nullable: true}
+        avgShotsPerGame: {type: number, format: float, nullable: true}
+        passSuccessPercentage: {type: number, format: float, nullable: true}
+        aerialsWon: {type: number, format: float, nullable: true}
+        timesManOfTheMatch: {type: integer, nullable: true}
+    TeamResponse:
+      type: object
+      required: [externalId, name]
+      properties:
+        externalId: {type: integer, format: int64}
+        name: {type: string}
+    LeagueResponse:
+      type: object
+      properties:
+        codigo: {type: string}
+        nombre: {type: string}
+        pais: {type: string}
+    PlayerError:
+      type: object
+      required: [mensaje]
+      properties:
+        mensaje: {type: string}
