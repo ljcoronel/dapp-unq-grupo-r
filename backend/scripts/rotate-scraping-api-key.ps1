@@ -29,7 +29,7 @@ if ($javaExecutable -ne "java" -and -not (Test-Path $javaExecutable)) {
 }
 
 try {
-    $output = @(& $javaExecutable "-Duser.timezone=America/Argentina/Buenos_Aires" -jar $jarPath --app.command=rotate-scraping-api-key 2>&1)
+    $output = @(& $javaExecutable "-Duser.timezone=America/Argentina/Buenos_Aires" "-Dlogging.level.root=OFF" -jar $jarPath --app.command=rotate-scraping-api-key 2>&1)
     if ($LASTEXITCODE -ne 0) {
         $details = ($output | ForEach-Object { $_.ToString() } | Where-Object { $_.Trim() -ne "" }) -join [Environment]::NewLine
         Stop-RotationWithError $details

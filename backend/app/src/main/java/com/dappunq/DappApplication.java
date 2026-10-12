@@ -15,6 +15,7 @@ public class DappApplication {
         if (rotateCommand) {
             System.setProperty("spring.main.web-application-type", "none");
             System.setProperty("spring.main.banner-mode", "off");
+            System.setProperty("logging.level.root", "OFF");
         }
 
         SpringApplication application = new SpringApplication(DappApplication.class);
