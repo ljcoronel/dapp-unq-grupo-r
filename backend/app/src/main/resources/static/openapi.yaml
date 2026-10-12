@@ -117,21 +117,19 @@ paths:
   /players:
     get:
       tags: [Jugadores]
-      summary: Obtener jugadores agrupados por liga
-      description: Devuelve las listas de jugadores de las ligas configuradas en el orden estable del catalogo. No requiere autenticacion.
+      summary: Obtener el catalogo plano de jugadores
+      description: Devuelve una lista plana de jugadores en el orden del catalogo persistido. No requiere autenticacion.
       operationId: getPlayers
       security: []
       responses:
         '200':
-          description: Listas de jugadores agrupadas por liga; las listas sin jugadores permanecen vacias.
+          description: Lista plana de jugadores; si no hay registros devuelve [].
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/PlayerResponse'
+                  $ref: '#/components/schemas/PlayerResponse'
         '503':
           description: No se pudo leer el catalogo de jugadores.
           content:
@@ -210,43 +208,91 @@ components:
           type: string
           description: Nombre de usuario.
           example: usuario1
+    TeamResponse:
+      type: object
+      required: [externalId, name]
+      properties:
+        externalId:
+          type: integer
+          format: int64
+          description: Identificador publico del equipo.
+        name:
+          type: string
+          description: Nombre del equipo.
     PlayerResponse:
       type: object
-      required: [id, nombre, equipo, liga]
+      required: [externalId, name, team, league]
       properties:
-        id:
+        externalId:
           type: integer
-          format: int32
-          minimum: 1
-          description: Identificador persistido del jugador.
-        nombre:
+          format: int64
+          description: Identificador publico del jugador.
+        name:
           type: string
           description: Nombre del jugador.
-        seccion:
-          type: string
-          nullable: true
-          description: Posicion o seccion cuando esta disponible.
-        equipo:
-          type: string
-          description: Equipo del jugador.
-        liga:
+        team:
+          $ref: '#/components/schemas/TeamResponse'
+        league:
           $ref: '#/components/schemas/LeagueResponse'
-        partidosJugados:
+        age:
           type: integer
           nullable: true
-          description: Partidos jugados; null si el dato no esta disponible.
-        goles:
+          description: Edad del jugador cuando está disponible.
+        heightCM:
           type: integer
           nullable: true
-          description: Goles; null si el dato no esta disponible.
-        asistencias:
+          description: Altura en centímetros.
+        weightKG:
           type: integer
           nullable: true
-          description: Asistencias; null si el dato no esta disponible.
-        penaltis:
+          description: Peso en kilogramos.
+        position:
+          type: string
+          nullable: true
+          description: Posicion del jugador cuando está disponible.
+        appearances:
           type: integer
           nullable: true
-          description: Penaltis; null si el dato no esta disponible.
+          description: Partidos jugados.
+        minutesPlayed:
+          type: integer
+          nullable: true
+          description: Minutos disputados.
+        goals:
+          type: integer
+          nullable: true
+          description: Goles anotados.
+        assists:
+          type: integer
+          nullable: true
+          description: Asistencias realizadas.
+        yellowCards:
+          type: integer
+          nullable: true
+          description: Tarjetas amarillas.
+        redCards:
+          type: integer
+          nullable: true
+          description: Tarjetas rojas.
+        avgShotsPerGame:
+          type: number
+          format: float
+          nullable: true
+          description: Promedio de tiros por partido.
+        passSuccessPercentage:
+          type: number
+          format: float
+          nullable: true
+          description: Porcentaje de pases exitosos.
+        aerialsWon:
+          type: number
+          format: float
+          nullable: true
+          description: Aéreos ganados.
+        timesManOfTheMatch:
+          type: integer
+          nullable: true
+          description: Veces elegido mejor jugador del partido.
     LeagueResponse:
       type: object
       required: [codigo, nombre, pais]

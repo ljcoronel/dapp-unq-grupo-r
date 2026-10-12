@@ -54,17 +54,55 @@ class UserAuthE2ETest {
 
     @Test
     void shouldSupportProfileLookupAndLoginFlow() throws Exception {
-        userRepository.save(new User("usuarioE2E", passwordEncoder.encode("secret")));
+        // Save through the new domain repository boundary and capture the assigned ID
+        User saved = userRepository.save(new User("usuarioE2E", passwordEncoder.encode("secret")));
+        Long id = saved.getId();
 
-        mockMvc.perform(get("/users/1/"))
+        // Profile lookup returns the correct domain user through UserService → UserRepository → UserMapper
+        mockMvc.perform(get("/users/" + id + "/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("usuarioE2E"));
 
+        // Login returns the same name and a non-empty JWT Authorization header
         mockMvc.perform(post("/login")
                         .contentType("application/json")
                         .content("{\"nombre\":\"usuarioE2E\",\"password\":\"secret\"}"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.AUTHORIZATION, not(blankOrNullString())))
                 .andExpect(jsonPath("$.nombre").value("usuarioE2E"));
+    }
+
+    @Test
+    void shouldSupportFullRegistrationLoginProfileFlow() throws Exception {
+        // Register a new user via /register endpoint
+        mockMvc.perform(post("/register")
+                        .contentType("application/json")
+                        .content("{\"nombre\":\"e2eFlowUser\",\"password\":\"pass123\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombre").value("e2eFlowUser"));
+
+        // Login the registered user and confirm JWT returned
+        mockMvc.perform(post("/login")
+                        .contentType("application/json")
+                        .content("{\"nombre\":\"e2eFlowUser\",\"password\":\"pass123\"}"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.AUTHORIZATION, not(blankOrNullString())))
+                .andExpect(jsonPath("$.nombre").value("e2eFlowUser"));
+    }
+
+    @Test
+    void shouldReturnSameResponseForDuplicateRegistration() throws Exception {
+        // First registration succeeds
+        mockMvc.perform(post("/register")
+                        .contentType("application/json")
+                        .content("{\"nombre\":\"dupE2EUser\",\"password\":\"pass\"}"))
+                .andExpect(status().isOk());
+
+        // Second registration with same name returns 400 with Spanish error
+        mockMvc.perform(post("/register")
+                        .contentType("application/json")
+                        .content("{\"nombre\":\"dupE2EUser\",\"password\":\"pass\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Usuario existente"));
     }
 }

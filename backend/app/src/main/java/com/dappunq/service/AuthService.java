@@ -7,6 +7,7 @@ import com.dappunq.exception.UserAlreadyExistsException;
 import com.dappunq.model.User;
 import com.dappunq.persistence.UserRepository;
 import com.dappunq.security.JwtService;
+import com.dappunq.security.UserPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,7 @@ public class AuthService {
             throw new InvalidCredentialsException();
         }
 
-        return new AuthResult(new UserResponseDTO(user.getNombre()), jwtService.generateToken(user));
+        return new AuthResult(new UserResponseDTO(user.getNombre()), jwtService.generateToken(new UserPrincipal(user)));
     }
 
     @Transactional

@@ -4,6 +4,7 @@ import com.dappunq.dto.UserResponseDTO;
 import com.dappunq.exception.UserNotFoundException;
 import com.dappunq.model.User;
 import com.dappunq.persistence.UserRepository;
+import com.dappunq.security.UserPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,6 +29,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByNombreIgnoreCase(username)
+                .map(UserPrincipal::new)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 }

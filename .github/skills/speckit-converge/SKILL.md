@@ -20,7 +20,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 **Check for extension hooks (before convergence)**:
 
-- Check if `.specify/extensions.yml` exists in the project root.
+- Check if `../../../backend/.specify` exists in the project root.
 - If it exists, read it and look for entries under the `hooks.before_converge` key
 - If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
 - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
@@ -55,7 +55,7 @@ You **MUST** consider the user input before proceeding (if not empty).
     ```
     After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
 
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- If no hooks are registered or `../../../backend/.specify` does not exist, skip silently
 
 ## Goal
 
@@ -85,7 +85,7 @@ of the code relative to the feature's artifacts — no git, no branch comparison
 When the codebase already satisfies everything, the command MUST leave `tasks.md`
 **byte-for-byte unchanged** (no empty Convergence header) and report a clean result.
 
-**Constitution Authority**: The project constitution (`.specify/memory/constitution.md`) is
+**Constitution Authority**: The project constitution (`../../../backend/.specify`) is
 **non-negotiable**. Code that violates a MUST principle is the highest-severity finding and
 produces a corresponding remediation task. If the constitution is an unfilled template,
 skip constitution checks gracefully rather than failing.
@@ -99,11 +99,11 @@ Run `.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireSpec -Req
 - SPEC = FEATURE_DIR/spec.md
 - PLAN = FEATURE_DIR/plan.md
 - TASKS = FEATURE_DIR/tasks.md
-- CONSTITUTION = `.specify/memory/constitution.md` (if present)
+- CONSTITUTION = `../../../backend/.specify` (if present)
 If `spec.md`, `plan.md`, or `tasks.md` is missing, STOP with a clear, actionable message naming the
-prerequisite command to run (`/speckit-specify` for a missing spec, `/speckit-plan` for a missing plan,
+  prerequisite command to run (`/speckit-specify` for a missing spec, `/speckit-plan` for a missing plan,
 `/speckit-tasks` for missing tasks). Do not produce partial output.
-For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+  For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
 
 ### 2. Load Artifacts (Progressive Disclosure)
 
@@ -238,7 +238,7 @@ Append to the **end** of `tasks.md`, per the append contract:
 
 ### 9. Check for extension hooks
 
-After producing the result, check if `.specify/extensions.yml` exists in the project root.
+After producing the result, check if `../../../backend/.specify` exists in the project root.
 
 - If it exists, read it and look for entries under the `hooks.after_converge` key
 - If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
@@ -274,4 +274,4 @@ After producing the result, check if `.specify/extensions.yml` exists in the pro
     ```
     After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
 
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- If no hooks are registered or `../../../backend/.specify` does not exist, skip silently
