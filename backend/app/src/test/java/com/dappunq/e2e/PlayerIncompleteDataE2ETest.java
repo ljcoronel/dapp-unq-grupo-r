@@ -1,7 +1,9 @@
 package com.dappunq.e2e;
 
 import com.dappunq.controller.PlayerControllerRest;
+import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.PlayerResponse;
+import com.dappunq.dto.TeamResponse;
 import com.dappunq.exception.CatalogUnavailableException;
 import com.dappunq.service.PlayerCatalogReadService;
 import org.junit.jupiter.api.Test;
@@ -23,18 +25,34 @@ class PlayerIncompleteDataE2ETest {
         var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(readService))
                 .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
                 .build();
-        when(readService.findCatalog()).thenReturn(List.of(
-                List.of(new PlayerResponse(42, "Jugador", null, "Equipo", null,
-                        null, 0, null, 0)),
-                List.of(), List.of(), List.of(), List.of()));
+        when(readService.findCatalog()).thenReturn(List.of(new PlayerResponse(
+                42L,
+                "Jugador",
+                new TeamResponse(99L, "Equipo"),
+                new LeagueResponse("PL", "Premier League", "Inglaterra"),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                0,
+                null,
+                0,
+                null,
+                null,
+                null,
+                null,
+                null
+        )));
 
         mockMvc.perform(get("/players"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0][0].nombre").value("Jugador"))
-                .andExpect(jsonPath("$[0][0].partidosJugados").doesNotExist())
-                .andExpect(jsonPath("$[0][0].goles").value(0))
-                .andExpect(jsonPath("$[0][0].asistencias").doesNotExist())
-                .andExpect(jsonPath("$[0][0].penaltis").value(0));
+                .andExpect(jsonPath("$[0].name").value("Jugador"))
+                .andExpect(jsonPath("$[0].age").doesNotExist())
+                .andExpect(jsonPath("$[0].goals").value(0))
+                .andExpect(jsonPath("$[0].assists").doesNotExist())
+                .andExpect(jsonPath("$[0].yellowCards").value(0));
     }
 
     @Test

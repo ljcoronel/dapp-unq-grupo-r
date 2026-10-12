@@ -1,7 +1,9 @@
 package com.dappunq.e2e;
 
-import com.dappunq.dto.PlayerResponse;
+import com.dappunq.controller.PlayerControllerRest;
 import com.dappunq.dto.LeagueResponse;
+import com.dappunq.dto.PlayerResponse;
+import com.dappunq.dto.TeamResponse;
 import com.dappunq.service.PlayerCatalogReadService;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,43 +19,67 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class PlayerCatalogE2ETest {
     @Test
-    void returnsFiveOrderedListsIncludingEmptyLeagues() throws Exception {
+    void returnsFlatPlayerListWithTeamAndLeagueData() throws Exception {
         var readService = mock(PlayerCatalogReadService.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(
-                        new com.dappunq.controller.PlayerControllerRest(readService))
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(readService))
+                .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
                 .build();
-        var player = new PlayerResponse(7, "Jugador", "Defensa", "Equipo",
-                new LeagueResponse("PL", "Premier League", "Inglaterra"), 1, 0, null, null);
-        when(readService.findCatalog()).thenReturn(List.of(
-                List.of(player), List.of(), List.of(), List.of(), List.of()));
+
+        var first = new PlayerResponse(
+                7L,
+                "Jugador",
+                new TeamResponse(12L, "Equipo"),
+                new LeagueResponse("PL", "Premier League", "Inglaterra"),
+                24,
+                180,
+                75,
+                "Delantero",
+                12,
+                900,
+                3,
+                2,
+                1,
+                0,
+                2.5f,
+                81.5f,
+                4.1f,
+                1
+        );
+        var second = new PlayerResponse(
+                42L,
+                "Jugador 2",
+                new TeamResponse(16L, "Equipo 2"),
+                new LeagueResponse("SA", "Serie A", "Italia"),
+                27,
+                182,
+                78,
+                "Mediocampista",
+                20,
+                1500,
+                5,
+                4,
+                0,
+                1,
+                1.2f,
+                76.0f,
+                2.0f,
+                0
+        );
+
+        when(readService.findCatalog()).thenReturn(List.of(first, second));
 
         mockMvc.perform(get("/players"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(5))
-                .andExpect(jsonPath("$[0][0].id").value(7))
-                .andExpect(jsonPath("$[0][0].nombre").value("Jugador"))
-                .andExpect(jsonPath("$[0][0].liga.codigo").value("PL"))
-                .andExpect(jsonPath("$[0][0].liga.nombre").value("Premier League"))
-                .andExpect(jsonPath("$[0][0].goles").value(0))
-                .andExpect(jsonPath("$[0][0].asistencias").doesNotExist())
-                .andExpect(jsonPath("$[1]").isEmpty())
-                .andExpect(jsonPath("$[4]").isEmpty());
-    }
-
-    @Test
-    void returnsPlayerIncludingItsLeague() throws Exception {
-        var readService = mock(PlayerCatalogReadService.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(
-                        new com.dappunq.controller.PlayerControllerRest(readService))
-                .build();
-        when(readService.findPlayer(7)).thenReturn(new PlayerResponse(7, "Jugador", "Defensa", "Equipo",
-                new LeagueResponse("SA", "Serie A", "Italia"), 1, 2, 0, null));
-
-        mockMvc.perform(get("/players/7"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(7))
-                .andExpect(jsonPath("$.liga.codigo").value("SA"))
-                .andExpect(jsonPath("$.liga.nombre").value("Serie A"));
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].externalId").value(7))
+                .andExpect(jsonPath("$[0].name").value("Jugador"))
+                .andExpect(jsonPath("$[0].team.externalId").value(12))
+                .andExpect(jsonPath("$[0].team.name").value("Equipo"))
+                .andExpect(jsonPath("$[0].league.codigo").value("PL"))
+                .andExpect(jsonPath("$[0].league.nombre").value("Premier League"))
+                .andExpect(jsonPath("$[0].goals").value(3))
+                .andExpect(jsonPath("$[1].externalId").value(42))
+                .andExpect(jsonPath("$[1].league.codigo").value("SA"));
     }
 }
