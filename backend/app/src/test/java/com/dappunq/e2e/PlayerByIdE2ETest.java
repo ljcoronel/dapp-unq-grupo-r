@@ -3,8 +3,9 @@ package com.dappunq.e2e;
 import com.dappunq.controller.PlayerControllerRest;
 import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.PlayerResponse;
-import com.dappunq.exception.PlayerNotFoundException;
+import com.dappunq.dto.TeamResponse;
 import com.dappunq.exception.InvalidPlayerIdException;
+import com.dappunq.exception.PlayerNotFoundException;
 import com.dappunq.service.PlayerCatalogReadService;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,15 +24,32 @@ class PlayerByIdE2ETest {
         var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(readService))
                 .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
                 .build();
-        when(readService.findPlayer(42)).thenReturn(new PlayerResponse(42, "Jugador",
-                "Delantero", "Equipo", new LeagueResponse("PL", "Premier League", "Inglaterra"),
-                10, 3, 1, 0));
+        when(readService.findPlayer(42)).thenReturn(new PlayerResponse(
+                42L,
+                "Jugador",
+                new TeamResponse(7L, "Equipo"),
+                new LeagueResponse("PL", "Premier League", "Inglaterra"),
+                10,
+                180,
+                75,
+                "Delantero",
+                12,
+                800,
+                3,
+                1,
+                0,
+                2,
+                1.5f,
+                81.0f,
+                3.2f,
+                1
+        ));
 
         mockMvc.perform(get("/players/42"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(42))
-                .andExpect(jsonPath("$.nombre").value("Jugador"))
-                .andExpect(jsonPath("$.goles").value(3));
+                .andExpect(jsonPath("$.externalId").value(42))
+                .andExpect(jsonPath("$.name").value("Jugador"))
+                .andExpect(jsonPath("$.goals").value(3));
     }
 
     @Test

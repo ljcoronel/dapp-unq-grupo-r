@@ -2,11 +2,10 @@ package com.dappunq.service;
 
 import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.PlayerResponse;
+import com.dappunq.dto.TeamResponse;
 import com.dappunq.exception.CatalogUnavailableException;
 import com.dappunq.exception.InvalidPlayerIdException;
 import com.dappunq.exception.PlayerNotFoundException;
-import com.dappunq.persistence.LeagueEntity;
-import com.dappunq.persistence.LeagueRepository;
 import com.dappunq.persistence.PlayerEntity;
 import com.dappunq.persistence.PlayerRepository;
 import org.springframework.stereotype.Service;
@@ -16,29 +15,21 @@ import java.util.List;
 
 @Service
 public class PlayerCatalogReadService {
-    private final LeagueRepository leagueRepository;
     private final PlayerRepository playerRepository;
 
-    public PlayerCatalogReadService(LeagueRepository leagueRepository, PlayerRepository playerRepository) {
-        this.leagueRepository = leagueRepository;
+    public PlayerCatalogReadService(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
     }
 
     @Transactional(readOnly = true)
-    public List<List<PlayerResponse>> findCatalog() {
+    public List<PlayerResponse> findCatalog() {
         try {
-            return leagueRepository.findAllByOrderByIdAsc().stream()
-                    .map(this::readLeague)
+            return playerRepository.findAll().stream()
+                    .map(this::toResponse)
                     .toList();
         } catch (RuntimeException exception) {
             throw new CatalogUnavailableException("No fue posible leer el catálogo de jugadores", exception);
         }
-    }
-
-    private List<PlayerResponse> readLeague(LeagueEntity league) {
-        return playerRepository.findByLeagueOrderByIdAsc(league).stream()
-                .map(this::toResponse)
-                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -53,15 +44,24 @@ public class PlayerCatalogReadService {
 
     private PlayerResponse toResponse(PlayerEntity entity) {
         return new PlayerResponse(
-                entity.getExternalId() != null ? entity.getExternalId().intValue() : null,
+                entity.getExternalId(),
                 entity.getName(),
-                null,
-                entity.getTeam() != null ? entity.getTeam().getName() : null,
+                TeamResponse.from(entity.getTeam()),
                 entity.getLeague() != null ? LeagueResponse.from(entity.getLeague()) : null,
+                entity.getAge(),
+                entity.getHeightCM(),
+                entity.getWeightKG(),
+                entity.getPosition(),
                 entity.getAppearances(),
+                entity.getMinutesPlayed(),
                 entity.getGoals(),
                 entity.getAssists(),
-                null
+                entity.getYellowCards(),
+                entity.getRedCards(),
+                entity.getAvgShotsPerGame(),
+                entity.getPassSuccessPercentage(),
+                entity.getAerialsWon(),
+                entity.getTimesManOfTheMatch()
         );
     }
 }
