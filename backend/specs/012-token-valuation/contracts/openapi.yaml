@@ -1,0 +1,186 @@
+openapi: 3.0.3
+info:
+  title: API de valuacion de tokens
+  version: 1.0.0
+  description: Configuracion de estrategias, consulta de tenencias y valuaciones.
+servers:
+  - url: /
+tags:
+  - name: Estrategias
+  - name: Tenencias
+  - name: Cotizaciones
+paths:
+  /quotes/recalculate:
+    post:
+      tags: [Cotizaciones]
+      summary: Ejecutar scraping y recalculo manual
+      description: Ejecuta el mismo flujo de la ventana semanal. Es publico y no requiere autenticacion.
+      operationId: recalculateQuotes
+      security: []
+      responses:
+        '200':
+          description: Scraping y recalculo completados.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecalculationResult'
+        '503':
+          description: No se pudo completar el scraping o el recalculo; se conserva la ultima valuacion valida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+  /users/{usuarioId}/strategy:
+    put:
+      tags: [Estrategias]
+      summary: Configurar estrategia de valuacion
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/UsuarioId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyRequest'
+      responses:
+        '200':
+          description: Configuracion aplicada o programada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StrategyState' }
+        '400': { description: Pesos invalidos o incompletos. }
+        '401': { description: Falta autenticacion. }
+        '409': { description: No existe estrategia actual para crear una pendiente. }
+    get:
+      tags: [Estrategias]
+      summary: Consultar estrategia actual y pendiente
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/UsuarioId'
+      responses:
+        '200':
+          description: Estado de configuracion.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StrategyState' }
+        '404': { description: Usuario inexistente. }
+  /users/{usuarioId}/holdings:
+    get:
+      tags: [Tenencias]
+      summary: Consultar tenencias y valor unitario
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/UsuarioId'
+      responses:
+        '200':
+          description: Tenencias del Usuario.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Holding' }
+        '401': { description: Falta autenticacion. }
+        '404': { description: Usuario inexistente. }
+  /users/{usuarioId}/holdings/history:
+    get:
+      tags: [Tenencias]
+      summary: Consultar historial de valores de tokens poseidos
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/UsuarioId'
+      responses:
+        '200':
+          description: Snapshots historicos por Jugador y ejecucion.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/HoldingHistory' }
+        '401': { description: Falta autenticacion. }
+        '404': { description: Usuario inexistente. }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    UsuarioId:
+      name: usuarioId
+      in: path
+      required: true
+      schema: { type: integer, format: int64, minimum: 1 }
+  schemas:
+    StrategyRequest:
+      type: object
+      required: [estrategia, pesos]
+      properties:
+        estrategia:
+          type: string
+          enum: [ESTRATEGIA_A, ESTRATEGIA_B]
+        pesos:
+          type: object
+          additionalProperties: { type: number, minimum: 0 }
+          description: Porcentajes que deben sumar exactamente 100.
+    StrategyState:
+      type: object
+      properties:
+        actual: { $ref: '#/components/schemas/StrategyConfig' }
+        pendiente: { $ref: '#/components/schemas/StrategyConfig' }
+        estado:
+          type: string
+          enum: [ACTUAL, PENDIENTE, SIN_ESTRATEGIA]
+    StrategyConfig:
+      allOf:
+        - $ref: '#/components/schemas/StrategyRequest'
+        - type: object
+          properties:
+            vigenteDesde: { type: string, format: date-time }
+    Holding:
+      type: object
+      required: [id, usuarioId, jugadorId, tokens, valorTotal, valorUnitario]
+      properties:
+        id: { type: integer, format: int64 }
+        usuarioId: { type: integer, format: int64 }
+        jugadorId: { type: integer, format: int64 }
+        tokens: { type: integer, minimum: 0 }
+        valorTotal: { type: number, format: float, multipleOf: 0.01 }
+        valorUnitario: { type: number, format: float, multipleOf: 0.01 }
+    HoldingHistory:
+      type: object
+      required: [usuarioId, jugadorId, tokens, valorUnitario, valorTotal, ejecutadoEn]
+      properties:
+        usuarioId: { type: integer, format: int64 }
+        jugadorId: { type: integer, format: int64 }
+        tokens: { type: integer, minimum: 0 }
+        valorUnitario: { type: number, format: float, multipleOf: 0.01 }
+        valorTotal: { type: number, format: float, multipleOf: 0.01 }
+        estrategia:
+          type: string
+          enum: [ESTRATEGIA_A, ESTRATEGIA_B]
+        ejecutadoEn: { type: string, format: date-time }
+        tipoEjecucion:
+          type: string
+          enum: [DOMINICAL, MANUAL]
+    RecalculationResult:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [COMPLETED]
+        playersScraped:
+          type: integer
+          minimum: 0
+        recalculatedHoldings:
+          type: integer
+          minimum: 0
+        executedAt:
+          type: string
+          format: date-time
+    MessageError:
+      type: object
+      properties:
+        message:
+          type: string
