@@ -22,7 +22,7 @@ Entidad persistente recomendada: `configuraciones_estrategia`.
 | `id` | PK autogenerada |
 | `usuario_id` | FK obligatoria a `usuarios` |
 | `estrategia` | `ESTRATEGIA_A` o `ESTRATEGIA_B` |
-| `pesos` | JSON/estructura persistida con todas las metricas requeridas |
+| `pesos` | JSON/estructura persistida con las metricas configurables; B conserva 5% fijo para `position` |
 | `estado` | `ACTUAL` o `PENDIENTE` |
 | `vigente_desde` | fecha/hora de aplicacion |
 
@@ -78,14 +78,16 @@ Unica `(usuario_id, jugador_id, ventana_dominical)`. `estado` puede ser `VALUADA
 
 ## Reglas de dominio
 
-1. Los pesos son no negativos, contienen exactamente las metricas de la estrategia y
-   suman 100.
-2. A usa `goals`, `assists`, `passSuccessPercentage`, `aerialsWon` y
+1. Los pesos configurables son no negativos, contienen exactamente las metricas
+   configurables de la estrategia y suman 100; en B los pesos configurables suman 95%
+   porque `position` aporta un 5% fijo.
+2. A usa exclusivamente `goals`, `assists`, `passSuccessPercentage`, `aerialsWon` y
    `timesManOfTheMatch`.
-3. B usa `passSuccessPercentage`, `aerialsWon`, `minutesPlayed`, `appearances` y
-   `isDefender`; `isDefender` vale 1 solo para posicion `Defender`.
-4. La normalizacion produce valores en `[0,1]`; una metrica faltante se reemplaza por
-   0 antes del calculo.
+3. B usa exclusivamente `passSuccessPercentage`, `aerialsWon`, `minutesPlayed`,
+   `appearances` y `position`; `position` tiene un peso fijo de 5% y vale 1 solo si
+   es exactamente `Defender`, o 0 en cualquier otro caso.
+4. La normalizacion produce valores en `[0,1]`; una metrica faltante usa directamente
+   el valor normalizado 0 antes del calculo.
 5. El precio se redondea a dos decimales antes de persistirse.
 6. Una ventana dominical aplica la pendiente antes de recalcular.
 7. La valuacion no crea ni elimina tokens.

@@ -122,7 +122,7 @@ components:
         pesos:
           type: object
           additionalProperties: { type: number, minimum: 0 }
-          description: Porcentajes que deben sumar exactamente 100.
+          description: Porcentajes de las metricas configurables. En ESTRATEGIA_B, position no se envia porque aporta un 5% fijo; los demas pesos deben sumar 95%.
     StrategyState:
       type: object
       properties:

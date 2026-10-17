@@ -23,6 +23,9 @@ persistencia usan Testcontainers PostgreSQL y las E2E permanecen en `com.dappunq
 
 1. Autenticar un Usuario y configurar Estrategia A con pesos 30, 25, 15, 15, 15.
    Consultar la estrategia y verificar que la primera configuracion es `ACTUAL`.
+   Para Estrategia B, enviar pesos solo para `passSuccessPercentage`, `aerialsWon`,
+   `minutesPlayed` y `appearances`, con suma 95%, y verificar que `position` se aplica
+   automaticamente con 5% y valor 1 únicamente para `Defender`.
 2. Consultar tenencias y comprobar que `valorUnitario` tiene como maximo dos decimales
    y que `valorTotal = tokens * valorUnitario`.
    Verificar tambien que la ejecucion creo un snapshot historico con la cantidad de

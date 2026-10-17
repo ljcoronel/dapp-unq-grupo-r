@@ -5,8 +5,12 @@
 ## Summary
 
 Se incorporaran dos estrategias configurables por Usuario, con pesos no negativos que
-sumen 100%, normalizacion de metricas a `[0,1]`, redondeo monetario a dos decimales y
-estado actual/pendiente. La valuacion vigente se persistira por Usuario y Jugador,
+suman 100%, normalizacion de metricas a `[0,1]`, redondeo monetario a dos decimales y
+estado actual/pendiente. La Estrategia A usara exclusivamente `goals`, `assists`,
+`passSuccessPercentage`, `aerialsWon` y `timesManOfTheMatch`; la Estrategia B usara
+exclusivamente `passSuccessPercentage`, `aerialsWon`, `minutesPlayed`, `appearances` y
+`position`, con `position` fija al 5% y valor 1 solo para `Defender`. La valuacion vigente
+se persistira por Usuario y Jugador,
 `TenenciaEntity` representara la cantidad agregada de tokens y cada ejecucion generara
 un historial inmutable de los tokens poseidos. Un scheduler dominical
 actualizara 50 jugadores mediante `WhoScoredScrapingService.scrape(String)` con `"50"` y, solo si el
@@ -29,7 +33,7 @@ transaccion idempotente.
 
 **Performance Goals**: Completar una ventana con hasta 50 jugadores y todas las tenencias sin duplicar escrituras en reintentos
 
-**Constraints**: Zona `America/Argentina/Buenos_Aires`; pesos suman exactamente 100; valor con dos decimales; no valuacion parcial tras scraping invalido; una pendiente por Usuario; sin mezclar transferencias con valuacion; `POST /quotes/recalculate` es publico y sin proteccion
+**Constraints**: Zona `America/Argentina/Buenos_Aires`; pesos suman exactamente 100 incluyendo el 5% fijo de `position` en B; valor con dos decimales; metrica faltante usa valor normalizado 0; no valuacion parcial tras scraping invalido; una pendiente por Usuario; sin mezclar transferencias con valuacion; `POST /quotes/recalculate` es publico y sin proteccion
 
 **Scale/Scope**: 50 jugadores por actualizacion, 100 tokens por jugador, todos los Usuarios y sus tenencias; exactamente dos estrategias
 

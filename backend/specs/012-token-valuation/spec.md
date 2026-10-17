@@ -15,6 +15,7 @@
 - Q: ¿Qué tipo recibe el método `WhoScoredScrapingService.scrape` para la cantidad de jugadores? → A: `String`; la ejecución semanal debe invocarlo con `"50"`.
 - Q: ¿Debe existir una forma manual de ejecutar la actualización fuera del Scheduler? → A: Sí; exponer `POST /quotes/recalculate` sin autenticación ni otra protección.
 - Q: ¿Qué valor debe utilizarse cuando un Jugador no tenga alguna métrica requerida por su Estrategia? → A: Cero; la métrica faltante se normaliza como 0 y el Jugador continúa siendo valuado.
+- Q: ¿Qué métricas componen exactamente cada Estrategia de Valuacion? → A: A usa `goals`, `assists`, `passSuccessPercentage`, `aerialsWon` y `timesManOfTheMatch`; B usa `passSuccessPercentage`, `aerialsWon`, `minutesPlayed`, `appearances` y `position` con la regla Defender 1/no Defender 0.
 - Q: ¿Qué debe conservarse cuando se ejecuta una valuación dominical o manual? → A: Un historial del valor unitario de cada Token de cada Jugador que el Usuario poseía en ese momento.
 
 ## User Scenarios & Testing *(mandatory)*
@@ -103,9 +104,10 @@ Como Superusuario, quiero que el sistema cree y mantenga exactamente 100 Token p
 - **FR-002**: El sistema MUST usar "creditos" como unidad monetaria y mantener un unico valor por Token para cada combinacion de Usuario y Jugador en una valuacion.
 - **FR-003**: El sistema MUST permitir que el Superusuario tenga inicialmente la Tenencia de los 100 Token de cada Jugador.
 - **FR-004**: El sistema MUST ofrecer exactamente dos Estrategias de Valuacion predefinidas a todos los Usuarios.
-- **FR-005**: Cada Estrategia MUST declarar las metricas de Jugador que utiliza, sin fijar por si misma el peso de esas metricas.
-- **FR-006**: El sistema MUST permitir que cada Usuario configure un peso para cada metrica requerida por la Estrategia elegida.
-- **FR-007**: El sistema MUST validar que los pesos de una configuracion sean no negativos, incluyan todas las metricas requeridas y cumplan la regla de suma definida para la configuracion.
+- **FR-005**: La Estrategia A MUST usar exclusivamente `goals`, `assists`, `passSuccessPercentage`, `aerialsWon` y `timesManOfTheMatch`; la Estrategia B MUST usar exclusivamente `passSuccessPercentage`, `aerialsWon`, `minutesPlayed`, `appearances` y `position`.
+- **FR-005a**: Para la Estrategia B, la metrica `position` MUST tener un peso del 5%; su valor normalizado MUST ser 1 si `position` es exactamente `Defender` y 0 en cualquier otro caso.
+- **FR-006**: El sistema MUST permitir que cada Usuario configure un peso para cada metrica configurable requerida por la Estrategia elegida; en la Estrategia B, el peso de `position` es fijo e igual a 5%.
+- **FR-007**: El sistema MUST validar que los pesos configurables sean no negativos, incluyan todas las metricas configurables requeridas y, sumados al 5% fijo de `position` en la Estrategia B, totalicen exactamente 100%.
 - **FR-008**: El sistema MUST calcular el valor de cada Token usando la Estrategia y los pesos configurados por el Usuario sobre las metricas vigentes del Jugador.
 - **FR-008a**: Si al Jugador le falta una metrica requerida por la Estrategia, el sistema MUST utilizar el valor 0 para esa metrica y continuar el calculo de su valor.
 - **FR-008b**: Cada ejecucion dominical o manual de valuacion MUST guardar un registro historico del valor unitario de cada Token de cada Jugador que cada Usuario poseia en el momento de la ejecucion, junto con la cantidad poseida y la fecha de la valuacion.

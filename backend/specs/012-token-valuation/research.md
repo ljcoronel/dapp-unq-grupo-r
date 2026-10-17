@@ -17,22 +17,24 @@ el Superusuario tenga exactamente 100 por Jugador.
 ## Decision: Estrategias como catalogo cerrado
 
 Se modelaran `ESTRATEGIA_A` y `ESTRATEGIA_B` como enum/catalogo inmutable, no como filas
-creables por API. A permite `goals`, `assists`, `passSuccessPercentage`, `aerialsWon` y
-`timesManOfTheMatch`. B permite `passSuccessPercentage`, `aerialsWon`, `minutesPlayed`,
-`appearances` y la metrica derivada `isDefender`; esta ultima tendra el peso de 5% fijado
-por la estrategia.
+creables por API. A usa exclusivamente `goals`, `assists`, `passSuccessPercentage`,
+`aerialsWon` y `timesManOfTheMatch`. B usa exclusivamente `passSuccessPercentage`,
+`aerialsWon`, `minutesPlayed`, `appearances` y `position`; esta ultima tendra el peso
+fijo de 5% y se convertira a 1 solo para `Defender`, o 0 en cualquier otro caso.
 
-Los pesos configurables se expresan en porcentajes y deben sumar exactamente 100. La
-configuracion del Superusuario se inicializa con A y los pesos 30/25/15/15/15.
+Los pesos configurables se expresan en porcentajes y deben sumar exactamente 100. En B,
+`position` no es configurable y aporta siempre 5%; los otros cuatro pesos deben sumar
+95%. La configuracion del Superusuario se inicializa con A y los pesos 30/25/15/15/15.
 
 ## Decision: Normalizacion determinista y dinero redondeado
 
 El calculador obtendra minimos y maximos del snapshot de jugadores para cada metrica.
-Cuando todos los valores sean iguales, la metrica normalizada sera 0 para evitar una
-division por cero. La posicion Defender se convertira directamente a 1 o 0. El calculo
-se hara con `BigDecimal`, y el valor persistido/expuesto se redondeara a dos decimales
-con `HALF_UP`; los campos JPA conservaran el tipo `Float` requerido por el contrato de
-la tabla, con conversion centralizada.
+Una métrica faltante se representará directamente con valor normalizado 0. Cuando todos
+los valores disponibles sean iguales, la métrica normalizada será 0 para evitar una
+división por cero. La posición `Defender` se convertirá directamente a 1 o 0. El cálculo
+se hará con `BigDecimal`, y el valor persistido/expuesto se redondeará a dos decimales
+con `HALF_UP`; los campos JPA conservarán el tipo `Float` requerido por el contrato de
+la tabla, con conversión centralizada.
 
 ## Decision: Ventana semanal atomica e idempotente
 
