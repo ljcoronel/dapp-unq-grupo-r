@@ -1,0 +1,7 @@
+package com.dappunq.model.valuation;
+import com.dappunq.persistence.PlayerEntity; import java.math.*; import java.util.*;
+public class PlayerValuationCalculator {
+ public BigDecimal calculate(PlayerEntity p, StrategyConfig c, List<PlayerEntity> snapshot){ Map<String,double[]> ranges=new HashMap<>(); for(String m:c.weights().keySet()){double min=Double.MAX_VALUE,max=-Double.MAX_VALUE; for(PlayerEntity x:snapshot){double v=value(x,m); min=Math.min(min,v);max=Math.max(max,v);} ranges.put(m,new double[]{min,max});} BigDecimal result=BigDecimal.ZERO; for(var e:c.weights().entrySet()){double[] r=ranges.get(e.getKey()); double n=r[1]<=r[0]?0:(value(p,e.getKey())-r[0])/(r[1]-r[0]); result=result.add(e.getValue().divide(BigDecimal.valueOf(100),8,RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(Math.max(0,Math.min(1,n))))); } if(c.strategy()==StrategyType.ESTRATEGIA_B && "Defender".equals(p.getPosition())) result=result.add(BigDecimal.valueOf(.05)); return result.setScale(2,RoundingMode.HALF_UP); }
+ private double value(PlayerEntity p,String m){return switch(m){case "goals"->nz(p.getGoals());case "assists"->nz(p.getAssists());case "passSuccessPercentage"->nz(p.getPassSuccessPercentage());case "aerialsWon"->nz(p.getAerialsWon());case "timesManOfTheMatch"->nz(p.getTimesManOfTheMatch());case "minutesPlayed"->nz(p.getMinutesPlayed());case "appearances"->nz(p.getAppearances());case "position"->"Defender".equals(p.getPosition())?1:0;default->0;};}
+ private double nz(Number n){return n==null?0:n.doubleValue();}
+}

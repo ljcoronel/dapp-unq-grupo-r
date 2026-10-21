@@ -15,11 +15,11 @@ description: "Tareas de implementacion para la valuacion de tokens de jugadores"
 
 **Purpose**: Preparar dependencias, configuracion y contratos compartidos.
 
-- [ ] T001 [P] Registrar dependencias de scheduling, Jackson, persistencia y Testcontainers en `backend/app/build.gradle`
-- [ ] T002 [P] Configurar zona `America/Argentina/Buenos_Aires`, cron dominical y propiedades de valuacion en `backend/app/src/main/resources/application.properties`
-- [ ] T003 [P] Configurar overrides locales y de prueba para la ventana semanal en `backend/app/src/main/resources/application-local.properties`
-- [ ] T004 [P] Publicar el contrato de endpoints, esquemas y errores en `backend/app/src/main/resources/static/openapi.yaml`
-- [ ] T005 [P] Agregar requests autenticados y publico de la feature en `backend/postman/token-valuation.postman_collection.json`
+- [X] T001 [P] Registrar dependencias de scheduling, Jackson, persistencia y Testcontainers en `backend/app/build.gradle`
+- [X] T002 [P] Configurar zona `America/Argentina/Buenos_Aires`, cron dominical y propiedades de valuacion en `backend/app/src/main/resources/application.properties`
+- [X] T003 [P] Configurar overrides locales y de prueba para la ventana semanal en `backend/app/src/main/resources/application-local.properties`
+- [X] T004 [P] Publicar el contrato de endpoints, esquemas y errores en `backend/app/src/main/resources/static/openapi.yaml`
+- [X] T005 [P] Agregar requests autenticados y publico de la feature en `backend/postman/token-valuation.postman_collection.json`
 
 ## Phase 2: Foundational
 
@@ -27,14 +27,14 @@ description: "Tareas de implementacion para la valuacion de tokens de jugadores"
 
 **CRITICAL**: Ninguna historia puede comenzar hasta completar esta fase.
 
-- [ ] T006 [P] Crear enums para estrategias, metricas, estados, tipo de ejecucion y estado de valuacion en `backend/app/src/main/java/com/dappunq/model/valuation`
-- [ ] T007 [P] Implementar errores de dominio para pesos invalidos, estrategia pendiente sin actual, ventana invalida y fallo de snapshot en `backend/app/src/main/java/com/dappunq/model/valuation/ValuationDomainException.java`
-- [ ] T008 [P] Crear entidades JPA `StrategyConfigEntity`, `HoldingEntity`, `ValuationEntity` y `ValuationHistoryEntity` con FK, restricciones y claves unicas en `backend/app/src/main/java/com/dappunq/persistence`
-- [ ] T009 [P] Crear repositorios para configuraciones, tenencias, valuaciones e historial con consultas por usuario, estado, jugador y ventana en `backend/app/src/main/java/com/dappunq/persistence`
-- [ ] T010 Implementar mapeos entre modelos de dominio y entidades JPA sin trasladar reglas de negocio al servicio en `backend/app/src/main/java/com/dappunq/persistence/ValuationPersistenceMapper.java`
-- [ ] T011 [P] Crear DTOs y validaciones de requests/responses de estrategia, tenencia, historial y recalculo en `backend/app/src/main/java/com/dappunq/dto/valuation`
-- [ ] T012 Implementar manejo HTTP explícito para validacion, conflicto, recurso inexistente y fallo operativo en `backend/app/src/main/java/com/dappunq/controller/ValuationExceptionHandler.java`
-- [ ] T013 [P] Preparar fixtures y configuracion Testcontainers para usuarios, jugadores, tenencias y metricas en `backend/app/src/test/java/com/dappunq/config/ValuationTestDataConfig.java`
+- [X] T006 [P] Crear enums para estrategias, metricas, estados, tipo de ejecucion y estado de valuacion en `backend/app/src/main/java/com/dappunq/model/valuation`
+- [X] T007 [P] Implementar errores de dominio para pesos invalidos, estrategia pendiente sin actual, ventana invalida y fallo de snapshot en `backend/app/src/main/java/com/dappunq/model/valuation/ValuationDomainException.java`
+- [X] T008 [P] Crear entidades JPA `StrategyConfigEntity`, `HoldingEntity`, `ValuationEntity` y `ValuationHistoryEntity` con FK, restricciones y claves unicas en `backend/app/src/main/java/com/dappunq/persistence`
+- [X] T009 [P] Crear repositorios para configuraciones, tenencias, valuaciones e historial con consultas por usuario, estado, jugador y ventana en `backend/app/src/main/java/com/dappunq/persistence`
+- [X] T010 Implementar mapeos entre modelos de dominio y entidades JPA sin trasladar reglas de negocio al servicio en `backend/app/src/main/java/com/dappunq/persistence/ValuationPersistenceMapper.java`
+- [X] T011 [P] Crear DTOs y validaciones de requests/responses de estrategia, tenencia, historial y recalculo en `backend/app/src/main/java/com/dappunq/dto/valuation`
+- [X] T012 Implementar manejo HTTP explícito para validacion, conflicto, recurso inexistente y fallo operativo en `backend/app/src/main/java/com/dappunq/controller/ValuationExceptionHandler.java`
+- [X] T013 [P] Preparar fixtures y configuracion Testcontainers para usuarios, jugadores, tenencias y metricas en `backend/app/src/test/java/com/dappunq/config/ValuationTestDataConfig.java`
 
 ## Phase 3: User Story 1 - Configurar una estrategia y valuar tokens (Priority: P1) 🎯 MVP
 
@@ -44,19 +44,19 @@ description: "Tareas de implementacion para la valuacion de tokens de jugadores"
 
 ### Tests for User Story 1
 
-- [ ] T014 [P] [US1] Probar catalogo cerrado, metricas requeridas, pesos no negativos y suma exacta de cada estrategia en `backend/app/src/test/java/com/dappunq/unit/StrategyConfigTest.java`
-- [ ] T015 [P] [US1] Probar normalizacion `[0,1]`, metricas faltantes como cero, `Defender` y redondeo monetario en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
-- [ ] T016 [P] [US1] Probar persistencia de configuracion, unicidad de tenencia y snapshots inmutables con PostgreSQL en `backend/app/src/test/java/com/dappunq/integration/ValuationPersistenceIntegrationTest.java`
-- [ ] T017 [P] [US1] Probar PUT/GET de estrategia y GET de tenencias e historial con MockMvc en `backend/app/src/test/java/com/dappunq/e2e/ValuationConfigurationE2ETest.java`
+- [X] T014 [P] [US1] Probar catalogo cerrado, metricas requeridas, pesos no negativos y suma exacta de cada estrategia en `backend/app/src/test/java/com/dappunq/unit/StrategyConfigTest.java`
+- [X] T015 [P] [US1] Probar normalizacion `[0,1]`, metricas faltantes como cero, `Defender` y redondeo monetario en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
+- [X] T016 [P] [US1] Probar persistencia de configuracion, unicidad de tenencia y snapshots inmutables con PostgreSQL en `backend/app/src/test/java/com/dappunq/integration/ValuationPersistenceIntegrationTest.java`
+- [X] T017 [P] [US1] Probar PUT/GET de estrategia y GET de tenencias e historial con MockMvc en `backend/app/src/test/java/com/dappunq/e2e/ValuationConfigurationE2ETest.java`
 
 ### Implementation for User Story 1
 
-- [ ] T018 [P] [US1] Implementar `StrategyConfig` con validacion de pesos de A y B, incluyendo el 5% fijo de `position`, en `backend/app/src/main/java/com/dappunq/model/valuation/StrategyConfig.java`
-- [ ] T019 [P] [US1] Implementar calculo determinista con min/max del snapshot, valores faltantes en cero, regla de posicion y `BigDecimal` en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
-- [ ] T020 [US1] Implementar configuracion inicial como `ACTUAL` y valuacion inmediata de las tenencias del usuario en `backend/app/src/main/java/com/dappunq/service/StrategyConfigurationService.java`
-- [ ] T021 [US1] Implementar actualizacion atomica de `valorUnitario`, `valorTotal` e historial sin modificar `tokens` en `backend/app/src/main/java/com/dappunq/service/HoldingsValuationService.java`
-- [ ] T022 [US1] Implementar mapeo de estados, configuraciones, holdings, historial y resultado al contrato REST en `backend/app/src/main/java/com/dappunq/controller/ValuationDtoMapper.java`
-- [ ] T023 [US1] Exponer los endpoints autenticados de estrategia, tenencias e historial reutilizando la autenticacion existente en `backend/app/src/main/java/com/dappunq/controller/ValuationControllerRest.java`
+- [X] T018 [P] [US1] Implementar `StrategyConfig` con validacion de pesos de A y B, incluyendo el 5% fijo de `position`, en `backend/app/src/main/java/com/dappunq/model/valuation/StrategyConfig.java`
+- [X] T019 [P] [US1] Implementar calculo determinista con min/max del snapshot, valores faltantes en cero, regla de posicion y `BigDecimal` en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
+- [X] T020 [US1] Implementar configuracion inicial como `ACTUAL` y valuacion inmediata de las tenencias del usuario en `backend/app/src/main/java/com/dappunq/service/StrategyConfigurationService.java`
+- [X] T021 [US1] Implementar actualizacion atomica de `valorUnitario`, `valorTotal` e historial sin modificar `tokens` en `backend/app/src/main/java/com/dappunq/service/HoldingsValuationService.java`
+- [X] T022 [US1] Implementar mapeo de estados, configuraciones, holdings, historial y resultado al contrato REST en `backend/app/src/main/java/com/dappunq/controller/ValuationDtoMapper.java`
+- [X] T023 [US1] Exponer los endpoints autenticados de estrategia, tenencias e historial reutilizando la autenticacion existente en `backend/app/src/main/java/com/dappunq/controller/ValuationControllerRest.java`
 
 ## Phase 4: User Story 2 - Actualizar la estrategia para la proxima valuacion (Priority: P1)
 

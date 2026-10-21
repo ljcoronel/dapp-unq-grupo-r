@@ -1,0 +1,2 @@
+package com.dappunq.controller; import com.dappunq.dto.valuation.*; import com.dappunq.persistence.*; import java.util.*;
+public class ValuationDtoMapper { public StrategyStateResponse strategy(StrategyConfigEntity e,Map<String,java.math.BigDecimal> weights){return new StrategyStateResponse(e.getEstrategia(),weights,e.getEstado(),e.getVigenteDesde());} public HoldingResponse holding(HoldingEntity h){return new HoldingResponse(h.getId(),h.getUser().getId(),h.getPlayer().getId(),h.getTokens(),h.getValorTotal(),h.getValorUnitario());} }

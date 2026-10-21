@@ -1,322 +1,186 @@
 openapi: 3.0.3
 info:
-  title: SDD Project API
+  title: API de valuacion de tokens
   version: 1.0.0
-  description: Contrato publico del backend para autenticacion, usuarios y catalogo de jugadores.
+  description: Configuracion de estrategias, consulta de tenencias y valuaciones.
 servers:
   - url: /
-    description: Mismo origen donde se sirve la API.
 tags:
-  - name: Autenticacion
-    description: Inicio de sesion y registro de usuarios.
-  - name: Usuarios
-    description: Consulta del perfil de usuario.
-  - name: Jugadores
-    description: Consulta del catalogo persistido de jugadores.
+  - name: Estrategias
+  - name: Tenencias
+  - name: Cotizaciones
 paths:
-  /login:
+  /quotes/recalculate:
     post:
-      tags: [Autenticacion]
-      summary: Iniciar sesion
-      description: Valida las credenciales y devuelve un JWT en la cabecera Authorization. La operacion es publica.
-      operationId: login
+      tags: [Cotizaciones]
+      summary: Ejecutar scraping y recalculo manual
+      description: Ejecuta el mismo flujo de la ventana semanal. Es publico y no requiere autenticacion.
+      operationId: recalculateQuotes
       security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequest'
       responses:
         '200':
-          description: Inicio de sesion exitoso.
-          headers:
-            Authorization:
-              description: Token de acceso con esquema Bearer.
-              schema:
-                type: string
-                example: Bearer <token>
+          description: Scraping y recalculo completados.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        '400':
-          description: Credenciales incorrectas o datos de entrada invalidos.
+                $ref: '#/components/schemas/RecalculationResult'
+        '503':
+          description: No se pudo completar el scraping o el recalculo; se conserva la ultima valuacion valida.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageError'
-        '500':
-          description: Error interno no controlado.
-  /register:
-    post:
-      tags: [Autenticacion]
-      summary: Registrar usuario
-      description: Crea una cuenta nueva. La prueba desde Swagger UI requiere confirmar antes del envio porque modifica datos.
-      operationId: register
-      security: []
-      x-confirmation-required: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequest'
-      responses:
-        '200':
-          description: Usuario registrado.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-        '400':
-          description: El usuario ya existe o los datos de entrada son invalidos.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageError'
-        '500':
-          description: Error interno no controlado.
-  /users/{id}/:
-    get:
-      tags: [Usuarios]
-      summary: Obtener perfil por identificador
-      description: Consulta el nombre del usuario. Es una operacion publica con la configuracion actual del backend.
-      operationId: getUserProfile
-      security: []
+  /users/{usuarioId}/strategy:
+    put:
+      tags: [Estrategias]
+      summary: Configurar estrategia de valuacion
+      security: [{ bearerAuth: [] }]
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Identificador numerico positivo del usuario.
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
+        - $ref: '#/components/parameters/UsuarioId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyRequest'
       responses:
         '200':
-          description: Perfil encontrado.
+          description: Configuracion aplicada o programada.
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-        '400':
-          description: El identificador no tiene un formato numerico valido; el manejador global actual devuelve el esquema PlayerError.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlayerError'
-        '404':
-          description: No existe un usuario con ese identificador.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MessageError'
-        '500':
-          description: Error interno no controlado.
-  /players:
+              schema: { $ref: '#/components/schemas/StrategyState' }
+        '400': { description: Pesos invalidos o incompletos. }
+        '401': { description: Falta autenticacion. }
+        '409': { description: No existe estrategia actual para crear una pendiente. }
     get:
-      tags: [Jugadores]
-      summary: Obtener el catalogo plano de jugadores
-      description: Devuelve una lista plana de jugadores en el orden del catalogo persistido. No requiere autenticacion.
-      operationId: getPlayers
-      security: []
+      tags: [Estrategias]
+      summary: Consultar estrategia actual y pendiente
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/UsuarioId'
       responses:
         '200':
-          description: Lista plana de jugadores; si no hay registros devuelve [].
+          description: Estado de configuracion.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StrategyState' }
+        '404': { description: Usuario inexistente. }
+  /users/{usuarioId}/holdings:
+    get:
+      tags: [Tenencias]
+      summary: Consultar tenencias y valor unitario
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/UsuarioId'
+      responses:
+        '200':
+          description: Tenencias del Usuario.
           content:
             application/json:
               schema:
                 type: array
-                items:
-                  $ref: '#/components/schemas/PlayerResponse'
-        '503':
-          description: No se pudo leer el catalogo de jugadores.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlayerError'
-        '500':
-          description: Error interno no controlado.
-  /players/{id}:
+                items: { $ref: '#/components/schemas/Holding' }
+        '401': { description: Falta autenticacion. }
+        '404': { description: Usuario inexistente. }
+  /users/{usuarioId}/holdings/history:
     get:
-      tags: [Jugadores]
-      summary: Obtener jugador por identificador
-      description: Consulta un jugador persistido. No requiere autenticacion.
-      operationId: getPlayerById
-      security: []
+      tags: [Tenencias]
+      summary: Consultar historial de valores de tokens poseidos
+      security: [{ bearerAuth: [] }]
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Identificador entero positivo del jugador.
-          schema:
-            type: integer
-            format: int32
-            minimum: 1
+        - $ref: '#/components/parameters/UsuarioId'
       responses:
         '200':
-          description: Jugador encontrado.
+          description: Snapshots historicos por Jugador y ejecucion.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlayerResponse'
-        '400':
-          description: El identificador no es un entero positivo.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlayerError'
-        '404':
-          description: No existe un jugador con ese identificador.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlayerError'
-        '500':
-          description: Error interno no controlado.
+                type: array
+                items: { $ref: '#/components/schemas/HoldingHistory' }
+        '401': { description: Falta autenticacion. }
+        '404': { description: Usuario inexistente. }
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  parameters:
+    UsuarioId:
+      name: usuarioId
+      in: path
+      required: true
+      schema: { type: integer, format: int64, minimum: 1 }
   schemas:
-    UserRequest:
+    StrategyRequest:
       type: object
-      required: [nombre, password]
-      description: Credenciales requeridas para iniciar sesion o registrar una cuenta.
+      required: [estrategia, pesos]
       properties:
-        nombre:
+        estrategia:
           type: string
-          minLength: 1
-          pattern: '^\S+$'
-          description: Nombre sin espacios internos; se recortan espacios exteriores.
-          example: usuario1
-        password:
-          type: string
-          format: password
-          minLength: 4
-          maxLength: 16
-          description: Contrasena de entre 4 y 16 caracteres.
-          example: secreto123
-    UserResponse:
+          enum: [ESTRATEGIA_A, ESTRATEGIA_B]
+        pesos:
+          type: object
+          additionalProperties: { type: number, minimum: 0 }
+          description: Porcentajes de las metricas configurables. En ESTRATEGIA_B, position no se envia porque aporta un 5% fijo; los demas pesos deben sumar 95%.
+    StrategyState:
       type: object
-      required: [nombre]
       properties:
-        nombre:
+        actual: { $ref: '#/components/schemas/StrategyConfig' }
+        pendiente: { $ref: '#/components/schemas/StrategyConfig' }
+        estado:
           type: string
-          description: Nombre de usuario.
-          example: usuario1
-    TeamResponse:
+          enum: [ACTUAL, PENDIENTE, SIN_ESTRATEGIA]
+    StrategyConfig:
+      allOf:
+        - $ref: '#/components/schemas/StrategyRequest'
+        - type: object
+          properties:
+            vigenteDesde: { type: string, format: date-time }
+    Holding:
       type: object
-      required: [externalId, name]
+      required: [id, usuarioId, jugadorId, tokens, valorTotal, valorUnitario]
       properties:
-        externalId:
-          type: integer
-          format: int64
-          description: Identificador publico del equipo.
-        name:
-          type: string
-          description: Nombre del equipo.
-    PlayerResponse:
+        id: { type: integer, format: int64 }
+        usuarioId: { type: integer, format: int64 }
+        jugadorId: { type: integer, format: int64 }
+        tokens: { type: integer, minimum: 0 }
+        valorTotal: { type: number, format: float, multipleOf: 0.01 }
+        valorUnitario: { type: number, format: float, multipleOf: 0.01 }
+    HoldingHistory:
       type: object
-      required: [externalId, name, team, league]
+      required: [usuarioId, jugadorId, tokens, valorUnitario, valorTotal, ejecutadoEn]
       properties:
-        externalId:
-          type: integer
-          format: int64
-          description: Identificador publico del jugador.
-        name:
+        usuarioId: { type: integer, format: int64 }
+        jugadorId: { type: integer, format: int64 }
+        tokens: { type: integer, minimum: 0 }
+        valorUnitario: { type: number, format: float, multipleOf: 0.01 }
+        valorTotal: { type: number, format: float, multipleOf: 0.01 }
+        estrategia:
           type: string
-          description: Nombre del jugador.
-        team:
-          $ref: '#/components/schemas/TeamResponse'
-        league:
-          $ref: '#/components/schemas/LeagueResponse'
-        age:
-          type: integer
-          nullable: true
-          description: Edad del jugador cuando está disponible.
-        heightCM:
-          type: integer
-          nullable: true
-          description: Altura en centímetros.
-        weightKG:
-          type: integer
-          nullable: true
-          description: Peso en kilogramos.
-        position:
+          enum: [ESTRATEGIA_A, ESTRATEGIA_B]
+        ejecutadoEn: { type: string, format: date-time }
+        tipoEjecucion:
           type: string
-          nullable: true
-          description: Posicion del jugador cuando está disponible.
-        appearances:
-          type: integer
-          nullable: true
-          description: Partidos jugados.
-        minutesPlayed:
-          type: integer
-          nullable: true
-          description: Minutos disputados.
-        goals:
-          type: integer
-          nullable: true
-          description: Goles anotados.
-        assists:
-          type: integer
-          nullable: true
-          description: Asistencias realizadas.
-        yellowCards:
-          type: integer
-          nullable: true
-          description: Tarjetas amarillas.
-        redCards:
-          type: integer
-          nullable: true
-          description: Tarjetas rojas.
-        avgShotsPerGame:
-          type: number
-          format: float
-          nullable: true
-          description: Promedio de tiros por partido.
-        passSuccessPercentage:
-          type: number
-          format: float
-          nullable: true
-          description: Porcentaje de pases exitosos.
-        aerialsWon:
-          type: number
-          format: float
-          nullable: true
-          description: Aéreos ganados.
-        timesManOfTheMatch:
-          type: integer
-          nullable: true
-          description: Veces elegido mejor jugador del partido.
-    LeagueResponse:
+          enum: [DOMINICAL, MANUAL]
+    RecalculationResult:
       type: object
-      required: [codigo, nombre, pais]
+      required: [status]
       properties:
-        codigo:
+        status:
           type: string
-          description: Codigo de la liga.
-        nombre:
+          enum: [COMPLETED]
+        playersScraped:
+          type: integer
+          minimum: 0
+        recalculatedHoldings:
+          type: integer
+          minimum: 0
+        executedAt:
           type: string
-          description: Nombre de la liga.
-        pais:
-          type: string
-          description: Pais asociado a la liga.
+          format: date-time
     MessageError:
       type: object
-      required: [message]
       properties:
         message:
           type: string
-          description: Mensaje de error de autenticacion o perfil.
-    PlayerError:
-      type: object
-      required: [mensaje]
-      properties:
-        mensaje:
-          type: string
-          description: Mensaje de error del catalogo de jugadores.
