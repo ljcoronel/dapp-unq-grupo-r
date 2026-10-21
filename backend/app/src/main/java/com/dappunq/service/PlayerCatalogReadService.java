@@ -8,6 +8,7 @@ import com.dappunq.exception.InvalidPlayerIdException;
 import com.dappunq.exception.PlayerNotFoundException;
 import com.dappunq.persistence.PlayerEntity;
 import com.dappunq.persistence.PlayerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,15 +16,27 @@ import java.util.List;
 
 @Service
 public class PlayerCatalogReadService {
+
     private final PlayerRepository playerRepository;
+    private final InitialHoldingsService initialHoldingsService;
 
     public PlayerCatalogReadService(PlayerRepository playerRepository) {
-        this.playerRepository = playerRepository;
+        this(playerRepository, null);
     }
 
-    @Transactional(readOnly = true)
+    @Autowired
+    public PlayerCatalogReadService(PlayerRepository playerRepository,
+                                    @Autowired(required = false) InitialHoldingsService initialHoldingsService) {
+        this.playerRepository = playerRepository;
+        this.initialHoldingsService = initialHoldingsService;
+    }
+
+    @Transactional
     public List<PlayerResponse> findCatalog() {
         try {
+            if (initialHoldingsService != null) {
+                initialHoldingsService.initializeHoldingsForAllPlayers();
+            }
             return playerRepository.findAll().stream()
                     .map(this::toResponse)
                     .toList();
@@ -32,14 +45,17 @@ public class PlayerCatalogReadService {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PlayerResponse findPlayer(Integer id) {
         if (id == null || id <= 0) {
             throw new InvalidPlayerIdException("El identificador del jugador debe ser positivo");
         }
-        return playerRepository.findByExternalId(Long.valueOf(id))
-                .map(this::toResponse)
+        PlayerEntity entity = playerRepository.findByExternalId(Long.valueOf(id))
                 .orElseThrow(() -> new PlayerNotFoundException(id));
+        if (initialHoldingsService != null) {
+            initialHoldingsService.initializeHoldingForPlayer(entity);
+        }
+        return toResponse(entity);
     }
 
     private PlayerResponse toResponse(PlayerEntity entity) {

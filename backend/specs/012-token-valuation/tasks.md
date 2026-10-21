@@ -66,16 +66,16 @@ description: "Tareas de implementacion para la valuacion de tokens de jugadores"
 
 ### Tests for User Story 2
 
-- [ ] T024 [P] [US2] Probar reemplazo de pendiente, rechazo sin actual y conservacion ante pesos invalidos en `backend/app/src/test/java/com/dappunq/service/StrategyConfigurationServiceTest.java`
-- [ ] T025 [P] [US2] Probar unicidad de pendiente y fechas de vigencia con PostgreSQL/Testcontainers en `backend/app/src/test/java/com/dappunq/integration/PendingStrategyIntegrationTest.java`
-- [ ] T026 [P] [US2] Probar respuestas 400/409 y estado `PENDIENTE` mediante MockMvc en `backend/app/src/test/java/com/dappunq/e2e/PendingStrategyE2ETest.java`
+- [X] T024 [P] [US2] Probar reemplazo de pendiente, rechazo sin actual y conservacion ante pesos invalidos en `backend/app/src/test/java/com/dappunq/service/StrategyConfigurationServiceTest.java`
+- [X] T025 [P] [US2] Probar unicidad de pendiente y fechas de vigencia con PostgreSQL/Testcontainers en `backend/app/src/test/java/com/dappunq/integration/PendingStrategyIntegrationTest.java`
+- [X] T026 [P] [US2] Probar respuestas 400/409 y estado `PENDIENTE` mediante MockMvc en `backend/app/src/test/java/com/dappunq/e2e/PendingStrategyE2ETest.java`
 
 ### Implementation for User Story 2
 
-- [ ] T027 [US2] Extender `StrategyConfigurationService` para distinguir primera configuracion de cambios posteriores y exigir estrategia actual antes de crear pendiente en `backend/app/src/main/java/com/dappunq/service/StrategyConfigurationService.java`
-- [ ] T028 [US2] Implementar reemplazo transaccional y consultas de configuracion actual/pendiente en `backend/app/src/main/java/com/dappunq/persistence/StrategyConfigRepository.java`
-- [ ] T029 [US2] Exponer `ACTUAL`, `PENDIENTE`, `SIN_ESTRATEGIA` y `vigenteDesde` en `backend/app/src/main/java/com/dappunq/dto/valuation/StrategyStateResponse.java`
-- [ ] T030 [US2] Asegurar que las modificaciones posteriores no invoquen valuacion inmediata en `backend/app/src/main/java/com/dappunq/controller/ValuationControllerRest.java`
+- [X] T027 [US2] Extender `StrategyConfigurationService` para distinguir primera configuracion de cambios posteriores y exigir estrategia actual antes de crear pendiente en `backend/app/src/main/java/com/dappunq/service/StrategyConfigurationService.java`
+- [X] T028 [US2] Implementar reemplazo transaccional y consultas de configuracion actual/pendiente en `backend/app/src/main/java/com/dappunq/persistence/StrategyConfigRepository.java`
+- [X] T029 [US2] Exponer `ACTUAL`, `PENDIENTE`, `SIN_ESTRATEGIA` y `vigenteDesde` en `backend/app/src/main/java/com/dappunq/dto/valuation/StrategyStateResponse.java`
+- [X] T030 [US2] Asegurar que las modificaciones posteriores no invoquen valuacion inmediata en `backend/app/src/main/java/com/dappunq/controller/ValuationControllerRest.java`
 
 ## Phase 5: User Story 3 - Ejecutar la valuacion semanal de todos los usuarios (Priority: P1)
 
@@ -85,19 +85,19 @@ description: "Tareas de implementacion para la valuacion de tokens de jugadores"
 
 ### Tests for User Story 3
 
-- [ ] T031 [P] [US3] Probar orden scrape/calculo, usuarios sin estrategia y rollback ante fallo con mocks en `backend/app/src/test/java/com/dappunq/service/WeeklyValuationServiceTest.java`
-- [ ] T032 [P] [US3] Probar claves unicas de ventana, aplicacion de pendiente y snapshots por usuario en `backend/app/src/test/java/com/dappunq/integration/WeeklyValuationIntegrationTest.java`
-- [ ] T033 [P] [US3] Probar POST publico sin Authorization y respuestas 200/503 con MockMvc en `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java`
-- [ ] T034 [P] [US3] Probar cron, zona horaria y delegacion al caso de uso comun en `backend/app/src/test/java/com/dappunq/integration/ValuationSchedulerTest.java`
+- [X] T031 [P] [US3] Probar orden scrape/calculo, usuarios sin estrategia y rollback ante fallo con mocks en `backend/app/src/test/java/com/dappunq/service/WeeklyValuationServiceTest.java`
+- [X] T032 [P] [US3] Probar claves unicas de ventana, aplicacion de pendiente y snapshots por usuario en `backend/app/src/test/java/com/dappunq/integration/WeeklyValuationIntegrationTest.java`
+- [X] T033 [P] [US3] Probar POST publico sin Authorization y respuestas 200/503 con MockMvc en `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java`
+- [X] T034 [P] [US3] Probar cron, zona horaria y delegacion al caso de uso comun en `backend/app/src/test/java/com/dappunq/integration/ValuationSchedulerTest.java`
 
 ### Implementation for User Story 3
 
-- [ ] T035 [US3] Implementar servicio transaccional que ejecute `WhoScoredScrapingService.scrape("50")` y rechace snapshots incompletos en `backend/app/src/main/java/com/dappunq/service/WeeklyValuationService.java`
-- [ ] T036 [US3] Aplicar pendientes antes de recalcular, omitir usuarios sin estrategia y preservar la ultima valuacion valida en `backend/app/src/main/java/com/dappunq/service/WeeklyValuationService.java`
-- [ ] T037 [US3] Implementar identificador de ventana, tipo de ejecucion, restricciones unicas e idempotencia en `backend/app/src/main/java/com/dappunq/persistence/ValuationRepository.java` y `backend/app/src/main/java/com/dappunq/persistence/ValuationHistoryRepository.java`
-- [ ] T038 [US3] Crear scheduler dominical a las 03:00 con zona de negocio en `backend/app/src/main/java/com/dappunq/config/ValuationScheduler.java`
-- [ ] T039 [US3] Exponer `POST /quotes/recalculate` sin autenticacion y mapear exito o error 503 al flujo comun en `backend/app/src/main/java/com/dappunq/controller/QuoteControllerRest.java` y `backend/app/src/main/java/com/dappunq/config/SecurityConfig.java`
-- [ ] T040 [US3] Mantener sincronizados el contrato publicado y el contrato de feature para recalculo, errores e idempotencia en `backend/app/src/main/resources/static/openapi.yaml` y `backend/specs/012-token-valuation/contracts/openapi.yaml`
+- [X] T035 [US3] Implementar servicio transaccional que ejecute `WhoScoredScrapingService.scrape("50")` y rechace snapshots incompletos en `backend/app/src/main/java/com/dappunq/service/WeeklyValuationService.java`
+- [X] T036 [US3] Aplicar pendientes antes de recalcular, omitir usuarios sin estrategia y preservar la ultima valuacion valida en `backend/app/src/main/java/com/dappunq/service/WeeklyValuationService.java`
+- [X] T037 [US3] Implementar identificador de ventana, tipo de ejecucion, restricciones unicas e idempotencia en `backend/app/src/main/java/com/dappunq/persistence/ValuationRepository.java` y `backend/app/src/main/java/com/dappunq/persistence/ValuationHistoryRepository.java`
+- [X] T038 [US3] Crear scheduler dominical a las 03:00 con zona de negocio en `backend/app/src/main/java/com/dappunq/config/ValuationScheduler.java`
+- [X] T039 [US3] Exponer `POST /quotes/recalculate` sin autenticacion y mapear exito o error 503 al flujo comun en `backend/app/src/main/java/com/dappunq/controller/QuoteControllerRest.java` y `backend/app/src/main/java/com/dappunq/config/SecurityConfig.java`
+- [X] T040 [US3] Mantener sincronizados el contrato publicado y el contrato de feature para recalculo, errores e idempotencia en `backend/app/src/main/resources/static/openapi.yaml` y `backend/specs/012-token-valuation/contracts/openapi.yaml`
 
 ## Phase 6: User Story 4 - Administrar la cantidad y tenencia inicial de tokens (Priority: P2)
 
@@ -107,16 +107,16 @@ description: "Tareas de implementacion para la valuacion de tokens de jugadores"
 
 ### Tests for User Story 4
 
-- [ ] T041 [P] [US4] Probar inicializacion idempotente, Superusuario unico y 100 tokens por jugador en `backend/app/src/test/java/com/dappunq/service/InitialHoldingsServiceTest.java`
-- [ ] T042 [P] [US4] Probar FK, unicidad usuario/jugador y formula `valorTotal = tokens * valorUnitario` en `backend/app/src/test/java/com/dappunq/integration/InitialHoldingsIntegrationTest.java`
-- [ ] T043 [P] [US4] Probar que recalcular no crea/elimina tokens y conserva invariantes mediante MockMvc en `backend/app/src/test/java/com/dappunq/e2e/HoldingsInvariantE2ETest.java`
+- [X] T041 [P] [US4] Probar inicializacion idempotente, Superusuario unico y 100 tokens por jugador en `backend/app/src/test/java/com/dappunq/service/InitialHoldingsServiceTest.java`
+- [X] T042 [P] [US4] Probar FK, unicidad usuario/jugador y formula `valorTotal = tokens * valorUnitario` en `backend/app/src/test/java/com/dappunq/integration/InitialHoldingsIntegrationTest.java`
+- [X] T043 [P] [US4] Probar que recalcular no crea/elimina tokens y conserva invariantes mediante MockMvc en `backend/app/src/test/java/com/dappunq/e2e/HoldingsInvariantE2ETest.java`
 
 ### Implementation for User Story 4
 
-- [ ] T044 [US4] Implementar inicializacion idempotente de tenencias del Superusuario con 100 tokens por jugador en `backend/app/src/main/java/com/dappunq/service/InitialHoldingsService.java`
-- [ ] T045 [US4] Integrar la inicializacion al alta o sincronizacion de jugadores sin duplicar tenencias en `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java`
-- [ ] T046 [US4] Implementar invariantes de cantidad y formula de valor en `backend/app/src/main/java/com/dappunq/model/valuation/Holding.java` y `backend/app/src/main/java/com/dappunq/persistence/HoldingEntity.java`
-- [ ] T047 [US4] Inicializar la estrategia A del Superusuario con pesos 30/25/15/15/15 en `backend/app/src/main/java/com/dappunq/service/SuperuserInitializationService.java`
+- [X] T044 [US4] Implementar inicializacion idempotente de tenencias del Superusuario con 100 tokens por jugador en `backend/app/src/main/java/com/dappunq/service/InitialHoldingsService.java`
+- [X] T045 [US4] Integrar la inicializacion al alta o sincronizacion de jugadores sin duplicar tenencias en `backend/app/src/main/java/com/dappunq/service/PlayerCatalogReadService.java`
+- [X] T046 [US4] Implementar invariantes de cantidad y formula de valor en `backend/app/src/main/java/com/dappunq/model/valuation/Holding.java` y `backend/app/src/main/java/com/dappunq/persistence/HoldingEntity.java`
+- [X] T047 [US4] Inicializar la estrategia A del Superusuario con pesos 30/25/15/15/15 en `backend/app/src/main/java/com/dappunq/service/SuperuserInitializationService.java`
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
