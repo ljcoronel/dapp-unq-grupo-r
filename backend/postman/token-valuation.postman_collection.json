@@ -1,1 +1,442 @@
-{"info":{"name":"Token Valuation","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},"item":[{"name":"Configurar estrategia","request":{"method":"PUT","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],"url":"{{baseUrl}}/users/{{usuarioId}}/strategy"}},{"name":"Tenencias","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":"{{baseUrl}}/users/{{usuarioId}}/holdings"}}],"variable":[{"key":"baseUrl","value":"http://localhost:8080"},{"key":"usuarioId","value":"1"},{"key":"token","value":""}]}
+{
+  "info": {
+    "name": "Token Valuation API",
+    "description": "Coleccion de pruebas para la API de valuacion de tokens de jugadores (especificacion 012-token-valuation). Incluye configuracion de estrategias, consulta de tenencias, historial y recalculo manual.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Estrategias",
+      "item": [
+        {
+          "name": "Configurar estrategia (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estrategia\": \"ESTRATEGIA_A\",\n  \"pesos\": {\n    \"goals\": 30.0,\n    \"assists\": 25.0,\n    \"passSuccessPercentage\": 15.0,\n    \"aerialsWon\": 15.0,\n    \"timesManOfTheMatch\": 15.0\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{usuarioId}}/strategy",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{usuarioId}}", "strategy"]
+            },
+            "description": "Configura una estrategia. Si es la primera vez, se activa como ACTUAL y valua de inmediato. Si ya existe una actual, se programa como PENDIENTE para la proxima ventana dominical."
+          },
+          "response": [
+            {
+              "name": "200 OK - Configuracion inicial exitosa (ACTUAL)",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estrategia\": \"ESTRATEGIA_A\",\n  \"pesos\": {\n    \"goals\": 30.0,\n    \"assists\": 25.0,\n    \"passSuccessPercentage\": 15.0,\n    \"aerialsWon\": 15.0,\n    \"timesManOfTheMatch\": 15.0\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/strategy",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "strategy"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"actual\": {\n    \"estrategia\": \"ESTRATEGIA_A\",\n    \"pesos\": {\n      \"goals\": 30.0,\n      \"assists\": 25.0,\n      \"passSuccessPercentage\": 15.0,\n      \"aerialsWon\": 15.0,\n      \"timesManOfTheMatch\": 15.0\n    },\n    \"vigenteDesde\": \"2026-10-21T19:00:00Z\"\n  },\n  \"pendiente\": null,\n  \"estado\": \"ACTUAL\"\n}"
+            },
+            {
+              "name": "200 OK - Configuracion posterior programada (PENDIENTE)",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estrategia\": \"ESTRATEGIA_B\",\n  \"pesos\": {\n    \"passSuccessPercentage\": 30.0,\n    \"aerialsWon\": 25.0,\n    \"minutesPlayed\": 20.0,\n    \"appearances\": 20.0\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/strategy",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "strategy"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"actual\": {\n    \"estrategia\": \"ESTRATEGIA_A\",\n    \"pesos\": {\n      \"goals\": 30.0,\n      \"assists\": 25.0,\n      \"passSuccessPercentage\": 15.0,\n      \"aerialsWon\": 15.0,\n      \"timesManOfTheMatch\": 15.0\n    },\n    \"vigenteDesde\": \"2026-10-21T19:00:00Z\"\n  },\n  \"pendiente\": {\n    \"estrategia\": \"ESTRATEGIA_B\",\n    \"pesos\": {\n      \"passSuccessPercentage\": 30.0,\n      \"aerialsWon\": 25.0,\n      \"minutesPlayed\": 20.0,\n      \"appearances\": 20.0,\n      \"position\": 5.0\n    },\n    \"vigenteDesde\": \"2026-10-25T03:00:00Z\"\n  },\n  \"estado\": \"PENDIENTE\"\n}"
+            },
+            {
+              "name": "400 Bad Request - Pesos invalidos",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estrategia\": \"ESTRATEGIA_A\",\n  \"pesos\": {\n    \"goals\": 40.0,\n    \"assists\": 25.0\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/strategy",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "strategy"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"La suma de los pesos de la Estrategia A debe ser exactamente 100\"\n}"
+            },
+            {
+              "name": "401 Unauthorized - Falta token",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estrategia\": \"ESTRATEGIA_A\",\n  \"pesos\": {\n    \"goals\": 30.0,\n    \"assists\": 25.0,\n    \"passSuccessPercentage\": 15.0,\n    \"aerialsWon\": 15.0,\n    \"timesManOfTheMatch\": 15.0\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/strategy",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "strategy"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Full authentication is required to access this resource\"\n}"
+            },
+            {
+              "name": "409 Conflict - Sin estrategia actual para crear pendiente",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estrategia\": \"ESTRATEGIA_A\",\n  \"pesos\": {\n    \"goals\": 30.0,\n    \"assists\": 25.0,\n    \"passSuccessPercentage\": 15.0,\n    \"aerialsWon\": 15.0,\n    \"timesManOfTheMatch\": 15.0\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/strategy?estado=PENDIENTE",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "strategy"],
+                  "query": [{ "key": "estado", "value": "PENDIENTE" }]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"No existe estrategia actual para crear una pendiente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Consultar estrategia (GET)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{usuarioId}}/strategy",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{usuarioId}}", "strategy"]
+            },
+            "description": "Devuelve la estrategia actual y cualquier cambio programado pendiente del usuario."
+          },
+          "response": [
+            {
+              "name": "200 OK - Estrategia actual y pendiente",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/strategy",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "strategy"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"actual\": {\n    \"estrategia\": \"ESTRATEGIA_A\",\n    \"pesos\": {\n      \"goals\": 30.0,\n      \"assists\": 25.0,\n      \"passSuccessPercentage\": 15.0,\n      \"aerialsWon\": 15.0,\n      \"timesManOfTheMatch\": 15.0\n    },\n    \"vigenteDesde\": \"2026-10-21T19:00:00Z\"\n  },\n  \"pendiente\": {\n    \"estrategia\": \"ESTRATEGIA_B\",\n    \"pesos\": {\n      \"passSuccessPercentage\": 30.0,\n      \"aerialsWon\": 25.0,\n      \"minutesPlayed\": 20.0,\n      \"appearances\": 20.0,\n      \"position\": 5.0\n    },\n    \"vigenteDesde\": \"2026-10-25T03:00:00Z\"\n  },\n  \"estado\": \"PENDIENTE\"\n}"
+            },
+            {
+              "name": "401 Unauthorized - Falta token",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/strategy",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "strategy"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Full authentication is required to access this resource\"\n}"
+            },
+            {
+              "name": "404 Not Found - Usuario inexistente",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{baseUrl}}/users/9999/strategy",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "9999", "strategy"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Usuario inexistente\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tenencias",
+      "item": [
+        {
+          "name": "Consultar tenencias (GET)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{usuarioId}}/holdings",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{usuarioId}}", "holdings"]
+            },
+            "description": "Obtiene la lista de tenencias del usuario con cantidad de tokens, valor unitario y valor total calculado."
+          },
+          "response": [
+            {
+              "name": "200 OK - Tenencias del usuario",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/holdings",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "holdings"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"id\": 1,\n    \"usuarioId\": 1,\n    \"jugadorId\": 10,\n    \"tokens\": 100,\n    \"valorTotal\": 75.50,\n    \"valorUnitario\": 0.76\n  }\n]"
+            },
+            {
+              "name": "401 Unauthorized - Falta token",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/holdings",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "holdings"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Full authentication is required to access this resource\"\n}"
+            },
+            {
+              "name": "404 Not Found - Usuario inexistente",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{baseUrl}}/users/9999/holdings",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "9999", "holdings"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Usuario inexistente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Historial de tenencias (GET)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{usuarioId}}/holdings/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{usuarioId}}", "holdings", "history"]
+            },
+            "description": "Obtiene snapshots historicos inmutables de las valuaciones pasadas por ejecucion y jugador."
+          },
+          "response": [
+            {
+              "name": "200 OK - Historial de snapshots",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/holdings/history",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "holdings", "history"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "[\n  {\n    \"usuarioId\": 1,\n    \"jugadorId\": 10,\n    \"tokens\": 100,\n    \"valorUnitario\": 0.76,\n    \"valorTotal\": 75.50,\n    \"estrategia\": \"ESTRATEGIA_A\",\n    \"ejecutadoEn\": \"2026-10-21T19:00:00Z\",\n    \"tipoEjecucion\": \"MANUAL\"\n  }\n]"
+            },
+            {
+              "name": "401 Unauthorized - Falta token",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/users/{{usuarioId}}/holdings/history",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "{{usuarioId}}", "holdings", "history"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Full authentication is required to access this resource\"\n}"
+            },
+            {
+              "name": "404 Not Found - Usuario inexistente",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{baseUrl}}/users/9999/holdings/history",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "9999", "holdings", "history"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"Usuario inexistente\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cotizaciones",
+      "item": [
+        {
+          "name": "Recalculo manual (POST)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/quotes/recalculate",
+              "host": ["{{baseUrl}}"],
+              "path": ["quotes", "recalculate"]
+            },
+            "description": "Endpoint publico sin autenticacion. Ejecuta scraping de 50 jugadores, promueve estrategias pendientes y recalcula las tenencias de todos los usuarios."
+          },
+          "response": [
+            {
+              "name": "200 OK - Recalculo completado",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{baseUrl}}/quotes/recalculate",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["quotes", "recalculate"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"COMPLETED\",\n  \"playersScraped\": 50,\n  \"recalculatedHoldings\": 50,\n  \"executedAt\": \"2026-10-21T19:00:00Z\"\n}"
+            },
+            {
+              "name": "503 Service Unavailable - Fallo operativo en scraping o recalculo",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{baseUrl}}/quotes/recalculate",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["quotes", "recalculate"]
+                }
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"message\": \"No se pudo completar el scraping o el recalculo; se conserva la ultima valuacion valida. Snapshot de jugadores vacio o incompleto\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "usuarioId",
+      "value": "1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

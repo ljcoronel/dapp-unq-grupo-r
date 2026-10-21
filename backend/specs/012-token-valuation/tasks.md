@@ -122,10 +122,10 @@ description: "Tareas de implementacion para la valuacion de tokens de jugadores"
 
 **Purpose**: Validar la feature completa y conservar documentación y arquitectura.
 
-- [ ] T048 [P] Actualizar escenarios de rollback, idempotencia, pendientes y recalculo manual en `backend/specs/012-token-valuation/quickstart.md`
-- [ ] T049 [P] Actualizar la coleccion Postman con ejemplos de errores y respuestas de todos los endpoints en `backend/postman/token-valuation.postman_collection.json`
-- [ ] T050 Ejecutar `backend/gradlew.bat :app:test` y corregir fallos de compilacion, unitarios, Testcontainers y MockMvc en `backend/`
-- [ ] T051 Revisar separacion Model/Service/Controller/Persistence, logs de errores operativos y mensajes en espanol en `backend/app/src/main/java/com/dappunq`
+- [X] T048 [P] Actualizar escenarios de rollback, idempotencia, pendientes y recalculo manual en `backend/specs/012-token-valuation/quickstart.md`
+- [X] T049 [P] Actualizar la coleccion Postman con ejemplos de errores y respuestas de todos los endpoints en `backend/postman/token-valuation.postman_collection.json`
+- [X] T050 Ejecutar `backend/gradlew.bat :app:test` y corregir fallos de compilacion, unitarios, Testcontainers y MockMvc en `backend/`
+- [X] T051 Revisar separacion Model/Service/Controller/Persistence, logs de errores operativos y mensajes en espanol en `backend/app/src/main/java/com/dappunq`
 
 ## Dependencies & Execution Order
 

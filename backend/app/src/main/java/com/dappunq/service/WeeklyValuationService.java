@@ -17,6 +17,8 @@ import com.dappunq.persistence.ValuationHistoryEntity;
 import com.dappunq.persistence.ValuationHistoryRepository;
 import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,8 @@ import java.util.List;
 
 @Service
 public class WeeklyValuationService {
+
+    private static final Logger log = LoggerFactory.getLogger(WeeklyValuationService.class);
 
     private final WhoScoredScrapingService scrapingService;
     private final PlayerRepository playerRepository;
@@ -71,15 +75,18 @@ public class WeeklyValuationService {
 
     @Transactional
     public RecalculationResult execute(ExecutionType executionType) {
+        log.info("Iniciando ejecucion de valuacion tipo {} con limite de {} jugadores", executionType, playersLimit);
         scrapingService.scrape(playersLimit != null ? playersLimit : "50");
 
         List<PlayerEntity> snapshot = playerRepository.findAll();
         if (snapshot == null || snapshot.isEmpty()) {
+            log.error("Fallo de snapshot: la lista de jugadores obtenida tras el scrape esta vacia o incompleta");
             throw ValuationDomainException.snapshotFailure("Snapshot de jugadores vacio o incompleto");
         }
 
         // 1. Aplicar estrategias pendientes antes de recalcular
         List<StrategyConfigEntity> pendingList = strategyConfigRepository.findAllByEstado(StrategyStatus.PENDIENTE);
+        log.info("Aplicando {} estrategias pendientes a estado ACTUAL", pendingList.size());
         for (StrategyConfigEntity pending : pendingList) {
             strategyConfigRepository.findFirstByUserIdAndEstado(pending.getUser().getId(), StrategyStatus.ACTUAL)
                     .ifPresent(strategyConfigRepository::delete);
@@ -128,6 +135,7 @@ public class WeeklyValuationService {
             }
         }
 
+        log.info("Valuacion tipo {} completada. Jugadores: {}, tenencias recalculadas: {}", executionType, snapshot.size(), recalculatedHoldings);
         return new RecalculationResult("COMPLETED", snapshot.size(), recalculatedHoldings, Instant.now(clock));
     }
 }
