@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/quotes/recalculate").permitAll()
                         .requestMatchers(HttpMethod.POST, "/scrape").hasAuthority("scraping")
                         .requestMatchers(HttpMethod.GET, "/users/**", "/players", "/players/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/users/{usuarioId}/strategy").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> writeUnauthorized(response))
