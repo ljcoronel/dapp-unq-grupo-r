@@ -24,6 +24,7 @@ public class SuperuserInitializationService {
 
     private final JpaUserEntityRepository userRepository;
     private final StrategyConfigRepository strategyConfigRepository;
+    private final HoldingsValuationService holdingsValuationService;
     private final ValuationPersistenceMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -33,11 +34,12 @@ public class SuperuserInitializationService {
     public SuperuserInitializationService(JpaUserEntityRepository userRepository,
                                           StrategyConfigRepository strategyConfigRepository,
                                           ValuationPersistenceMapper mapper,
-                                          PasswordEncoder passwordEncoder) {
+                                          PasswordEncoder passwordEncoder, HoldingsValuationService holdingsValuationService) {
         this.userRepository = userRepository;
         this.strategyConfigRepository = strategyConfigRepository;
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
+        this.holdingsValuationService = holdingsValuationService;
     }
 
     public void setSuperuserUsername(String superuserUsername) {
@@ -73,6 +75,9 @@ public class SuperuserInitializationService {
                             StrategyStatus.ACTUAL,
                             Instant.now()
                     );
+                    // Tengo que hacer que se setee la estrategia
+                    // Después hacer revalue (y eso lo debería hacer el seteo de estrategia
+                    // holdingsValuationService.revalue(superuser.getId(), )
                     return strategyConfigRepository.save(config);
                 });
     }

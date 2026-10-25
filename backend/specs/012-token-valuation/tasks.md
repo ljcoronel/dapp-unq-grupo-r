@@ -202,3 +202,8 @@ Task: "T034 [US3] Probar scheduler"
 - [X] T053 Refactorizar `StrategyConfigurationService` y `HoldingsValuationService` para retornar modelos de dominio (`StrategyState`, `Holding`, `ValuationHistoryRecord`) y utilizar `ValuationDtoMapper` en `ValuationControllerRest` per Constitution II (contradicts)
 - [X] T054 Implementar pruebas unitarias completas de calculo, normalizacion [0,1], metricas faltantes en cero, regla Defender y redondeo a dos decimales en `PlayerValuationCalculatorTest` per T015 / US1 (partial)
 
+## Phase 9: Convergence
+
+- [ ] T055 [CRITICAL] Desacoplar `WeeklyValuationService` de los DTOs de controlador definiendo el modelo de dominio `RecalculationSummary` en `com.dappunq.model.valuation`, retornándolo desde el servicio y mapeándolo a `RecalculationResult` mediante `ValuationDtoMapper` en `QuoteControllerRest` per Constitution II (contradicts)
+
+

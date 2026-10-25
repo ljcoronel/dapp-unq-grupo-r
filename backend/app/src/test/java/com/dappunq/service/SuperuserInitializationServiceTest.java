@@ -33,7 +33,11 @@ class SuperuserInitializationServiceTest {
     private StrategyConfigRepository strategyConfigRepository;
 
     @Mock
+    private HoldingsValuationService holdingsValuationService;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
+
 
     private final ValuationPersistenceMapper mapper = new ValuationPersistenceMapper();
     private SuperuserInitializationService suService;
@@ -41,7 +45,7 @@ class SuperuserInitializationServiceTest {
 
     @BeforeEach
     void setUp() {
-        suService = new SuperuserInitializationService(userRepository, strategyConfigRepository, mapper, passwordEncoder);
+        suService = new SuperuserInitializationService(userRepository, strategyConfigRepository, mapper, passwordEncoder, holdingsValuationService);
         superuser = new UserEntity(999L, "superuser", "hash999");
     }
 
