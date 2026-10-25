@@ -1,11 +1,11 @@
 package com.dappunq.service;
 
-import com.dappunq.dto.valuation.StrategyConfigDto;
 import com.dappunq.dto.valuation.StrategyRequest;
-import com.dappunq.dto.valuation.StrategyStateResponse;
 import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.StrategyConfig;
+import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.StrategyStatus;
+import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.model.valuation.ValuationDomainException;
 import com.dappunq.persistence.JpaUserEntityRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
@@ -15,7 +15,9 @@ import com.dappunq.persistence.ValuationPersistenceMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -38,7 +40,7 @@ public class StrategyConfigurationService {
     }
 
     @Transactional
-    public StrategyStateResponse configure(Long id, StrategyRequest r) {
+    public StrategyState configure(Long id, StrategyRequest r) {
         UserEntity u = users.findById(id).orElseThrow(() -> new NoSuchElementException("Usuario inexistente"));
         StrategyConfig domain = new StrategyConfig(r.estrategia(), r.pesos());
 
@@ -66,28 +68,38 @@ public class StrategyConfigurationService {
             holdings.revalue(id, saved, ExecutionType.MANUAL);
         }
 
-        StrategyConfigDto actualDto = current
-                .map(c -> new StrategyConfigDto(c.getEstrategia(), mapper.read(c.getPesos()), c.getVigenteDesde()))
-                .orElse(targetStatus == StrategyStatus.ACTUAL
-                        ? new StrategyConfigDto(saved.getEstrategia(), domain.weights(), saved.getVigenteDesde())
-                        : null);
+        StrategyType estrategiaActual = current
+                .map(StrategyConfigEntity::getEstrategia)
+                .orElse(targetStatus == StrategyStatus.ACTUAL ? saved.getEstrategia() : null);
 
-        StrategyConfigDto pendienteDto = (targetStatus == StrategyStatus.PENDIENTE)
-                ? new StrategyConfigDto(saved.getEstrategia(), domain.weights(), saved.getVigenteDesde())
-                : null;
+        Map<String, BigDecimal> pesosActual = current
+                .map(c -> mapper.read(c.getPesos()))
+                .orElse(targetStatus == StrategyStatus.ACTUAL ? domain.weights() : null);
 
-        return new StrategyStateResponse(
+        Instant vigenteDesdeActual = current
+                .map(StrategyConfigEntity::getVigenteDesde)
+                .orElse(targetStatus == StrategyStatus.ACTUAL ? saved.getVigenteDesde() : null);
+
+        StrategyType estrategiaPendiente = (targetStatus == StrategyStatus.PENDIENTE) ? saved.getEstrategia() : null;
+        Map<String, BigDecimal> pesosPendiente = (targetStatus == StrategyStatus.PENDIENTE) ? domain.weights() : null;
+        Instant vigentesDesdePendiente = (targetStatus == StrategyStatus.PENDIENTE) ? saved.getVigenteDesde() : null;
+
+        return new StrategyState(
                 saved.getEstrategia(),
                 domain.weights(),
                 targetStatus,
                 saved.getVigenteDesde(),
-                actualDto,
-                pendienteDto
+                estrategiaActual,
+                pesosActual,
+                vigenteDesdeActual,
+                estrategiaPendiente,
+                pesosPendiente,
+                vigentesDesdePendiente
         );
     }
 
     @Transactional
-    public StrategyStateResponse configurePending(Long id, StrategyRequest r) {
+    public StrategyState configurePending(Long id, StrategyRequest r) {
         Optional<StrategyConfigEntity> current = configs.findFirstByUserIdAndEstado(id, StrategyStatus.ACTUAL);
         if (current.isEmpty()) {
             throw ValuationDomainException.pendingWithoutCurrent();
@@ -96,33 +108,37 @@ public class StrategyConfigurationService {
     }
 
     @Transactional(readOnly = true)
-    public StrategyStateResponse get(Long id) {
+    public StrategyState get(Long id) {
         users.findById(id).orElseThrow(() -> new NoSuchElementException("Usuario inexistente"));
         Optional<StrategyConfigEntity> actual = configs.findFirstByUserIdAndEstado(id, StrategyStatus.ACTUAL);
         Optional<StrategyConfigEntity> pendiente = configs.findFirstByUserIdAndEstado(id, StrategyStatus.PENDIENTE);
 
         if (actual.isEmpty() && pendiente.isEmpty()) {
-            return new StrategyStateResponse(null, null, StrategyStatus.SIN_ESTRATEGIA, null, null, null);
+            return new StrategyState(null, null, StrategyStatus.SIN_ESTRATEGIA, null, null, null, null, null, null, null);
         }
 
-        StrategyConfigDto actualDto = actual
-                .map(e -> new StrategyConfigDto(e.getEstrategia(), mapper.read(e.getPesos()), e.getVigenteDesde()))
-                .orElse(null);
+        StrategyType estrategiaActual = actual.map(StrategyConfigEntity::getEstrategia).orElse(null);
+        Map<String, BigDecimal> pesosActual = actual.map(e -> mapper.read(e.getPesos())).orElse(null);
+        Instant vigenteDesdeActual = actual.map(StrategyConfigEntity::getVigenteDesde).orElse(null);
 
-        StrategyConfigDto pendienteDto = pendiente
-                .map(e -> new StrategyConfigDto(e.getEstrategia(), mapper.read(e.getPesos()), e.getVigenteDesde()))
-                .orElse(null);
+        StrategyType estrategiaPendiente = pendiente.map(StrategyConfigEntity::getEstrategia).orElse(null);
+        Map<String, BigDecimal> pesosPendiente = pendiente.map(e -> mapper.read(e.getPesos())).orElse(null);
+        Instant vigentesDesdePendiente = pendiente.map(StrategyConfigEntity::getVigenteDesde).orElse(null);
 
         StrategyStatus status = pendiente.isPresent() ? StrategyStatus.PENDIENTE : StrategyStatus.ACTUAL;
         StrategyConfigEntity main = pendiente.orElseGet(actual::get);
 
-        return new StrategyStateResponse(
+        return new StrategyState(
                 main.getEstrategia(),
                 mapper.read(main.getPesos()),
                 status,
                 main.getVigenteDesde(),
-                actualDto,
-                pendienteDto
+                estrategiaActual,
+                pesosActual,
+                vigenteDesdeActual,
+                estrategiaPendiente,
+                pesosPendiente,
+                vigentesDesdePendiente
         );
     }
 }

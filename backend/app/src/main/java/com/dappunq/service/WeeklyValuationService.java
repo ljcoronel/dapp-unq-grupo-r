@@ -2,6 +2,7 @@ package com.dappunq.service;
 
 import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.PlayerValuationCalculator;
 import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyStatus;
@@ -84,6 +85,8 @@ public class WeeklyValuationService {
             throw ValuationDomainException.snapshotFailure("Snapshot de jugadores vacio o incompleto");
         }
 
+        List<PlayerSnapshot> playerSnapshots = snapshot.stream().map(mapper::toSnapshot).toList();
+
         // 1. Aplicar estrategias pendientes antes de recalcular
         List<StrategyConfigEntity> pendingList = strategyConfigRepository.findAllByEstado(StrategyStatus.PENDIENTE);
         log.info("Aplicando {} estrategias pendientes a estado ACTUAL", pendingList.size());
@@ -106,7 +109,8 @@ public class WeeklyValuationService {
             List<HoldingEntity> userHoldings = holdingRepository.findByUserId(userId);
 
             for (HoldingEntity holding : userHoldings) {
-                BigDecimal unitValue = calculator.calculate(holding.getPlayer(), domain, snapshot);
+                PlayerSnapshot playerSnapshot = mapper.toSnapshot(holding.getPlayer());
+                BigDecimal unitValue = calculator.calculate(playerSnapshot, domain, playerSnapshots);
                 holding.valuate(unitValue);
                 holdingRepository.save(holding);
 

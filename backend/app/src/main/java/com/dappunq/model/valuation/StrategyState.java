@@ -47,4 +47,9 @@ public class StrategyState {
     public StrategyType getEstrategiaPendiente() { return estrategiaPendiente; }
     public Map<String, BigDecimal> getPesosPendiente() { return pesosPendiente; }
     public Instant getVigentesDesdePendiente() { return vigentesDesdePendiente; }
+
+    public StrategyType estrategia() { return estrategia; }
+    public Map<String, BigDecimal> pesos() { return pesos; }
+    public StrategyStatus estado() { return estado; }
+    public Instant vigenteDesde() { return vigenteDesde; }
 }

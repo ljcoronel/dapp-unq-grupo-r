@@ -1,10 +1,11 @@
 package com.dappunq.service;
 
-import com.dappunq.dto.valuation.HoldingHistoryResponse;
-import com.dappunq.dto.valuation.HoldingResponse;
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.Holding;
+import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.PlayerValuationCalculator;
 import com.dappunq.model.valuation.StrategyConfig;
+import com.dappunq.model.valuation.ValuationHistoryRecord;
 import com.dappunq.persistence.HoldingEntity;
 import com.dappunq.persistence.HoldingRepository;
 import com.dappunq.persistence.PlayerEntity;
@@ -49,13 +50,15 @@ public class HoldingsValuationService {
 
     @Transactional
     public int revalue(Long userId, StrategyConfigEntity ce, ExecutionType type) {
-        List<PlayerEntity> snapshot = players.findAll();
+        List<PlayerEntity> playerEntities = players.findAll();
+        List<PlayerSnapshot> snapshot = playerEntities.stream().map(mapper::toSnapshot).toList();
         StrategyConfig c = new StrategyConfig(ce.getEstrategia(), mapper.read(ce.getPesos()));
         int n = 0;
         String window = LocalDate.now().toString() + "-" + type;
 
         for (HoldingEntity h : holdings.findByUserId(userId)) {
-            BigDecimal v = calculator.calculate(h.getPlayer(), c, snapshot);
+            PlayerSnapshot playerSnapshot = mapper.toSnapshot(h.getPlayer());
+            BigDecimal v = calculator.calculate(playerSnapshot, c, snapshot);
             h.valuate(v);
             holdings.save(h);
             history.save(new ValuationHistoryEntity(h.getUser(), h.getPlayer(), h.getTokens(), v, c.strategy(), window, type));
@@ -65,31 +68,15 @@ public class HoldingsValuationService {
         return n;
     }
 
-    public List<HoldingResponse> list(Long id) {
+    public List<Holding> list(Long id) {
         return holdings.findByUserId(id).stream()
-                .map(h -> new HoldingResponse(
-                        h.getId(),
-                        h.getUser().getId(),
-                        h.getPlayer().getId(),
-                        h.getTokens(),
-                        h.getValorTotal(),
-                        h.getValorUnitario()
-                ))
+                .map(mapper::toModel)
                 .toList();
     }
 
-    public List<HoldingHistoryResponse> history(Long id) {
+    public List<ValuationHistoryRecord> history(Long id) {
         return history.findByUserIdOrderByEjecutadoEnDesc(id).stream()
-                .map(h -> new HoldingHistoryResponse(
-                        h.getUser().getId(),
-                        h.getPlayer().getId(),
-                        h.getTokens(),
-                        h.getValorUnitario(),
-                        h.getValorTotal(),
-                        h.getEstrategia(),
-                        h.getEjecutadoEn(),
-                        h.getTipoEjecucion()
-                ))
+                .map(mapper::toModel)
                 .toList();
     }
 }

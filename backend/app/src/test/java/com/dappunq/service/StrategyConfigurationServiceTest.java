@@ -1,8 +1,8 @@
 package com.dappunq.service;
 
 import com.dappunq.dto.valuation.StrategyRequest;
-import com.dappunq.dto.valuation.StrategyStateResponse;
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.model.valuation.ValuationDomainException;
@@ -77,7 +77,7 @@ class StrategyConfigurationServiceTest {
         when(strategyConfigRepository.save(any(StrategyConfigEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
         StrategyRequest req = new StrategyRequest(StrategyType.ESTRATEGIA_A, validWeightsA);
-        StrategyStateResponse resp = service.configure(1L, req);
+        StrategyState resp = service.configure(1L, req);
 
         assertEquals(StrategyStatus.ACTUAL, resp.estado());
         assertEquals(StrategyType.ESTRATEGIA_A, resp.estrategia());
@@ -93,7 +93,7 @@ class StrategyConfigurationServiceTest {
         when(strategyConfigRepository.save(any(StrategyConfigEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
         StrategyRequest req = new StrategyRequest(StrategyType.ESTRATEGIA_B, validWeightsB);
-        StrategyStateResponse resp = service.configure(1L, req);
+        StrategyState resp = service.configure(1L, req);
 
         assertEquals(StrategyStatus.PENDIENTE, resp.estado());
         assertEquals(StrategyType.ESTRATEGIA_B, resp.estrategia());
@@ -111,7 +111,7 @@ class StrategyConfigurationServiceTest {
         when(strategyConfigRepository.save(any(StrategyConfigEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
         StrategyRequest req = new StrategyRequest(StrategyType.ESTRATEGIA_A, validWeightsA);
-        StrategyStateResponse resp = service.configure(1L, req);
+        StrategyState resp = service.configure(1L, req);
 
         verify(strategyConfigRepository).delete(existingPending);
         assertEquals(StrategyStatus.PENDIENTE, resp.estado());

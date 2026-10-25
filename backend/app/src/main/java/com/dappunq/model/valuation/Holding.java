@@ -6,13 +6,15 @@ import java.util.Objects;
 
 public class Holding {
 
+    private final Long id;
     private final Long usuarioId;
     private final Long jugadorId;
     private final Integer tokens;
     private BigDecimal valorUnitario;
     private BigDecimal valorTotal;
 
-    public Holding(Long usuarioId, Long jugadorId, Integer tokens, BigDecimal valorUnitario) {
+    public Holding(Long id, Long usuarioId, Long jugadorId, Integer tokens, BigDecimal valorUnitario) {
+        this.id = id;
         this.usuarioId = Objects.requireNonNull(usuarioId, "usuarioId no puede ser nulo");
         this.jugadorId = Objects.requireNonNull(jugadorId, "jugadorId no puede ser nulo");
         if (tokens == null || tokens < 0) {
@@ -25,8 +27,16 @@ public class Holding {
         this.valorTotal = this.valorUnitario.multiply(BigDecimal.valueOf(tokens)).setScale(2, RoundingMode.HALF_UP);
     }
 
+    public Holding(Long usuarioId, Long jugadorId, Integer tokens, BigDecimal valorUnitario) {
+        this(null, usuarioId, jugadorId, tokens, valorUnitario);
+    }
+
     public Holding(Long usuarioId, Long jugadorId, Integer tokens) {
-        this(usuarioId, jugadorId, tokens, BigDecimal.ZERO);
+        this(null, usuarioId, jugadorId, tokens, BigDecimal.ZERO);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Long getUsuarioId() {

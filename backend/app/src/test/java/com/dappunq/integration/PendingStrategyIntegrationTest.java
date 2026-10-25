@@ -1,7 +1,7 @@
 package com.dappunq.integration;
 
 import com.dappunq.dto.valuation.StrategyRequest;
-import com.dappunq.dto.valuation.StrategyStateResponse;
+import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.persistence.JpaUserEntityRepository;
@@ -68,7 +68,7 @@ class PendingStrategyIntegrationTest {
         weightsA.put("timesManOfTheMatch", BigDecimal.valueOf(15));
 
         // 1. Primera configuración -> ACTUAL
-        StrategyStateResponse first = strategyService.configure(user.getId(), new StrategyRequest(StrategyType.ESTRATEGIA_A, weightsA));
+        StrategyState first = strategyService.configure(user.getId(), new StrategyRequest(StrategyType.ESTRATEGIA_A, weightsA));
         assertEquals(StrategyStatus.ACTUAL, first.estado());
         assertNotNull(first.vigenteDesde());
 
@@ -79,14 +79,14 @@ class PendingStrategyIntegrationTest {
         weightsB.put("appearances", BigDecimal.valueOf(20));
 
         // 2. Segunda configuración -> PENDIENTE
-        StrategyStateResponse second = strategyService.configure(user.getId(), new StrategyRequest(StrategyType.ESTRATEGIA_B, weightsB));
+        StrategyState second = strategyService.configure(user.getId(), new StrategyRequest(StrategyType.ESTRATEGIA_B, weightsB));
         assertEquals(StrategyStatus.PENDIENTE, second.estado());
         assertNotNull(second.vigenteDesde());
 
         // 3. Tercera configuración -> Reemplaza PENDIENTE
         weightsA.put("goals", BigDecimal.valueOf(40));
         weightsA.put("assists", BigDecimal.valueOf(15));
-        StrategyStateResponse third = strategyService.configure(user.getId(), new StrategyRequest(StrategyType.ESTRATEGIA_A, weightsA));
+        StrategyState third = strategyService.configure(user.getId(), new StrategyRequest(StrategyType.ESTRATEGIA_A, weightsA));
         assertEquals(StrategyStatus.PENDIENTE, third.estado());
 
         // Validar unicidad en base de datos: exactamente 1 ACTUAL y exactamente 1 PENDIENTE

@@ -195,3 +195,10 @@ Task: "T034 [US3] Probar scheduler"
 - Las tareas de historias incluyen exactamente una etiqueta `[USn]`; `[P]` solo indica trabajo paralelizable.
 - Las pruebas se escriben antes de la implementacion y deben fallar por la funcionalidad ausente.
 - Transferencias, compras y ventas quedan fuera de alcance.
+
+## Phase 8: Convergence
+
+- [X] T052 Desacoplar `PlayerValuationCalculator` de `PlayerEntity` utilizando el modelo de dominio `PlayerSnapshot` per Constitution II (contradicts)
+- [X] T053 Refactorizar `StrategyConfigurationService` y `HoldingsValuationService` para retornar modelos de dominio (`StrategyState`, `Holding`, `ValuationHistoryRecord`) y utilizar `ValuationDtoMapper` en `ValuationControllerRest` per Constitution II (contradicts)
+- [X] T054 Implementar pruebas unitarias completas de calculo, normalizacion [0,1], metricas faltantes en cero, regla Defender y redondeo a dos decimales en `PlayerValuationCalculatorTest` per T015 / US1 (partial)
+

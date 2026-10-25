@@ -24,10 +24,14 @@ public class ValuationControllerRest {
 
     private final StrategyConfigurationService strategies;
     private final HoldingsValuationService holdings;
+    private final ValuationDtoMapper mapper;
 
-    public ValuationControllerRest(StrategyConfigurationService strategies, HoldingsValuationService holdings) {
+    public ValuationControllerRest(StrategyConfigurationService strategies,
+                                  HoldingsValuationService holdings,
+                                  ValuationDtoMapper mapper) {
         this.strategies = strategies;
         this.holdings = holdings;
+        this.mapper = mapper;
     }
 
     @PutMapping("/strategy")
@@ -38,21 +42,25 @@ public class ValuationControllerRest {
         if (targetStatus != null && targetStatus != r.estado()) {
             r = new StrategyRequest(r.estrategia(), r.pesos(), targetStatus);
         }
-        return strategies.configure(usuarioId, r);
+        return mapper.toResponse(strategies.configure(usuarioId, r));
     }
 
     @GetMapping("/strategy")
     public StrategyStateResponse get(@PathVariable Long usuarioId) {
-        return strategies.get(usuarioId);
+        return mapper.toResponse(strategies.get(usuarioId));
     }
 
     @GetMapping("/holdings")
     public List<HoldingResponse> holdings(@PathVariable Long usuarioId) {
-        return holdings.list(usuarioId);
+        return holdings.list(usuarioId).stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 
     @GetMapping("/holdings/history")
     public List<HoldingHistoryResponse> history(@PathVariable Long usuarioId) {
-        return holdings.history(usuarioId);
+        return holdings.history(usuarioId).stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 }
