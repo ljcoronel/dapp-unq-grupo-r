@@ -1,9 +1,9 @@
 package com.dappunq.service;
 
-import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.PlayerValuationCalculator;
+import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.ValuationDomainException;
@@ -75,7 +75,7 @@ public class WeeklyValuationService {
     }
 
     @Transactional
-    public RecalculationResult execute(ExecutionType executionType) {
+    public RecalculationSummary execute(ExecutionType executionType) {
         log.info("Iniciando ejecucion de valuacion tipo {} con limite de {} jugadores", executionType, playersLimit);
         scrapingService.scrape(playersLimit != null ? playersLimit : "50");
 
@@ -140,6 +140,6 @@ public class WeeklyValuationService {
         }
 
         log.info("Valuacion tipo {} completada. Jugadores: {}, tenencias recalculadas: {}", executionType, snapshot.size(), recalculatedHoldings);
-        return new RecalculationResult("COMPLETED", snapshot.size(), recalculatedHoldings, Instant.now(clock));
+        return new RecalculationSummary("COMPLETED", snapshot.size(), recalculatedHoldings, Instant.now(clock));
     }
 }

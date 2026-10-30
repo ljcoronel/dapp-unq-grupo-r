@@ -1,7 +1,7 @@
 package com.dappunq.integration;
 
-import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.persistence.HoldingEntity;
@@ -145,7 +145,7 @@ class WeeklyValuationIntegrationTest {
 
     @Test
     void ejecucionValuacionSemanalAplicaPendientesCreaSnapshotsYEsIdempotente() {
-        RecalculationResult firstResult = weeklyValuationService.execute(ExecutionType.DOMINICAL);
+        RecalculationSummary firstResult = weeklyValuationService.execute(ExecutionType.DOMINICAL);
         assertEquals("COMPLETED", firstResult.status());
         assertEquals(2, firstResult.recalculatedHoldings());
 
@@ -170,7 +170,7 @@ class WeeklyValuationIntegrationTest {
         assertEquals(0, historyNoStrat.size());
 
         // Idempotencia: reejecutar en la misma ventana no debe duplicar historial ni valuaciones
-        RecalculationResult secondResult = weeklyValuationService.execute(ExecutionType.DOMINICAL);
+        RecalculationSummary secondResult = weeklyValuationService.execute(ExecutionType.DOMINICAL);
         assertEquals("COMPLETED", secondResult.status());
 
         List<ValuationHistoryEntity> totalHistory = valuationHistoryRepository.findAll();

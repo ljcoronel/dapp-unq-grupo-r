@@ -2,6 +2,7 @@ package com.dappunq.controller;
 
 import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.service.WeeklyValuationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,16 +21,20 @@ public class QuoteControllerRest {
     private static final Logger log = LoggerFactory.getLogger(QuoteControllerRest.class);
 
     private final WeeklyValuationService weeklyValuationService;
+    private final ValuationDtoMapper valuationDtoMapper;
 
-    public QuoteControllerRest(WeeklyValuationService weeklyValuationService) {
+    public QuoteControllerRest(WeeklyValuationService weeklyValuationService,
+                               ValuationDtoMapper valuationDtoMapper) {
         this.weeklyValuationService = weeklyValuationService;
+        this.valuationDtoMapper = valuationDtoMapper;
     }
 
     @PostMapping("/recalculate")
     public ResponseEntity<?> recalculate() {
         log.info("Recibida peticion publica para recalculo manual de cotizaciones");
         try {
-            RecalculationResult result = weeklyValuationService.execute(ExecutionType.MANUAL);
+            RecalculationSummary summary = weeklyValuationService.execute(ExecutionType.MANUAL);
+            RecalculationResult result = valuationDtoMapper.toResponse(summary);
             log.info("Recalculo manual completado exitosamente: {}", result);
             return ResponseEntity.ok(result);
         } catch (Exception e) {

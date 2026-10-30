@@ -2,9 +2,11 @@ package com.dappunq.controller;
 
 import com.dappunq.dto.valuation.HoldingHistoryResponse;
 import com.dappunq.dto.valuation.HoldingResponse;
+import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.dto.valuation.StrategyConfigDto;
 import com.dappunq.dto.valuation.StrategyStateResponse;
 import com.dappunq.model.valuation.Holding;
+import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.ValuationHistoryRecord;
 import com.dappunq.persistence.HoldingEntity;
@@ -64,6 +66,18 @@ public class ValuationDtoMapper {
                 r.getEstrategia(),
                 r.getEjecutadoEn(),
                 r.getTipoEjecucion()
+        );
+    }
+
+    public RecalculationResult toResponse(RecalculationSummary summary) {
+        if (summary == null) {
+            return null;
+        }
+        return new RecalculationResult(
+                summary.getStatus(),
+                summary.getPlayersScraped(),
+                summary.getRecalculatedHoldings(),
+                summary.getExecutedAt()
         );
     }
 

@@ -1,7 +1,7 @@
 package com.dappunq.service;
 
-import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.model.valuation.ValuationDomainException;
@@ -115,7 +115,7 @@ class WeeklyValuationServiceTest {
         HoldingEntity holding = new HoldingEntity(userWithStrategy, player, 100);
         when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding));
 
-        RecalculationResult result = service.execute(ExecutionType.DOMINICAL);
+        RecalculationSummary result = service.execute(ExecutionType.DOMINICAL);
 
         InOrder inOrder = inOrder(scrapingService, playerRepository, holdingRepository);
         inOrder.verify(scrapingService).scrape("50");
@@ -158,7 +158,7 @@ class WeeklyValuationServiceTest {
         HoldingEntity holding1 = new HoldingEntity(userWithStrategy, player, 100);
         when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding1));
 
-        RecalculationResult result = service.execute(ExecutionType.DOMINICAL);
+        RecalculationSummary result = service.execute(ExecutionType.DOMINICAL);
 
         verify(holdingRepository).findByUserId(1L);
         verify(holdingRepository, never()).findByUserId(2L);

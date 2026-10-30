@@ -75,9 +75,6 @@ public class SuperuserInitializationService {
                             StrategyStatus.ACTUAL,
                             Instant.now()
                     );
-                    // Tengo que hacer que se setee la estrategia
-                    // Después hacer revalue (y eso lo debería hacer el seteo de estrategia
-                    // holdingsValuationService.revalue(superuser.getId(), )
                     return strategyConfigRepository.save(config);
                 });
     }

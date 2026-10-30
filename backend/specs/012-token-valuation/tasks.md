@@ -204,6 +204,6 @@ Task: "T034 [US3] Probar scheduler"
 
 ## Phase 9: Convergence
 
-- [ ] T055 [CRITICAL] Desacoplar `WeeklyValuationService` de los DTOs de controlador definiendo el modelo de dominio `RecalculationSummary` en `com.dappunq.model.valuation`, retornándolo desde el servicio y mapeándolo a `RecalculationResult` mediante `ValuationDtoMapper` en `QuoteControllerRest` per Constitution II (contradicts)
+- [X] T055 [CRITICAL] Desacoplar `WeeklyValuationService` de los DTOs de controlador definiendo el modelo de dominio `RecalculationSummary` en `com.dappunq.model.valuation`, retornándolo desde el servicio y mapeándolo a `RecalculationResult` mediante `ValuationDtoMapper` en `QuoteControllerRest` per Constitution II (contradicts)
 
 

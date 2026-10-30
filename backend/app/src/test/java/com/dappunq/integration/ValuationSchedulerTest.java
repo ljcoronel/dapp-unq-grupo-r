@@ -1,8 +1,8 @@
 package com.dappunq.integration;
 
 import com.dappunq.config.ValuationScheduler;
-import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.service.WeeklyValuationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +32,7 @@ class ValuationSchedulerTest {
     @Test
     void delegaAlServicioDeValuacionSemanalConTipoDominical() {
         when(weeklyValuationService.execute(eq(ExecutionType.DOMINICAL)))
-                .thenReturn(new RecalculationResult("COMPLETED", 50, 10, Instant.now()));
+                .thenReturn(new RecalculationSummary("COMPLETED", 50, 10, Instant.now()));
 
         valuationScheduler.executeWeeklyValuation();
 
