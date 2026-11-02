@@ -35,9 +35,9 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 
 **⚠️ CRITICAL**: El trabajo en historias de usuario no puede comenzar hasta completar esta fase para evitar inconsistencias de firma y compilación.
 
-- [ ] T003 [P] Declarar la constante estática `FACTOR_ESCALA = BigDecimal.valueOf(2)` y extender la firma de cálculo para recibir `BigDecimal valorBase` en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
-- [ ] T004 Adaptar la invocación de `calculate` en los servicios de valuación pasando `valorBase` obtenido de `HoldingEntity.getValorUnitario()` en `backend/app/src/main/java/com/dappunq/service/HoldingsValuationService.java` y `backend/app/src/main/java/com/dappunq/service/WeeklyValuationService.java`
-- [ ] T005 [P] Adaptar tests unitarios existentes que invocan `calculate` para contemplar el nuevo parámetro `valorBase` y asegurar compilación limpia en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java` y `backend/app/src/test/java/com/dappunq/service/WeeklyValuationServiceTest.java`
+- [X] T003 [P] Declarar la constante estática `FACTOR_ESCALA = BigDecimal.valueOf(2)` y extender la firma de cálculo para recibir `BigDecimal valorBase` en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
+- [X] T004 Adaptar la invocación de `calculate` en los servicios de valuación pasando `valorBase` obtenido de `HoldingEntity.getValorUnitario()` en `backend/app/src/main/java/com/dappunq/service/HoldingsValuationService.java` y `backend/app/src/main/java/com/dappunq/service/WeeklyValuationService.java`
+- [X] T005 [P] Adaptar tests unitarios existentes que invocan `calculate` para contemplar el nuevo parámetro `valorBase` y asegurar compilación limpia en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java` y `backend/app/src/test/java/com/dappunq/service/WeeklyValuationServiceTest.java`
 
 **Checkpoint**: Base de compilación lista — la implementación de historias de usuario puede comenzar.
 
@@ -53,7 +53,7 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 
 > **NOTE: Escribir estos tests primero y verificar que fallen antes de completar la implementación.**
 
-- [ ] T006 [P] [US1] Crear tests unitarios verificando fórmula acumulativa con `valorBase = 0` y `valorBase > 0` en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
+- [X] T006 [P] [US1] Crear tests unitarios verificando fórmula acumulativa con `valorBase = 0` y `valorBase > 0` en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
 - [ ] T007 [P] [US1] Crear test de servicio verificando que `HoldingsValuationService.revalue()` lee el `valorBase` persistido previo y actualiza tenencias e historial con el acumulado en `backend/app/src/test/java/com/dappunq/service/HoldingsValuationServiceTest.java`
 - [ ] T008 [P] [US1] Crear test de servicio verificando que `WeeklyValuationService.execute()` lee `valorBase` persistido para cada tenencia y persiste el valor acumulativo en `backend/app/src/test/java/com/dappunq/service/WeeklyValuationServiceTest.java`
 - [ ] T009 [P] [US1] Crear test de integración con Testcontainers verificando la acumulación de valor en PostgreSQL tras múltiples valuaciones consecutivas en `backend/app/src/test/java/com/dappunq/integration/ValuationPersistenceIntegrationTest.java`
@@ -62,10 +62,10 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 
 ### Implementation for User Story 1
 
-- [ ] T012 [US1] Implementar en el modelo de cálculo la suma `valorBase + (result * FACTOR_ESCALA)` garantizando que `valorBase` nulo sea tratado como 0 en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
-- [ ] T013 [US1] Asegurar que `HoldingsValuationService.revalue()` extraiga `valorBase` de `h.getValorUnitario()` antes del cálculo y actualice `HoldingEntity` y `ValuationHistoryEntity` con el valor acumulado en `backend/app/src/main/java/com/dappunq/service/HoldingsValuationService.java`
-- [ ] T014 [US1] Asegurar que `WeeklyValuationService.execute()` extraiga `valorBase` de `holding.getValorUnitario()` antes del cálculo y registre `ValuationEntity` y `ValuationHistoryEntity` con el valor acumulado en `backend/app/src/main/java/com/dappunq/service/WeeklyValuationService.java`
-- [ ] T015 [US1] Asegurar que al configurar la primera estrategia de un usuario en `StrategyConfigurationService`, las tenencias iniciales se valúen con `valorBase = 0` acumulando determinísticamente en `backend/app/src/main/java/com/dappunq/service/StrategyConfigurationService.java`
+- [X] T012 [US1] Implementar en el modelo de cálculo la suma `valorBase + (result * FACTOR_ESCALA)` garantizando que `valorBase` nulo sea tratado como 0 en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
+- [X] T013 [US1] Asegurar que `HoldingsValuationService.revalue()` extraiga `valorBase` de `h.getValorUnitario()` antes del cálculo y actualice `HoldingEntity` y `ValuationHistoryEntity` con el valor acumulado en `backend/app/src/main/java/com/dappunq/service/HoldingsValuationService.java`
+- [X] T014 [US1] Asegurar que `WeeklyValuationService.execute()` extraiga `valorBase` de `holding.getValorUnitario()` antes del cálculo y registre `ValuationEntity` y `ValuationHistoryEntity` con el valor acumulado en `backend/app/src/main/java/com/dappunq/service/WeeklyValuationService.java`
+- [X] T015 [US1] Asegurar que al configurar la primera estrategia de un usuario en `StrategyConfigurationService`, las tenencias iniciales se valúen con `valorBase = 0` acumulando determinísticamente en `backend/app/src/main/java/com/dappunq/service/StrategyConfigurationService.java`
 
 **Checkpoint**: User Story 1 completa y verificable independientemente como MVP.
 
@@ -79,14 +79,14 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 
 ### Tests for User Story 2
 
-- [ ] T016 [P] [US2] Crear tests unitarios verificando que `factorEscala` multiplica exactamente por 2 y que con `result = 0.00` el valor final no varía respecto a `valorBase` en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
-- [ ] T017 [P] [US2] Crear tests unitarios para verificar la regla de redondeo `HALF_UP` a 2 decimales aplicada al valor compuesto final (sin redondeos truncados intermedios) en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
-- [ ] T018 [P] [US2] Crear tests unitarios para casos de borde de la fórmula (métricas faltantes tratadas como cero, bonus de Defender en Estrategia B y jugador en snapshot sin datos) en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
+- [X] T016 [P] [US2] Crear tests unitarios verificando que `factorEscala` multiplica exactamente por 2 y que con `result = 0.00` el valor final no varía respecto a `valorBase` en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
+- [X] T017 [P] [US2] Crear tests unitarios para verificar la regla de redondeo `HALF_UP` a 2 decimales aplicada al valor compuesto final (sin redondeos truncados intermedios) en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
+- [X] T018 [P] [US2] Crear tests unitarios para casos de borde de la fórmula (métricas faltantes tratadas como cero, bonus de Defender en Estrategia B y jugador en snapshot sin datos) en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Refinar el método `calculate` para aplicar `valorBase.add(result.multiply(FACTOR_ESCALA)).setScale(2, RoundingMode.HALF_UP)` como expresión final única en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
-- [ ] T020 [US2] Validar invariantes de dominio: lanzar `ValuationDomainException` o tratar defensivamente `valorBase` negativo antes del cálculo en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
+- [X] T019 [US2] Refinar el método `calculate` para aplicar `valorBase.add(result.multiply(FACTOR_ESCALA)).setScale(2, RoundingMode.HALF_UP)` como expresión final única en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
+- [X] T020 [US2] Validar invariantes de dominio: lanzar `ValuationDomainException` o tratar defensivamente `valorBase` negativo antes del cálculo en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
 
 **Checkpoint**: User Story 2 completa. La fórmula matemática es determinista, uniforme y cumple con las precisiones requeridas.
 
@@ -108,9 +108,9 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 
 ### Implementation for User Story 3
 
-- [ ] T026 [US3] Inyectar `InitialHoldingsService` y refactorizar `SuperuserInitializationService` implementando el método orquestador `initializeSuperuser()` que ejecuta el flujo 1→2→3 de forma transaccional e idempotente en `backend/app/src/main/java/com/dappunq/service/SuperuserInitializationService.java`
-- [ ] T027 [US3] Implementar o actualizar el runner de inicialización (`ApplicationRunner` con orden adecuado) para disparar `initializeSuperuser()` al arranque del sistema en `backend/app/src/main/java/com/dappunq/config/AppCommandConfig.java`
-- [ ] T028 [US3] Garantizar tolerancia a catálogo vacío: si no hay jugadores registrados al arrancar, el flujo de tenencias e inicialización de estrategia no debe fallar en `backend/app/src/main/java/com/dappunq/service/SuperuserInitializationService.java`
+- [X] T026 [US3] Inyectar `InitialHoldingsService` y refactorizar `SuperuserInitializationService` implementando el método orquestador `initializeSuperuser()` que ejecuta el flujo 1→2→3 de forma transaccional e idempotente en `backend/app/src/main/java/com/dappunq/service/SuperuserInitializationService.java`
+- [X] T027 [US3] Implementar o actualizar el runner de inicialización (`ApplicationRunner` con orden adecuado) para disparar `initializeSuperuser()` al arranque del sistema en `backend/app/src/main/java/com/dappunq/config/AppCommandConfig.java`
+- [X] T028 [US3] Garantizar tolerancia a catálogo vacío: si no hay jugadores registrados al arrancar, el flujo de tenencias e inicialización de estrategia no debe fallar en `backend/app/src/main/java/com/dappunq/service/SuperuserInitializationService.java`
 
 **Checkpoint**: User Story 3 completa. El Superusuario cuenta con estrategia activa y catálogo valorizado desde el primer arranque.
 
@@ -120,8 +120,8 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 
 **Purpose**: Verificación integral, documentación y validación de escenarios de arranque y revaluación.
 
-- [ ] T029 [P] Documentar el comportamiento de valuación acumulativa y el estado inicial del superusuario en `backend/app/src/main/resources/static/openapi.yaml`
-- [ ] T030 Ejecutar la suite completa de pruebas (`./gradlew test`) asegurando paso limpio de tests unitarios, de integración y E2E en `backend/app`
+- [X] T029 [P] Documentar el comportamiento de valuación acumulativa y el estado inicial del superusuario en `backend/app/src/main/resources/static/openapi.yaml`
+- [X] T030 Ejecutar la suite completa de pruebas (`./gradlew test`) asegurando paso limpio de tests unitarios, de integración y E2E en `backend/app`
 - [ ] T031 Ejecutar las validaciones funcionales y escenarios de idempotencia descritos en `backend/specs/013-valuation-refactor/quickstart.md`
 
 ---

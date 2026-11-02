@@ -8,9 +8,12 @@ import com.dappunq.persistence.LeagueEntity;
 import com.dappunq.persistence.LeagueRepository;
 import com.dappunq.persistence.PlayerEntity;
 import com.dappunq.persistence.PlayerRepository;
+import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.UserEntity;
+import com.dappunq.persistence.ValuationHistoryRepository;
+import com.dappunq.persistence.ValuationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +57,24 @@ class InitialHoldingsIntegrationTest {
     @Autowired
     private LeagueRepository leagueRepository;
 
+    @Autowired
+    private StrategyConfigRepository strategyConfigRepository;
+
+    @Autowired
+    private ValuationRepository valuationRepository;
+
+    @Autowired
+    private ValuationHistoryRepository valuationHistoryRepository;
+
     private UserEntity user;
     private PlayerEntity player;
 
     @BeforeEach
     void setUp() {
         holdingRepository.deleteAll();
+        valuationHistoryRepository.deleteAll();
+        valuationRepository.deleteAll();
+        strategyConfigRepository.deleteAll();
         playerRepository.deleteAll();
         teamRepository.deleteAll();
         leagueRepository.deleteAll();

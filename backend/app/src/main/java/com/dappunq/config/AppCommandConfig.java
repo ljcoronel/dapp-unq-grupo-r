@@ -1,11 +1,13 @@
 package com.dappunq.config;
 
 import com.dappunq.service.ApiKeyService;
+import com.dappunq.service.SuperuserInitializationService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 @Configuration
 public class AppCommandConfig {
@@ -20,7 +22,14 @@ public class AppCommandConfig {
                 System.err.println("Detalle: " + describeFailure(ex));
                 System.exit(1);
             }
+
         };
+    }
+
+    @Bean
+    @Order(0)
+    public ApplicationRunner initializeSuperuserCommand(SuperuserInitializationService service) {
+        return args -> service.initializeSuperuser();
     }
 
     private String describeFailure(Throwable failure) {
