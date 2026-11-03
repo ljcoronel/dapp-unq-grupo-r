@@ -41,6 +41,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class WeeklyValuationServiceTest {
@@ -184,5 +185,26 @@ class WeeklyValuationServiceTest {
         verify(strategyConfigRepository).delete(oldActual);
         verify(strategyConfigRepository).save(pending);
         assertEquals(StrategyStatus.ACTUAL, pending.getEstado());
+    }
+
+    @Test
+    void executeAcumulaElValorBaseEnEjecucionesConsecutivas() {
+        PlayerEntity lower = new PlayerEntity(11L, "Player 2", player.getTeam(), player.getLeague(),
+                0, 180, 75, "Forward", 0, 100, 0, 0, 0, 0, 0f, 50f, 1f, 0);
+        when(playerRepository.findAll()).thenReturn(List.of(player, lower));
+        StrategyConfigEntity active = new StrategyConfigEntity(userWithStrategy, StrategyType.ESTRATEGIA_A,
+                mapper.write(validWeightsA), StrategyStatus.ACTUAL, Instant.now());
+        when(strategyConfigRepository.findAllByEstado(StrategyStatus.PENDIENTE)).thenReturn(Collections.emptyList());
+        when(strategyConfigRepository.findAllByEstado(StrategyStatus.ACTUAL)).thenReturn(List.of(active));
+        HoldingEntity holding = new HoldingEntity(userWithStrategy, player, 100, BigDecimal.valueOf(3));
+        when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding));
+
+        service.execute(ExecutionType.DOMINICAL);
+        BigDecimal first = holding.getValorUnitario();
+        service.execute(ExecutionType.DOMINICAL);
+
+        assertEquals(BigDecimal.valueOf(5.00).setScale(2), first);
+        assertEquals(BigDecimal.valueOf(7.00).setScale(2), holding.getValorUnitario());
+        verify(holdingRepository, times(2)).save(holding);
     }
 }

@@ -385,7 +385,19 @@
               "host": ["{{baseUrl}}"],
               "path": ["quotes", "recalculate"]
             },
-            "description": "Endpoint publico sin autenticacion. Ejecuta scraping de 50 jugadores, promueve estrategias pendientes y recalcula las tenencias de todos los usuarios."
+            "description": "Endpoint publico sin autenticacion. Ejecuta scraping de 50 jugadores, promueve estrategias pendientes y recalcula las tenencias de todos los usuarios.",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text",
+                  "exec": [
+                    "pm.test(\"Recalculo completado\", function () { pm.response.to.have.status(200); });",
+                    "pm.test(\"La respuesta confirma COMPLETED\", function () { pm.expect(pm.response.json().status).to.eql(\"COMPLETED\"); });"
+                  ]
+                }
+              }
+            ]
           },
           "response": [
             {

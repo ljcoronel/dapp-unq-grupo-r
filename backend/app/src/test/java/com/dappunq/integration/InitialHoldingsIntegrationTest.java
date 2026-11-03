@@ -14,6 +14,7 @@ import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.UserEntity;
 import com.dappunq.persistence.ValuationHistoryRepository;
 import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.service.SuperuserInitializationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,9 @@ class InitialHoldingsIntegrationTest {
     @Autowired
     private ValuationHistoryRepository valuationHistoryRepository;
 
+    @Autowired
+    private SuperuserInitializationService superuserInitializationService;
+
     private UserEntity user;
     private PlayerEntity player;
 
@@ -110,5 +114,20 @@ class InitialHoldingsIntegrationTest {
         assertThrows(ValuationDomainException.class, () -> {
             new HoldingEntity(user, player, -10);
         });
+    }
+
+    @Test
+    void inicializacionSuperusuarioCreaEstrategiaTenenciaYValuacion() {
+        superuserInitializationService.initializeSuperuser();
+
+        UserEntity superuser = userRepository.findByNombreIgnoreCase("superuser").orElseThrow();
+        assertEquals(1, strategyConfigRepository.findAllByUserId(superuser.getId()).size());
+        HoldingEntity holding = holdingRepository.findByUserIdAndPlayerId(superuser.getId(), player.getId())
+                .orElseThrow();
+        assertEquals(100, holding.getTokens());
+        assertEquals(2, holding.getValorUnitario().scale());
+        assertEquals(1, valuationHistoryRepository.findAll().stream()
+                .filter(history -> history.getUser().getId().equals(superuser.getId()))
+                .count());
     }
 }

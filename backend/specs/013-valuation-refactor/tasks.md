@@ -24,8 +24,8 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 
 **Purpose**: Preparar fixtures, configuración de pruebas y contratos compartidos para el refactor.
 
-- [ ] T001 [P] Actualizar la colección de Postman con requests y aserciones para valuación acumulativa y estado de tenencias del superusuario en `backend/postman/token-valuation.postman_collection.json`
-- [ ] T002 [P] Preparar fixtures y helpers de prueba para soportar tenencias con valor acumulado y datos de prueba de superusuario en `backend/app/src/test/java/com/dappunq/config/ValuationTestDataConfig.java`
+- [X] T001 [P] Actualizar la colección de Postman con requests y aserciones para valuación acumulativa y estado de tenencias del superusuario en `backend/postman/token-valuation.postman_collection.json`
+- [X] T002 [P] Preparar fixtures y helpers de prueba para soportar tenencias con valor acumulado y datos de prueba de superusuario en `backend/app/src/test/java/com/dappunq/config/ValuationTestDataConfig.java`
 
 ---
 
@@ -54,11 +54,11 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 > **NOTE: Escribir estos tests primero y verificar que fallen antes de completar la implementación.**
 
 - [X] T006 [P] [US1] Crear tests unitarios verificando fórmula acumulativa con `valorBase = 0` y `valorBase > 0` en `backend/app/src/test/java/com/dappunq/unit/PlayerValuationCalculatorTest.java`
-- [ ] T007 [P] [US1] Crear test de servicio verificando que `HoldingsValuationService.revalue()` lee el `valorBase` persistido previo y actualiza tenencias e historial con el acumulado en `backend/app/src/test/java/com/dappunq/service/HoldingsValuationServiceTest.java`
-- [ ] T008 [P] [US1] Crear test de servicio verificando que `WeeklyValuationService.execute()` lee `valorBase` persistido para cada tenencia y persiste el valor acumulativo en `backend/app/src/test/java/com/dappunq/service/WeeklyValuationServiceTest.java`
-- [ ] T009 [P] [US1] Crear test de integración con Testcontainers verificando la acumulación de valor en PostgreSQL tras múltiples valuaciones consecutivas en `backend/app/src/test/java/com/dappunq/integration/ValuationPersistenceIntegrationTest.java`
-- [ ] T010 [P] [US1] Crear test de integración verificando la ejecución semanal y manual consecutiva acumulando sobre el valor previo en `backend/app/src/test/java/com/dappunq/integration/WeeklyValuationIntegrationTest.java`
-- [ ] T011 [P] [US1] Crear test end-to-end con MockMvc verificando que `POST /quotes/recalculate` y `GET /users/{id}/holdings` reflejan los valores acumulados en `backend/app/src/test/java/com/dappunq/e2e/ValuationConfigurationE2ETest.java`
+- [X] T007 [P] [US1] Crear test de servicio verificando que `HoldingsValuationService.revalue()` lee el `valorBase` persistido previo y actualiza tenencias e historial con el acumulado en `backend/app/src/test/java/com/dappunq/service/HoldingsValuationServiceTest.java`
+- [X] T008 [P] [US1] Crear test de servicio verificando que `WeeklyValuationService.execute()` lee `valorBase` persistido para cada tenencia y persiste el valor acumulativo en `backend/app/src/test/java/com/dappunq/service/WeeklyValuationServiceTest.java`
+- [X] T009 [P] [US1] Crear test de integración con Testcontainers verificando la acumulación de valor en PostgreSQL tras múltiples valuaciones consecutivas en `backend/app/src/test/java/com/dappunq/integration/ValuationPersistenceIntegrationTest.java`
+- [X] T010 [P] [US1] Crear test de integración verificando la ejecución semanal y manual consecutiva acumulando sobre el valor previo en `backend/app/src/test/java/com/dappunq/integration/WeeklyValuationIntegrationTest.java`
+- [X] T011 [P] [US1] Crear test end-to-end con MockMvc verificando que `POST /quotes/recalculate` y `GET /users/{id}/holdings` reflejan los valores acumulados en `backend/app/src/test/java/com/dappunq/e2e/ValuationConfigurationE2ETest.java`
 
 ### Implementation for User Story 1
 
@@ -100,11 +100,11 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 
 ### Tests for User Story 3
 
-- [ ] T021 [P] [US3] Crear tests de servicio para `SuperuserInitializationService` verificando la ejecución secuencial 1→2→3 y que la valuación ocurre si la estrategia fue creada en `backend/app/src/test/java/com/dappunq/service/SuperuserInitializationServiceTest.java`
-- [ ] T022 [P] [US3] Crear tests de servicio verificando la idempotencia: si el superusuario ya cuenta con estrategia ACTUAL, no se duplica ni se revalúan sus tokens redundantemente en `backend/app/src/test/java/com/dappunq/service/SuperuserInitializationServiceTest.java`
-- [ ] T023 [P] [US3] Crear test de integración con Testcontainers verificando la inicialización completa del superusuario, sus tenencias y su valuación inicial persistida en `backend/app/src/test/java/com/dappunq/integration/InitialHoldingsIntegrationTest.java`
-- [ ] T024 [P] [US3] Crear test de integración verificando la idempotencia en reinicios sucesivos del contexto de Spring Boot en `backend/app/src/test/java/com/dappunq/integration/SuperuserStartupIntegrationTest.java`
-- [ ] T025 [P] [US3] Crear tests end-to-end con MockMvc verificando que `GET /users/{idSuperUser}/strategy` y `GET /users/{idSuperUser}/holdings` responden con datos activos y valor positivo tras el startup en `backend/app/src/test/java/com/dappunq/e2e/SuperuserStartupE2ETest.java`
+- [X] T021 [P] [US3] Crear tests de servicio para `SuperuserInitializationService` verificando la ejecución secuencial 1→2→3 y que la valuación ocurre si la estrategia fue creada en `backend/app/src/test/java/com/dappunq/service/SuperuserInitializationServiceTest.java`
+- [X] T022 [P] [US3] Crear tests de servicio verificando la idempotencia: si el superusuario ya cuenta con estrategia ACTUAL, no se duplica ni se revalúan sus tokens redundantemente en `backend/app/src/test/java/com/dappunq/service/SuperuserInitializationServiceTest.java`
+- [X] T023 [P] [US3] Crear test de integración con Testcontainers verificando la inicialización completa del superusuario, sus tenencias y su valuación inicial persistida en `backend/app/src/test/java/com/dappunq/integration/InitialHoldingsIntegrationTest.java`
+- [X] T024 [P] [US3] Crear test de integración verificando la idempotencia en reinicios sucesivos del contexto de Spring Boot en `backend/app/src/test/java/com/dappunq/integration/SuperuserStartupIntegrationTest.java`
+- [X] T025 [P] [US3] Crear tests end-to-end con MockMvc verificando que `GET /users/{idSuperUser}/strategy` y `GET /users/{idSuperUser}/holdings` responden con datos activos y valor positivo tras el startup en `backend/app/src/test/java/com/dappunq/e2e/SuperuserStartupE2ETest.java`
 
 ### Implementation for User Story 3
 
@@ -122,7 +122,7 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 
 - [X] T029 [P] Documentar el comportamiento de valuación acumulativa y el estado inicial del superusuario en `backend/app/src/main/resources/static/openapi.yaml`
 - [X] T030 Ejecutar la suite completa de pruebas (`./gradlew test`) asegurando paso limpio de tests unitarios, de integración y E2E en `backend/app`
-- [ ] T031 Ejecutar las validaciones funcionales y escenarios de idempotencia descritos en `backend/specs/013-valuation-refactor/quickstart.md`
+- [X] T031 Ejecutar las validaciones funcionales y escenarios de idempotencia descritos en `backend/specs/013-valuation-refactor/quickstart.md`
 
 ---
 
