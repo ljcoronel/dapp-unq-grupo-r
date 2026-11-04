@@ -1,6 +1,10 @@
 package com.dappunq.persistence;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import jakarta.persistence.LockModeType;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,4 +18,8 @@ public interface PlayerRepository extends JpaRepository<PlayerEntity, Long> {
     List<PlayerEntity> findByLeagueOrderByIdAsc(LeagueEntity league);
 
     List<PlayerEntity> findByLeagueIdOrderByIdAsc(Long leagueId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from PlayerEntity p where p.id = :id")
+    Optional<PlayerEntity> findByIdForUpdate(@Param("id") Long id);
 }

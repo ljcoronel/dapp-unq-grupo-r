@@ -9,6 +9,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,6 +25,14 @@ public class UserEntity {
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
+
+    @Column(name = "creditos_disponibles", nullable = false, precision = 15, scale = 2,
+            columnDefinition = "numeric(15,2) default 100.00")
+    private BigDecimal creditosDisponibles = new BigDecimal("100.00");
+
+    @Column(name = "creditos_bloqueados", nullable = false, precision = 15, scale = 2,
+            columnDefinition = "numeric(15,2) default 0.00")
+    private BigDecimal creditosBloqueados = new BigDecimal("0.00");
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -83,5 +92,25 @@ public class UserEntity {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public BigDecimal getCreditosDisponibles() {
+        return creditosDisponibles;
+    }
+
+    public BigDecimal getCreditosBloqueados() {
+        return creditosBloqueados;
+    }
+
+    public void setCreditosDisponibles(BigDecimal creditosDisponibles) {
+        if (creditosDisponibles == null || creditosDisponibles.signum() < 0) {
+            throw new IllegalArgumentException("Los créditos disponibles no pueden ser negativos");
+        }
+        this.creditosDisponibles = creditosDisponibles.setScale(2);
+    }
+
+    public void actualizarSaldoCreditos(BigDecimal disponibles, BigDecimal bloqueados) {
+        this.creditosDisponibles = disponibles;
+        this.creditosBloqueados = bloqueados;
     }
 }
