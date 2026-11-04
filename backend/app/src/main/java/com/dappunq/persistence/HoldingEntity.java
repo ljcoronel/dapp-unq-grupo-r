@@ -35,6 +35,10 @@ public class HoldingEntity {
     @Column(nullable = false)
     private Integer tokens;
 
+    @Column(name = "tokens_bloqueados", nullable = false,
+            columnDefinition = "integer not null default 0")
+    private Integer tokensBloqueados = 0;
+
     @Column(name = "valor_total", nullable = false, precision = 15, scale = 2)
     private BigDecimal valorTotal = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
 
@@ -68,6 +72,9 @@ public class HoldingEntity {
     @PrePersist
     @PreUpdate
     protected void ensureInvariants() {
+        if (tokens != null && (tokensBloqueados == null || tokensBloqueados < 0 || tokensBloqueados > tokens)) {
+            throw new ValuationDomainException("Los tokens bloqueados deben estar entre cero y la tenencia");
+        }
         if (tokens != null && valorUnitario != null) {
             this.valorUnitario = this.valorUnitario.setScale(2, RoundingMode.HALF_UP);
             this.valorTotal = this.valorUnitario.multiply(BigDecimal.valueOf(tokens)).setScale(2, RoundingMode.HALF_UP);
@@ -90,6 +97,14 @@ public class HoldingEntity {
         return tokens;
     }
 
+    public Integer getTokensBloqueados() {
+        return tokensBloqueados;
+    }
+
+    public Integer getTokensDisponibles() {
+        return tokens - tokensBloqueados;
+    }
+
     public BigDecimal getValorTotal() {
         return valorTotal;
     }
@@ -104,5 +119,10 @@ public class HoldingEntity {
         }
         this.valorUnitario = v.setScale(2, RoundingMode.HALF_UP);
         this.valorTotal = this.valorUnitario.multiply(BigDecimal.valueOf(tokens)).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public void actualizarTokens(int cantidad, int bloqueados) {
+        this.tokens = cantidad;
+        this.tokensBloqueados = bloqueados;
     }
 }

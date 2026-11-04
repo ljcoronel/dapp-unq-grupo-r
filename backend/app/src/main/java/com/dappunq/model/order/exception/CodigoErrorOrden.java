@@ -1,0 +1,11 @@
+package com.dappunq.model.order.exception;
+
+public enum CodigoErrorOrden {
+    ORDEN_INVALIDA,
+    RECURSOS_INSUFICIENTES,
+    ORDEN_NO_ENCONTRADA,
+    PROPIETARIO_INVALIDO,
+    ESTADO_ORDEN_INVALIDO,
+    ESTRATEGIA_INACTIVA,
+    JUGADOR_NO_ENCONTRADO
+}
