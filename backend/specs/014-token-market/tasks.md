@@ -3,146 +3,155 @@
 description: "Task list for the token order market feature"
 ---
 
-# Tasks: Mercado de tokens de jugadores
+# Tasks: Mercado de ordenes de tokens
 
 **Input**: Design documents from `backend/specs/014-token-market/`
 
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/orders-api.md, quickstart.md
 
-**Tests**: Unit, integration, and E2E tests are included because the plan and project constitution require coverage of domain invariants, PostgreSQL persistence/locking, and authenticated REST endpoints.
+**Tests**: Test tasks are included because the feature specification and project constitution require domain, integration, and MockMvc coverage.
 
 **Organization**: Tasks are grouped by user story so each increment can be implemented and validated independently.
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Establish the source and test structure required by the order-market implementation.
+**Purpose**: Establish the files and dependencies needed by the order-market implementation.
 
-- [ ] T001 Create the order-market package structure under `backend/app/src/main/java/com/dappunq/model/order/`, `backend/app/src/main/java/com/dappunq/dto/order/`, `backend/app/src/main/java/com/dappunq/persistence/`, `backend/app/src/main/java/com/dappunq/service/`, and `backend/app/src/main/java/com/dappunq/controller/`
-- [ ] T002 [P] Create the matching test package structure under `backend/app/src/test/java/com/dappunq/unit/`, `backend/app/src/test/java/com/dappunq/integration/`, and `backend/app/src/test/java/com/dappunq/e2e/` for the market feature
-- [ ] T003 [P] Add the `backend/postman/token-market.postman_collection.json` skeleton with authenticated buy, sell, pending-orders, transaction-history, cancellation, and rejection scenarios
+- [ ] T001 Confirm the backend module and package layout for order-market code under `backend/app/src/main/java/com/dappunq/`
+- [ ] T002 [P] Add the order-market test package structure under `backend/app/src/test/java/com/dappunq/unit/`, `backend/app/src/test/java/com/dappunq/integration/`, and `backend/app/src/test/java/com/dappunq/e2e/`
+- [ ] T003 [P] Verify the existing Gradle dependencies and Testcontainers PostgreSQL configuration in `backend/app/build.gradle` for JUnit 5, Mockito, Spring Boot test, and PostgreSQL integration tests
+- [ ] T004 [P] Create the feature Postman collection skeleton at `backend/postman/token-market.postman_collection.json` with the base URL and public-request conventions
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-**Purpose**: Add shared balances, holdings reservations, persistence primitives, and authenticated error handling before implementing individual order flows.
+**Purpose**: Implement shared domain, persistence, error, and transaction primitives required by every user story.
 
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete.
+**Warning**: No user-story work can begin until this phase is complete.
 
-- [ ] T004 Extend `backend/app/src/main/java/com/dappunq/model/User.java` and `backend/app/src/main/java/com/dappunq/persistence/UserEntity.java` with non-negative available/blocked credit balances, default initialization, and operations to reserve, release, debit, and credit funds
-- [ ] T005 Extend `backend/app/src/main/java/com/dappunq/persistence/HoldingEntity.java` and its related mapper/service paths with available/blocked token quantities and atomic reserve, release, and transfer operations while preserving existing valuation behavior
-- [ ] T006 [P] Define order domain types and shared validation exceptions in `backend/app/src/main/java/com/dappunq/model/order/Order.java`, `OrderType.java`, `OrderStatus.java`, and `OrderDomainException.java`, including money precision, positive integer quantity, inclusive price ranges, and legal state transitions
-- [ ] T007 [P] Create order request/response DTOs and bean validation in `backend/app/src/main/java/com/dappunq/dto/order/OrderRequest.java`, `OrderResponse.java`, and `OrderDtoMapper.java`, including ISO-8601 dates and operation/counterparty fields
-- [ ] T008 Create `backend/app/src/main/java/com/dappunq/persistence/OrderEntity.java` and `OrderRepository.java` with JPA mappings, decimal precision/scale, status/date invariants, pending/history queries, and pessimistic locking for candidate matching
-- [ ] T009 [P] Add `backend/app/src/main/java/com/dappunq/exception/OrderException.java` and update `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java` to map validation, ownership, insufficient-balance, conflict, and not-found failures to the existing standard error response
-- [ ] T010 Add repository/service transaction test fixtures in `backend/app/src/test/java/com/dappunq/config/TokenMarketTestDataConfig.java` and configure deterministic users, players, balances, holdings, and the existing authentication setup for market tests
+- [ ] T005 [P] Define order operation and lifecycle enums in `backend/app/src/main/java/com/dappunq/model/order/TipoOperacionOrden.java` and `backend/app/src/main/java/com/dappunq/model/order/EstadoOrden.java`
+- [ ] T006 [P] Implement money and token quantity invariant helpers as framework-free domain objects in `backend/app/src/main/java/com/dappunq/model/order/DineroOrden.java` and `backend/app/src/main/java/com/dappunq/model/order/CantidadTokens.java`
+- [ ] T007 Implement the framework-free `Orden` aggregate with immutable issuance data, pending/executed/cancelled transitions, inclusive price ranges, complete-match validation, and domain-specific errors in `backend/app/src/main/java/com/dappunq/model/order/Orden.java`
+- [ ] T008 [P] Add order-domain exceptions following the backend error convention in `backend/app/src/main/java/com/dappunq/model/order/exception/`
+- [ ] T009 Define the JPA order entity and monetary/quantity column precision in `backend/app/src/main/java/com/dappunq/persistence/order/OrdenEntity.java`
+- [ ] T010 [P] Define order repository interfaces and Spring Data locking queries for pending opposite orders and owner-filtered history in `backend/app/src/main/java/com/dappunq/persistence/order/OrdenRepository.java`
+- [ ] T011 Implement the repository mapper between `Orden` and `OrdenEntity` without placing persistence annotations or mapping logic in the Service layer in `backend/app/src/main/java/com/dappunq/persistence/order/OrdenRepositoryImpl.java`
+- [ ] T012 Add shared DTO validation and order response mapping primitives, including ISO-8601 dates and two-decimal monetary serialization, in `backend/app/src/main/java/com/dappunq/dto/order/`
+- [ ] T013 Add transaction-safe balance and holding reservation/transfer ports or adapters that reuse the existing User, Player, Holding, and Strategy services in `backend/app/src/main/java/com/dappunq/service/order/OrderAssetService.java`
+- [ ] T014 Add the standard order error-to-HTTP response mapping without exposing persistence entities in `backend/app/src/main/java/com/dappunq/controller/OrderExceptionHandler.java`
 
-**Checkpoint**: Shared balance/holding reservations, order persistence, DTO validation, and error mapping are ready for story implementation.
+**Checkpoint**: Domain invariants, repository mapping, existing Strategy/Holding integration points, and transaction/error primitives are ready for story implementation.
 
 ---
 
 ## Phase 3: User Story 1 - Comprar tokens de un jugador (Priority: P1) 🎯 MVP
 
-**Goal**: Allow an authenticated user to create a valid buy order, reserve `price + tolerance`, and settle it atomically against a compatible sell order.
+**Goal**: Create buy orders, reserve credits, match compatible sells atomically, and add tokens using the buyer's valuation strategy.
 
-**Independent Test**: Create a buy order with sufficient credits and verify it is pending with the correct reservation; create a compatible sell order and verify one atomic transfer, executed states, settled price, and released excess reservation.
+**Independent Test**: Create a valid buy order with sufficient credits and an active strategy, verify the pending reservation, then create a compatible sell and verify one atomic execution, credit/token transfer, order states, and holding valuation.
 
 ### Tests for User Story 1
 
-- [ ] T011 [P] [US1] Add order-domain tests in `backend/app/src/test/java/com/dappunq/unit/OrderBuyTest.java` for buy ranges, zero tolerance, precision/quantity limits, state transitions, and reservation amount
-- [ ] T012 [P] [US1] Add buy/sell settlement integration tests in `backend/app/src/test/java/com/dappunq/integration/BuyOrderIntegrationTest.java` using PostgreSQL/Testcontainers for insufficient credits, compatible matching, incompatible ranges, same-owner rejection, atomic transfer, and concurrent consumption
-- [ ] T013 [P] [US1] Add authenticated buy endpoint tests in `backend/app/src/test/java/com/dappunq/e2e/BuyOrderE2ETest.java` covering `POST /orders/buy`, validation errors, pending response, and immediate execution response
+- [ ] T015 [P] [US1] Test `Orden` buy ranges, inclusive tolerance, maximum quantity, and execution transitions in `backend/app/src/test/java/com/dappunq/unit/order/OrdenCompraTest.java`
+- [ ] T016 [P] [US1] Test buy validation for missing strategy, insufficient available credits, invalid money precision, and quantities above 100 in `backend/app/src/test/java/com/dappunq/integration/order/CompraOrdenIntegrationTest.java`
+- [ ] T017 [P] [US1] Add MockMvc coverage for `POST /orders/buy`, including pending response and validation errors, in `backend/app/src/test/java/com/dappunq/e2e/OrderBuyControllerE2ETest.java`
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Implement buy-order creation, credit reservation, pending-order lookup, and validation orchestration in `backend/app/src/main/java/com/dappunq/service/OrderService.java`
-- [ ] T015 [US1] Implement deterministic compatible-order matching and atomic price selection/liquidation in `backend/app/src/main/java/com/dappunq/service/OrderMatchingService.java`, including pessimistic candidate locking and excess-credit release
-- [ ] T016 [US1] Implement `POST /orders/buy` in `backend/app/src/main/java/com/dappunq/controller/OrderControllerRest.java` using the authenticated principal instead of a request user id
-- [ ] T017 [US1] Wire player/user/holding/order repository lookups and persistence mappers in `backend/app/src/main/java/com/dappunq/persistence/OrderPersistenceMapper.java` and related repository interfaces, preserving transaction boundaries
-- [ ] T018 [US1] Complete the buy scenarios and expected pending/executed responses in `backend/postman/token-market.postman_collection.json`
+- [ ] T018 [P] [US1] Create buy request and response DTOs with Jakarta validation for user, player, integer quantity, non-negative price, non-negative tolerance, and maximum two decimals in `backend/app/src/main/java/com/dappunq/dto/order/CrearOrdenRequest.java` and `backend/app/src/main/java/com/dappunq/dto/order/OrdenResponse.java`
+- [ ] T019 [US1] Implement buy-order creation, active-strategy validation, credit reservation of `price + tolerance`, and pending persistence in `backend/app/src/main/java/com/dappunq/service/order/CrearOrdenCompraService.java`
+- [ ] T020 [US1] Implement compatible pending-sell lookup and deterministic inclusive-range price selection in `backend/app/src/main/java/com/dappunq/service/order/OrderMatchingService.java`
+- [ ] T021 [US1] Implement atomic buy settlement, including buyer debit, seller credit, reservation surplus release, order execution metadata, and rollback-safe holding update in `backend/app/src/main/java/com/dappunq/service/order/OrderSettlementService.java`
+- [ ] T022 [US1] Implement holding receipt logic that preserves an existing unit value or calculates a new holding value through the active Strategy, never from the settlement price, in `backend/app/src/main/java/com/dappunq/service/order/OrderHoldingService.java`
+- [ ] T023 [US1] Add the public `POST /orders/buy` endpoint and map Service domain models to response DTOs in `backend/app/src/main/java/com/dappunq/controller/OrderController.java`
+- [ ] T024 [US1] Add buy-order examples and pending/executed assertions to `backend/postman/token-market.postman_collection.json`
 
-**Checkpoint**: A buyer can create and settle a complete order independently, with no partial transfer or inconsistent lock.
+**Checkpoint**: A buyer can create a valid pending order or complete a compatible purchase with correct reservations, settlement, and holding valuation.
 
 ---
 
 ## Phase 4: User Story 2 - Vender tokens de un jugador (Priority: P1)
 
-**Goal**: Allow an authenticated holder to create a sell order, reserve tokens, and settle it atomically against a compatible buy order.
+**Goal**: Create sell orders, reserve free tokens, and settle compatible trades without partial executions or self-trades.
 
-**Independent Test**: Create a sell order with enough free tokens and verify the token reservation; create a compatible buy order and verify token/credit transfer, settled metadata, and executed states; reject insufficient free tokens without changing balances.
+**Independent Test**: Create a valid sell order with enough free tokens and an active strategy, verify the token reservation, then create a compatible buy and verify settlement and both executed orders.
 
 ### Tests for User Story 2
 
-- [ ] T019 [P] [US2] Add sell-domain tests in `backend/app/src/test/java/com/dappunq/unit/OrderSellTest.java` for non-negative money, token quantity, lower sell range, reservation, and legal transitions
-- [ ] T020 [P] [US2] Add sell-order persistence and settlement tests in `backend/app/src/test/java/com/dappunq/integration/SellOrderIntegrationTest.java` for insufficient holdings, blocked tokens, compatible/incompatible buyers, same-owner rejection, and rollback on transfer failure
-- [ ] T021 [P] [US2] Add authenticated sell endpoint tests in `backend/app/src/test/java/com/dappunq/e2e/SellOrderE2ETest.java` covering `POST /orders/sell`, valid pending output, validation failures, and token-lock behavior
+- [ ] T025 [P] [US2] Test `Orden` sell ranges, lower tolerance bounds, pending cancellation eligibility, and invalid transitions in `backend/app/src/test/java/com/dappunq/unit/order/OrdenVentaTest.java`
+- [ ] T026 [P] [US2] Test sell validation for missing strategy, insufficient free tokens, already-blocked tokens, invalid quantity, and invalid money precision in `backend/app/src/test/java/com/dappunq/integration/order/VentaOrdenIntegrationTest.java`
+- [ ] T027 [P] [US2] Add MockMvc coverage for `POST /orders/sell`, including pending response and validation errors, in `backend/app/src/test/java/com/dappunq/e2e/OrderSellControllerE2ETest.java`
+- [ ] T028 [P] [US2] Add PostgreSQL concurrency coverage proving only one complete matching settlement consumes compatible orders in `backend/app/src/test/java/com/dappunq/integration/order/OrderMatchingConcurrencyTest.java`
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Extend `backend/app/src/main/java/com/dappunq/service/OrderService.java` with sell-order creation, free-token validation, token reservation, and matching invocation
-- [ ] T023 [US2] Implement `POST /orders/sell` in `backend/app/src/main/java/com/dappunq/controller/OrderControllerRest.java` with authenticated seller identity and standard validation/error responses
-- [ ] T024 [US2] Complete token reservation, token transfer, seller crediting, and rollback-safe persistence paths in `backend/app/src/main/java/com/dappunq/service/OrderMatchingService.java` and `backend/app/src/main/java/com/dappunq/persistence/HoldingEntity.java`
-- [ ] T025 [US2] Add sell, settlement, and insufficient-token examples to `backend/postman/token-market.postman_collection.json`
+- [ ] T029 [US2] Implement sell-order creation, active-strategy validation, free-token reservation, and pending persistence in `backend/app/src/main/java/com/dappunq/service/order/CrearOrdenVentaService.java`
+- [ ] T030 [US2] Extend matching and settlement to reject same-owner buy/sell pairs, lock selected orders, transfer tokens and credits atomically, and preserve the no-partial-execution invariant in `backend/app/src/main/java/com/dappunq/service/order/OrderMatchingService.java` and `backend/app/src/main/java/com/dappunq/service/order/OrderSettlementService.java`
+- [ ] T031 [US2] Add the public `POST /orders/sell` endpoint using the shared request/response contract in `backend/app/src/main/java/com/dappunq/controller/OrderController.java`
+- [ ] T032 [US2] Add sell-order examples and incompatible-range/self-trade assertions to `backend/postman/token-market.postman_collection.json`
 
-**Checkpoint**: A seller can create and settle a complete order independently, and blocked tokens are always released or transferred exactly once.
+**Checkpoint**: Buyers and sellers can trade complete orders with explicit token/credit locks, atomic transfers, and no self-matching.
 
 ---
 
-## Phase 5: User Story 3 - Ejecución prioritaria con el Superusuario (Priority: P1)
+## Phase 5: User Story 3 - Ejecucion prioritaria con el Superusuario (Priority: P1)
 
-**Goal**: Give a new buy order priority access to sufficient free Superuser inventory by creating and immediately executing a zero-tolerance sell order.
+**Goal**: Give valid user buys priority access to Superuser inventory while keeping insufficient inventory pending and preventing Superuser self-trades.
 
-**Independent Test**: Seed the Superuser with enough free tokens and create a buy order; verify an executed Superuser sell order and immediate atomic settlement. Repeat with insufficient inventory and verify the buy remains pending.
+**Independent Test**: Seed enough free Superuser tokens and create a buy to verify immediate creation/execution of a zero-tolerance Superuser sell; repeat with insufficient inventory to verify no sell is created and the buy remains pending.
 
 ### Tests for User Story 3
 
-- [ ] T026 [P] [US3] Add Superuser priority unit tests in `backend/app/src/test/java/com/dappunq/unit/SuperuserLiquidityTest.java` for sufficient inventory, insufficient inventory, zero tolerance, and same-owner exclusion
-- [ ] T027 [P] [US3] Add Superuser priority integration tests in `backend/app/src/test/java/com/dappunq/integration/SuperuserOrderIntegrationTest.java` for generated sell orders, immediate settlement, inventory reservation, and fallback to ordinary pending matching
-- [ ] T028 [P] [US3] Add Superuser priority E2E tests in `backend/app/src/test/java/com/dappunq/e2e/SuperuserOrderE2ETest.java` for authenticated buy responses and resulting order/history visibility
+- [ ] T033 [P] [US3] Test immediate Superuser matching, zero tolerance, inclusive limits, insufficient inventory fallback, and Superuser self-trade rejection in `backend/app/src/test/java/com/dappunq/integration/order/SuperuserLiquidityIntegrationTest.java`
+- [ ] T034 [P] [US3] Add MockMvc coverage for priority execution and pending fallback in `backend/app/src/test/java/com/dappunq/e2e/SuperuserOrderE2ETest.java`
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] Implement Superuser identification and free-inventory lookup in `backend/app/src/main/java/com/dappunq/service/SuperuserOrderLiquidityService.java` using `SuperuserInitializationService` identity rules
-- [ ] T030 [US3] Integrate the priority Superuser sell creation and immediate matching before ordinary sell lookup in `backend/app/src/main/java/com/dappunq/service/OrderService.java` and `backend/app/src/main/java/com/dappunq/service/OrderMatchingService.java`
-- [ ] T031 [US3] Ensure generated Superuser orders are persisted with zero tolerance, cannot match another Superuser order, and expose correct buyer/seller metadata through `backend/app/src/main/java/com/dappunq/persistence/OrderEntity.java` and `backend/app/src/main/java/com/dappunq/dto/order/OrderDtoMapper.java`
-- [ ] T032 [US3] Add sufficient/insufficient Superuser inventory flows to `backend/postman/token-market.postman_collection.json`
+- [ ] T035 [US3] Implement Superuser identity resolution and free-token availability lookup using existing identity rules in `backend/app/src/main/java/com/dappunq/service/order/SuperuserLiquidityService.java`
+- [ ] T036 [US3] Implement creation of an internal Superuser sell order with zero tolerance and immediate matching before ordinary sell lookup in `backend/app/src/main/java/com/dappunq/service/order/SuperuserLiquidityService.java`
+- [ ] T037 [US3] Integrate the priority path into the transactional buy workflow, ensuring failed priority creation rolls back without leaving a sale or inconsistent locks in `backend/app/src/main/java/com/dappunq/service/order/CrearOrdenCompraService.java`
+- [ ] T038 [US3] Add priority-liquidity requests and expected immediate/pending responses to `backend/postman/token-market.postman_collection.json`
 
-**Checkpoint**: Eligible buys execute against the Superuser before ordinary matching; insufficient inventory leaves the buy pending without phantom orders.
+**Checkpoint**: Superuser liquidity is consumed first when available, otherwise ordinary matching remains available and all self-trades are rejected.
 
 ---
 
-## Phase 6: User Story 4 - Gestionar y consultar órdenes (Priority: P2)
+## Phase 6: User Story 4 - Gestionar y consultar ordenes (Priority: P2)
 
-**Goal**: Let each user list only their pending orders, cancel their own pending orders with complete lock release, and view their executed history with settlement details.
+**Goal**: Let each user list only their pending orders, cancel their own pending orders with full lock release, and inspect executed history.
 
-**Independent Test**: Create pending buy and sell orders, list them, cancel each, and verify released balances; execute an order and verify it appears only in the authenticated user's history. Attempt another user's endpoints and verify rejection.
+**Independent Test**: Create pending buy and sell orders, list them, cancel each own order and verify released locks, then execute a trade and verify only that user's executed history is returned; attempts against another user's order are rejected.
 
 ### Tests for User Story 4
 
-- [ ] T033 [P] [US4] Add cancellation and query service tests in `backend/app/src/test/java/com/dappunq/unit/OrderManagementTest.java` for ownership, pending-only cancellation, full lock release, ordering, and executed-history mapping
-- [ ] T034 [P] [US4] Add order-management integration tests in `backend/app/src/test/java/com/dappunq/integration/OrderManagementIntegrationTest.java` for pending/history filters, cancellation persistence, balance release, and unauthorized access
-- [ ] T035 [P] [US4] Add authenticated MockMvc tests in `backend/app/src/test/java/com/dappunq/e2e/OrderManagementE2ETest.java` for `GET /users/{id}/orders`, `GET /users/{id}/transactions`, cancellation, and cross-user rejection
+- [ ] T039 [P] [US4] Test pending cancellation transitions, owner checks, executed/cancelled rejection, and complete credit/token lock release in `backend/app/src/main/java/com/dappunq/model/order/Orden.java` via `backend/app/src/test/java/com/dappunq/unit/order/OrdenCancelacionTest.java`
+- [ ] T040 [P] [US4] Test owner-filtered pending and executed repository queries, ordering, cancellation persistence, and released balances in `backend/app/src/test/java/com/dappunq/integration/order/OrderQueryCancellationIntegrationTest.java`
+- [ ] T041 [P] [US4] Add MockMvc coverage for `GET /users/{id}/orders`, `GET /users/{id}/transactions`, and the owner-only cancellation endpoint in `backend/app/src/test/java/com/dappunq/e2e/OrderManagementControllerE2ETest.java`
 
 ### Implementation for User Story 4
 
-- [ ] T036 [US4] Implement ownership-checked cancellation and complete credit/token unlock in `backend/app/src/main/java/com/dappunq/service/OrderService.java`
-- [ ] T037 [US4] Implement pending and executed repository queries, descending date ordering, and authorization checks in `backend/app/src/main/java/com/dappunq/service/OrderQueryService.java` and `backend/app/src/main/java/com/dappunq/persistence/OrderRepository.java`
-- [ ] T038 [US4] Implement `GET /users/{id}/orders`, `GET /users/{id}/transactions`, and the cancellation route in `backend/app/src/main/java/com/dappunq/controller/OrderControllerRest.java` and `backend/app/src/main/java/com/dappunq/controller/UserControllerRest.java`
-- [ ] T039 [US4] Add pending, cancellation, history, and cross-user rejection examples to `backend/postman/token-market.postman_collection.json`
+- [ ] T042 [US4] Add pending-order and executed-transaction response DTOs with state-specific date and settlement fields in `backend/app/src/main/java/com/dappunq/dto/order/OrdenPendienteResponse.java` and `backend/app/src/main/java/com/dappunq/dto/order/TransaccionEjecutadaResponse.java`
+- [ ] T043 [US4] Implement owner-filtered pending and executed order queries sorted by issuance/execution date descending in `backend/app/src/main/java/com/dappunq/service/order/ConsultarOrdenesService.java`
+- [ ] T044 [US4] Implement owner-checked cancellation of pending orders and full credit/token lock release in a transaction in `backend/app/src/main/java/com/dappunq/service/order/CancelarOrdenService.java`
+- [ ] T045 [US4] Add `GET /users/{id}/orders`, `GET /users/{id}/transactions`, and `DELETE /orders/{orderId}?usuarioId={id}` endpoints with strict owner filtering in `backend/app/src/main/java/com/dappunq/controller/OrderController.java`
+- [ ] T046 [US4] Update the HTTP contract to document cancellation and the complete response shapes in `backend/specs/014-token-market/contracts/orders-api.md`
+- [ ] T047 [US4] Add pending-list, history, cancellation, ownership, and lock-release scenarios to `backend/postman/token-market.postman_collection.json`
 
-**Checkpoint**: Users can safely manage their own pending orders and inspect complete executed history without seeing another user's orders.
+**Checkpoint**: Users can safely manage their own pending orders and inspect their own executed history without seeing or changing another user's orders.
 
 ---
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-**Purpose**: Verify the complete feature, documentation, concurrency behavior, and operational readiness.
+**Purpose**: Complete quality gates, documentation, and end-to-end validation across all stories.
 
-- [ ] T040 [P] Update `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java` and controller response annotations to document all market error/status responses consistently
-- [ ] T041 [P] Add database/index and locking review for `backend/app/src/main/java/com/dappunq/persistence/OrderEntity.java`, `OrderRepository.java`, and balance/holding entities to support short serializable transactions
-- [ ] T042 [P] Add complete market invariant coverage to `backend/app/src/test/java/com/dappunq/integration/TokenMarketInvariantIntegrationTest.java` for conservation of credits/tokens, rollback, duplicate concurrent matches, and two-decimal/integer persistence
-- [ ] T043 Run the documented scenarios and full backend test suite from `backend/quickstart.md` using `backend/gradlew.bat :app:test`, including Testcontainers when Docker is available
-- [ ] T044 Update `backend/specs/014-token-market/quickstart.md` and `backend/postman/token-market.postman_collection.json` with the final endpoint payloads, authentication setup, cancellation route, and observed validation behavior
+- [ ] T048 [P] Add Spanish validation and domain error messages for all order and settlement failure paths in `backend/app/src/main/java/com/dappunq/model/order/exception/` and `backend/app/src/main/java/com/dappunq/controller/OrderExceptionHandler.java`
+- [ ] T049 [P] Add database indexes and uniqueness/locking constraints for owner, state, player, quantity, and execution lookup in `backend/app/src/main/resources/db/migration/`
+- [ ] T050 [P] Review order entities and mappers for separation of domain models from JPA annotations in `backend/app/src/main/java/com/dappunq/model/order/` and `backend/app/src/main/java/com/dappunq/persistence/order/`
+- [ ] T051 Run the full backend test suite, including PostgreSQL Testcontainers and MockMvc, with `backend/gradlew.bat :app:test`
+- [ ] T052 Run the backend application startup smoke check and validate all quickstart scenarios from `backend/specs/014-token-market/quickstart.md`
+- [ ] T053 Verify all four public API flows and cancellation in `backend/postman/token-market.postman_collection.json`, including no JWT/API key requirement and ISO-8601 responses
 
 ---
 
@@ -150,39 +159,39 @@ description: "Task list for the token order market feature"
 
 ### Phase Dependencies
 
-- **Setup (Phase 1)**: No dependencies; T001-T003 can start immediately.
-- **Foundational (Phase 2)**: Depends on Setup; T004-T010 block all user stories.
-- **User Stories 1-3 (Phases 3-5)**: Depend on the foundational phase. US1 and US2 are independently testable but share the transaction/matching foundation; US3 depends on the buy flow from US1.
-- **User Story 4 (Phase 6)**: Depends on the order model and service from US1/US2 and the executed metadata from US3, while remaining independently testable once those APIs exist.
+- **Setup (Phase 1)**: No dependencies; T001-T004 can start immediately.
+- **Foundational (Phase 2)**: Depends on Setup; T005-T014 block all user stories.
+- **User Story 1 (Phase 3)**: Depends on Foundational; delivers the MVP buy and settlement path.
+- **User Story 2 (Phase 4)**: Depends on Foundational and reuses the matching/settlement primitives from US1; it should not start until T020-T022 are available.
+- **User Story 3 (Phase 5)**: Depends on US1 buy creation and settlement (T019-T023); it extends the buy path with priority liquidity.
+- **User Story 4 (Phase 6)**: Depends on the order persistence and lifecycle from US1/US2 and the executed state from settlement; it can begin after T021 and T030.
 - **Polish (Phase 7)**: Depends on all desired stories being complete.
 
 ### User Story Dependencies
 
-- **US1 (P1)**: Foundational only; MVP starting point.
-- **US2 (P1)**: Foundational only for sell creation, but uses the shared settlement engine introduced by US1.
-- **US3 (P1)**: Depends on US1 buy creation and US2/settlement holding-transfer paths.
-- **US4 (P2)**: Depends on order persistence and services from US1-US3 for complete pending/executed/cancelled views.
+- **US1 (P1)**: Foundational only; no dependency on another user story.
+- **US2 (P1)**: Foundational plus shared matching/settlement implementation from US1; independently validates selling and a complete trade.
+- **US3 (P1)**: US1 buy workflow and US2 settlement primitives; independently validates Superuser liquidity behavior.
+- **US4 (P2)**: Shared order lifecycle and settlement behavior from US1/US2; independently validates ownership, cancellation, and queries.
 
 ### Parallel Opportunities
 
-- T002-T003 can run in parallel after T001 establishes the structure.
-- T006-T009 can run in parallel with each other after the shared package structure exists; T004-T005 can proceed independently.
-- Within each story, all marked test tasks can run in parallel; implementation tasks touching different files can be split after the domain/repository contracts are agreed.
-- US1 and the sell-specific portions of US2 can be staffed in parallel after foundational work, but shared `OrderService.java` and `OrderMatchingService.java` changes must be sequenced or merged carefully.
-- T040-T042 are independent polish tasks; T043-T044 follow implementation and test completion.
+- T002-T004 can run in parallel after the module layout is confirmed.
+- T005-T006, T008, T010, T012, and T014 can run in parallel before dependent foundational implementation.
+- Within US1, T015-T018 can run in parallel; T020 and T022 can proceed in parallel once T007/T013 are ready.
+- Within US2, T025-T028 can run in parallel; T029 and T032 can proceed in parallel after shared primitives are available.
+- Within US3, T033-T034 can run in parallel, followed by T035-T036.
+- Within US4, T039-T042 can run in parallel; T046-T047 can run in parallel with controller implementation.
+- T048-T050 can run in parallel after the story implementations stabilize.
+- After Foundational, separate developers can work on US1 and the independent sell/query test preparation, while respecting the shared matching files.
 
 ## Parallel Example: User Story 1
 
 ```text
-After Phase 2:
-Task: "T011 [US1] Order buy domain tests in backend/app/src/test/java/com/dappunq/unit/OrderBuyTest.java"
-Task: "T012 [US1] Buy settlement integration tests in backend/app/src/test/java/com/dappunq/integration/BuyOrderIntegrationTest.java"
-Task: "T013 [US1] Buy endpoint tests in backend/app/src/test/java/com/dappunq/e2e/BuyOrderE2ETest.java"
-
-After the contracts are agreed:
-Task: "T014 [US1] Buy creation and reservation in backend/app/src/main/java/com/dappunq/service/OrderService.java"
-Task: "T015 [US1] Matching and liquidation in backend/app/src/main/java/com/dappunq/service/OrderMatchingService.java"
-Task: "T016 [US1] POST /orders/buy in backend/app/src/main/java/com/dappunq/controller/OrderControllerRest.java"
+Task: "Test Orden buy ranges in backend/app/src/test/java/com/dappunq/unit/order/OrdenCompraTest.java"
+Task: "Test buy validation in backend/app/src/test/java/com/dappunq/integration/order/CompraOrdenIntegrationTest.java"
+Task: "Add MockMvc POST /orders/buy coverage in backend/app/src/test/java/com/dappunq/e2e/OrderBuyControllerE2ETest.java"
+Task: "Create buy DTOs in backend/app/src/main/java/com/dappunq/dto/order/CrearOrdenRequest.java and backend/app/src/main/java/com/dappunq/dto/order/OrdenResponse.java"
 ```
 
 ## Implementation Strategy
@@ -190,28 +199,21 @@ Task: "T016 [US1] POST /orders/buy in backend/app/src/main/java/com/dappunq/cont
 ### MVP First (User Story 1 Only)
 
 1. Complete Phase 1 Setup.
-2. Complete Phase 2 Foundational; this is the blocking reservation/persistence layer.
-3. Complete Phase 3 US1, including its unit, integration, and E2E tests.
-4. Stop and validate buy reservation, compatible settlement, rollback, and response behavior independently.
-5. Demonstrate the MVP before adding sell, Superuser liquidity, or management queries.
+2. Complete Phase 2 Foundational.
+3. Complete Phase 3 User Story 1.
+4. Run the independent US1 tests and validate pending reservations plus a compatible executed trade.
+5. Demonstrate the buy endpoint before adding Superuser priority, cancellation, and query enhancements.
 
 ### Incremental Delivery
 
-1. Add US2 to provide the ordinary sell side and complete user-to-user exchange.
+1. Add US2 to complete ordinary user selling and atomic two-sided settlement.
 2. Add US3 to provide prioritized Superuser liquidity.
-3. Add US4 to provide cancellation and pending/history visibility.
-4. Complete Phase 7 hardening and run the full quickstart suite.
-
-### Parallel Team Strategy
-
-1. Complete Setup and Foundational together.
-2. Assign US1 buy flow, US2 sell flow, and their tests to separate contributors while coordinating shared service files.
-3. Assign US3 to the contributor owning settlement and Superuser initialization.
-4. Assign US4 and Postman/documentation updates once response contracts stabilize.
+3. Add US4 to provide cancellation and user-scoped visibility.
+4. Complete Phase 7 quality gates and Postman/quickstart validation.
 
 ## Notes
 
-- Every task uses the required `- [ ] [TaskID] [P?] [Story?]` checklist format and includes an exact repository path.
-- `[P]` marks only work that can proceed independently without incomplete-file dependencies.
-- Tests must be written to fail for the new behavior before implementation where practical, then run with the existing Gradle/Testcontainers setup.
-- Preserve existing authentication, valuation, user, player, and holding behavior while adding explicit reservation state.
+- Every task uses the required `- [ ] T###` checklist format and includes a concrete file path.
+- `[P]` marks tasks that can usefully run in parallel without editing the same incomplete dependency.
+- Story labels map to the four prioritized stories in `spec.md`.
+- Tests must remain in their designated unit, integration, or e2e packages and existing tests must not be modified or removed.
