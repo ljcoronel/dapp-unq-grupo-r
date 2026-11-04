@@ -177,6 +177,64 @@ paths:
                 $ref: '#/components/schemas/PlayerError'
         '500':
           description: Error interno no controlado.
+  /orders/buy:
+    post:
+      tags: [Ordenes]
+      summary: Crear orden de compra
+      description: Crea una orden de compra para el usuario autenticado.
+      operationId: createBuyOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearOrdenRequest'
+      responses:
+        '201':
+          description: Orden creada y procesada según las reglas de mercado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+        '400':
+          description: Datos de orden inválidos o regla funcional incumplida.
+        '401':
+          description: JWT ausente, inválido, vencido o no asociado a una identidad disponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+  /orders/sell:
+    post:
+      tags: [Ordenes]
+      summary: Crear orden de venta
+      description: Crea una orden de venta para el usuario autenticado.
+      operationId: createSellOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearOrdenRequest'
+      responses:
+        '201':
+          description: Orden creada y procesada según las reglas de mercado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+        '400':
+          description: Datos de orden inválidos o regla funcional incumplida.
+        '401':
+          description: JWT ausente, inválido, vencido o no asociado a una identidad disponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
 components:
   securitySchemes:
     bearerAuth:
@@ -267,6 +325,47 @@ components:
         message:
           type: string
           description: Mensaje de error de autenticacion o perfil.
+    CrearOrdenRequest:
+      type: object
+      required: [usuarioId, playerId, quantity, price, tolerance]
+      properties:
+        usuarioId:
+          type: integer
+          format: int64
+          minimum: 1
+        playerId:
+          type: integer
+          format: int64
+          minimum: 1
+        quantity:
+          type: integer
+          minimum: 1
+        price:
+          type: number
+          format: double
+          minimum: 0
+        tolerance:
+          type: number
+          format: double
+          minimum: 0
+    OrdenResponse:
+      type: object
+      required: [orderId, userId, playerId, operation, quantity, price, tolerance, status, issuedAt]
+      properties:
+        orderId: {type: integer, format: int64}
+        userId: {type: integer, format: int64}
+        playerId: {type: integer, format: int64}
+        operation: {type: string}
+        quantity: {type: integer}
+        price: {type: number, format: double}
+        tolerance: {type: number, format: double}
+        status: {type: string}
+        issuedAt: {type: string, format: date-time}
+        executedAt: {type: string, format: date-time, nullable: true}
+        cancelledAt: {type: string, format: date-time, nullable: true}
+        settledPrice: {type: number, format: double, nullable: true}
+        buyerId: {type: integer, format: int64, nullable: true}
+        sellerId: {type: integer, format: int64, nullable: true}
     PlayerError:
       type: object
       required: [mensaje]

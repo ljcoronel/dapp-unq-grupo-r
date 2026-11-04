@@ -17,8 +17,8 @@ description: "Task list for protecting order creation with JWT authentication"
 
 **Purpose**: Confirm the existing backend test/build structure used by this feature.
 
-- [ ] T001 Confirm the Gradle test and resource-copy entry points in `backend/app/build.gradle` and record the focused commands from `backend/specs/015-jwt-order-protection/quickstart.md`
-- [ ] T002 [P] Confirm the existing JWT, order E2E, and OpenAPI source locations under `backend/app/src` and `backend/specs/005-swagger/contracts/openapi.yaml`
+- [X] T001 Confirm the Gradle test and resource-copy entry points in `backend/app/build.gradle` and record the focused commands from `backend/specs/015-jwt-order-protection/quickstart.md`
+- [X] T002 [P] Confirm the existing JWT, order E2E, and OpenAPI source locations under `backend/app/src` and `backend/specs/005-swagger/contracts/openapi.yaml`
 
 ---
 
@@ -28,8 +28,8 @@ description: "Task list for protecting order creation with JWT authentication"
 
 **⚠️ CRITICAL**: No user story implementation can be completed until the authenticated principal and existing JWT filter behavior are understood and preserved.
 
-- [ ] T003 [P] Verify `JwtAuthenticationFilter` continues to validate signature, expiration, and user existence in `backend/app/src/main/java/com/dappunq/security/JwtAuthenticationFilter.java` and `backend/app/src/main/java/com/dappunq/security/JwtService.java`
-- [ ] T004 Verify the order request and persistence invariants used by both order services in `backend/app/src/main/java/com/dappunq/dto/order/CrearOrdenRequest.java`, `backend/app/src/main/java/com/dappunq/service/order/CrearOrdenCompraService.java`, `backend/app/src/main/java/com/dappunq/service/order/CrearOrdenVentaService.java`, and `backend/app/src/main/java/com/dappunq/persistence/order/OrdenEntity.java`
+- [X] T003 [P] Verify `JwtAuthenticationFilter` continues to validate signature, expiration, and user existence in `backend/app/src/main/java/com/dappunq/security/JwtAuthenticationFilter.java` and `backend/app/src/main/java/com/dappunq/security/JwtService.java`
+- [X] T004 Verify the order request and persistence invariants used by both order services in `backend/app/src/main/java/com/dappunq/dto/order/CrearOrdenRequest.java`, `backend/app/src/main/java/com/dappunq/service/order/CrearOrdenCompraService.java`, `backend/app/src/main/java/com/dappunq/service/order/CrearOrdenVentaService.java`, and `backend/app/src/main/java/com/dappunq/persistence/order/OrdenEntity.java`
 
 **Checkpoint**: Existing JWT validation and order business rules are identified and ready for route protection without duplicating authentication logic.
 
@@ -43,18 +43,18 @@ description: "Task list for protecting order creation with JWT authentication"
 
 ### Tests for User Story 1
 
-- [ ] T005 [P] [US1] Add JWT token creation and authenticated-request helpers to `backend/app/src/test/java/com/dappunq/e2e/OrderManagementControllerE2ETest.java` using the existing `JwtService` and `UserPrincipal` test context
-- [ ] T006 [P] [US1] Add buy and sell rejection scenarios for missing, empty, non-Bearer, malformed, invalid, expired, and deleted-user tokens in `backend/app/src/test/java/com/dappunq/e2e/OrderManagementControllerE2ETest.java`
-- [ ] T007 [P] [US1] Add authenticated buy/sell, principal/request identity mismatch, and functional-validation regression scenarios in `backend/app/src/test/java/com/dappunq/e2e/OrderManagementControllerE2ETest.java`
-- [ ] T008 [P] [US1] Extend `backend/app/src/test/java/com/dappunq/security/JwtAuthenticationFilterTest.java` to verify the authenticated principal exposes the loaded user identity and invalid bearer tokens leave the security context unauthenticated
+- [X] T005 [P] [US1] Add JWT token creation and authenticated-request helpers to `backend/app/src/test/java/com/dappunq/e2e/OrderManagementControllerE2ETest.java` using the existing `JwtService` and `UserPrincipal` test context
+- [X] T006 [P] [US1] Add buy and sell rejection scenarios for missing, empty, non-Bearer, malformed, invalid, expired, and deleted-user tokens in `backend/app/src/test/java/com/dappunq/e2e/OrderManagementControllerE2ETest.java`
+- [X] T007 [P] [US1] Add authenticated buy/sell, principal/request identity mismatch, and functional-validation regression scenarios in `backend/app/src/test/java/com/dappunq/e2e/OrderManagementControllerE2ETest.java`
+- [X] T008 [P] [US1] Extend `backend/app/src/test/java/com/dappunq/security/JwtAuthenticationFilterTest.java` to verify the authenticated principal exposes the loaded user identity and invalid bearer tokens leave the security context unauthenticated
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Expose the persisted user identifier from `UserPrincipal` without adding persistence annotations in `backend/app/src/main/java/com/dappunq/security/UserPrincipal.java`
-- [ ] T010 [US1] Update `OrderController` to receive the validated authenticated principal for buy and sell, reject a `CrearOrdenRequest.usuarioId` that differs from the principal ID, and pass only an authenticated, attributed request to the existing order services in `backend/app/src/main/java/com/dappunq/controller/OrderController.java`
-- [ ] T011 [US1] Change only `POST /orders/buy` and `POST /orders/sell` from public access to `authenticated()` while preserving all other authorization matchers and stateless JWT filter ordering in `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java`
-- [ ] T012 [US1] Make the shared unauthorized response in `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java` generic for JWT and API-key authentication failures without exposing user, balance, holding, or order existence
-- [ ] T013 [US1] Run the focused order and JWT tests and correct any integration issues while preserving existing order service validation and transaction behavior in `backend/app/src/test/java/com/dappunq/e2e/OrderManagementControllerE2ETest.java` and `backend/app/src/test/java/com/dappunq/security/JwtAuthenticationFilterTest.java`
+- [X] T009 [US1] Expose the persisted user identifier from `UserPrincipal` without adding persistence annotations in `backend/app/src/main/java/com/dappunq/security/UserPrincipal.java`
+- [X] T010 [US1] Update `OrderController` to receive the validated authenticated principal for buy and sell, reject a `CrearOrdenRequest.usuarioId` that differs from the principal ID, and pass only an authenticated, attributed request to the existing order services in `backend/app/src/main/java/com/dappunq/controller/OrderController.java`
+- [X] T011 [US1] Change only `POST /orders/buy` and `POST /orders/sell` from public access to `authenticated()` while preserving all other authorization matchers and stateless JWT filter ordering in `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java`
+- [X] T012 [US1] Make the shared unauthorized response in `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java` generic for JWT and API-key authentication failures without exposing user, balance, holding, or order existence
+- [X] T013 [US1] Run the focused order and JWT tests and correct any integration issues while preserving existing order service validation and transaction behavior in `backend/app/src/test/java/com/dappunq/e2e/OrderManagementControllerE2ETest.java` and `backend/app/src/test/java/com/dappunq/security/JwtAuthenticationFilterTest.java`
 
 **Checkpoint**: User Story 1 is independently functional: only valid JWT requests reach order creation, identity cannot be spoofed through the body, and rejected requests have no business side effects.
 
@@ -68,13 +68,13 @@ description: "Task list for protecting order creation with JWT authentication"
 
 ### Tests for User Story 2
 
-- [ ] T014 [P] [US2] Add contract assertions for the bearer scheme, buy/sell security requirements, 401 responses, and preserved order schemas in `backend/app/src/test/java/com/dappunq/contract/OrdersOpenApiContractTest.java`
+- [X] T014 [P] [US2] Add contract assertions for the bearer scheme, buy/sell security requirements, 401 responses, and preserved order schemas in `backend/app/src/test/java/com/dappunq/contract/OrdersOpenApiContractTest.java`
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Add `/orders/buy` and `/orders/sell` POST operations, bearer security requirements, 401 responses, and order request/response references to the canonical contract in `backend/specs/005-swagger/contracts/openapi.yaml`
-- [ ] T016 [US2] Run the existing OpenAPI copy task from `backend/app/build.gradle` so `backend/app/src/main/resources/static/openapi.yaml` is regenerated from the canonical contract rather than edited independently
-- [ ] T017 [US2] Verify the generated resource in `backend/app/src/main/resources/static/openapi.yaml` matches the canonical contract and passes `OrdersOpenApiContractTest.java`
+- [X] T015 [US2] Add `/orders/buy` and `/orders/sell` POST operations, bearer security requirements, 401 responses, and order request/response references to the canonical contract in `backend/specs/005-swagger/contracts/openapi.yaml`
+- [X] T016 [US2] Run the existing OpenAPI copy task from `backend/app/build.gradle` so `backend/app/src/main/resources/static/openapi.yaml` is regenerated from the canonical contract rather than edited independently
+- [X] T017 [US2] Verify the generated resource in `backend/app/src/main/resources/static/openapi.yaml` matches the canonical contract and passes `OrdersOpenApiContractTest.java`
 
 **Checkpoint**: User Story 2 is independently complete: API consumers can identify the Bearer JWT header, protected operations, and 401 behavior from the served contract.
 
@@ -84,11 +84,11 @@ description: "Task list for protecting order creation with JWT authentication"
 
 **Purpose**: Validate the complete feature and preserve repository-wide behavior.
 
-- [ ] T018 [P] Run `.\gradlew.bat :app:compileTestJava` from `backend` and resolve compilation or type-safety issues in changed Java files
-- [ ] T019 [P] Run `.\gradlew.bat :app:test --tests com.dappunq.e2e.OrderManagementControllerE2ETest --tests com.dappunq.security.JwtAuthenticationFilterTest --tests com.dappunq.contract.OrdersOpenApiContractTest` from `backend` and verify all acceptance scenarios pass
-- [ ] T020 Run `.\gradlew.bat :app:processResources` from `backend` and verify the generated OpenAPI resource remains synchronized with `backend/specs/005-swagger/contracts/openapi.yaml`
-- [ ] T021 Run `.\gradlew.bat :app:test` from `backend` to confirm unrelated endpoints and existing behavior remain compatible
-- [ ] T022 [P] Update feature-linked API descriptions or test comments in `backend/specs/015-jwt-order-protection/quickstart.md` only if implementation details or expected unauthorized wording changed
+- [X] T018 [P] Run `.\gradlew.bat :app:compileTestJava` from `backend` and resolve compilation or type-safety issues in changed Java files
+- [X] T019 [P] Run `.\gradlew.bat :app:test --tests com.dappunq.e2e.OrderManagementControllerE2ETest --tests com.dappunq.security.JwtAuthenticationFilterTest --tests com.dappunq.contract.OrdersOpenApiContractTest` from `backend` and verify all acceptance scenarios pass
+- [X] T020 Run `.\gradlew.bat :app:processResources` from `backend` and verify the generated OpenAPI resource remains synchronized with `backend/specs/005-swagger/contracts/openapi.yaml`
+- [X] T021 Run `.\gradlew.bat :app:test` from `backend` to confirm unrelated endpoints and existing behavior remain compatible
+- [X] T022 [P] Update feature-linked API descriptions or test comments in `backend/specs/015-jwt-order-protection/quickstart.md` only if implementation details or expected unauthorized wording changed
 
 ---
 
