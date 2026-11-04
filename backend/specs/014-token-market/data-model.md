@@ -7,7 +7,7 @@ Representa el compromiso completo de compra o venta de tokens.
 | Campo | Tipo | Reglas |
 |---|---|---|
 | `id` | `Long` | Identificador positivo generado por persistencia |
-| `usuario` | `User` | Propietario; obligatorio |
+| `usuario` | `User` | Propietario; obligatorio; se resuelve desde `usuarioId` |
 | `tipoOperacion` | `COMPRA`/`VENTA` | Obligatorio |
 | `jugador` | `Player` | Obligatorio |
 | `cantidad` | `Integer` | Entero positivo; compra limitada a 100 |
@@ -34,9 +34,20 @@ libera la diferencia; al cancelar libera todo.
 
 ## Tenencia de tokens
 
-Cada par usuario/jugador mantiene `tokensDisponibles` y `tokensBloqueados`,
-ambos enteros no negativos. Una venta pendiente mueve la cantidad a bloqueado;
-al ejecutar transfiere los tokens al comprador; al cancelar los libera.
+Se reutiliza la `Holding` existente para cada par usuario/jugador. Una venta
+pendiente mueve la cantidad a bloqueado; al ejecutar transfiere los tokens al
+comprador. Si la Holding del comprador existe, aumenta su cantidad y conserva
+el valor unitario; si no existe, se crea con el valor unitario calculado por la
+Strategy activa del comprador y el valor vigente del jugador. Al cancelar se
+liberan los tokens bloqueados.
+
+## Estrategia de Valuación
+
+Se reutiliza la Strategy activa existente. Es un prerrequisito para crear
+cualquier orden, tanto de compra como de venta. La Strategy sólo determina el
+valor unitario inicial de tokens comprados cuando el comprador no tenía Holding;
+no reemplaza el valor unitario de una Holding existente ni usa el precio de
+liquidación.
 
 ## Operación
 

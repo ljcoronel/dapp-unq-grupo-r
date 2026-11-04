@@ -12,7 +12,7 @@
 
 ### User Story 1 - Comprar tokens de un jugador (Priority: P1)
 
-Como Usuario, quiero emitir una orden de compra indicando un jugador, una cantidad de tokens, un precio máximo total y una tolerancia al alza, para adquirir tokens cuando exista una oferta compatible.
+Como Usuario, quiero emitir una orden de compra indicando un jugador, una cantidad de tokens, un precio máximo total y una tolerancia al alza, para adquirir tokens cuando exista una oferta compatible y recibirlos valuados según mi Estrategia de Valuación activa.
 
 **Why this priority**: Es la vía principal para que un Usuario incorpore tokens y habilita el intercambio económico.
 
@@ -20,17 +20,20 @@ Como Usuario, quiero emitir una orden de compra indicando un jugador, una cantid
 
 **Acceptance Scenarios**:
 
-1. **Given** un Usuario con créditos disponibles suficientes, **When** emite una orden de compra de un jugador por una cantidad entera de hasta 100 tokens y un precio válido, **Then** la orden queda Pendiente y se bloquea de su saldo el precio total más la tolerancia al alza.
+1. **Given** un Usuario con Estrategia de Valuación activa y créditos disponibles suficientes, **When** emite una orden de compra de un jugador por una cantidad entera de hasta 100 tokens y un precio válido, **Then** la orden queda Pendiente y se bloquea de su saldo el precio total más la tolerancia al alza.
 2. **Given** un Usuario que emite una orden de compra por 20 créditos con una tolerancia de 2 créditos, **When** la orden queda Pendiente, **Then** se bloquean 22 créditos de su saldo.
 3. **Given** una orden de compra Pendiente y una orden de venta Pendiente del mismo jugador y cantidad, **When** el precio de la venta está dentro del rango aceptado por la compra, **Then** se ejecuta una única operación, el comprador recibe los tokens, el vendedor recibe los créditos al precio de liquidación y ambas órdenes pasan a Ejecutada.
-4. **Given** una orden de compra con tolerancia cero, **When** existe una venta al mismo precio total, **Then** las órdenes coinciden y se ejecutan.
-5. **Given** un Usuario con créditos insuficientes para cubrir el precio total más la tolerancia, **When** intenta emitir una orden de compra, **Then** el sistema rechaza la orden y no bloquea créditos.
+4. **Given** una compra por 3 tokens a 12 créditos con tolerancia de 2 y una venta compatible a 14 créditos, **When** se ejecuta el match, **Then** el comprador incorpora 3 tokens a su Tenencia y cada token nuevo queda valuado según su Estrategia de Valuación activa, no según el precio de compra.
+5. **Given** que el comprador ya tenía una Tenencia del jugador negociado, **When** recibe tokens por una compra Ejecutada, **Then** aumenta la cantidad de esa Tenencia y conserva sin cambios el valor unitario que ya tenía, por lo que aumenta su valor total.
+6. **Given** que el comprador no tenía una Tenencia del jugador negociado, **When** recibe tokens por una compra Ejecutada, **Then** se crea una Tenencia con la cantidad recibida y el valor unitario determinado por su Estrategia de Valuación activa.
+7. **Given** un Usuario sin Estrategia de Valuación activa, **When** intenta emitir una orden de compra, **Then** el sistema rechaza la orden y no bloquea créditos.
+8. **Given** un Usuario con créditos insuficientes para cubrir el precio total más la tolerancia, **When** intenta emitir una orden de compra, **Then** el sistema rechaza la orden y no bloquea créditos.
 
 ---
 
 ### User Story 2 - Vender tokens de un jugador (Priority: P1)
 
-Como Usuario, quiero emitir una orden de venta indicando un jugador, una cantidad de tokens, un precio mínimo total y una tolerancia a la baja, para vender tokens que ya poseo.
+Como Usuario, quiero emitir una orden de venta indicando un jugador, una cantidad de tokens, un precio mínimo total y una tolerancia a la baja, para vender tokens que ya poseo, siempre que tenga una Estrategia de Valuación activa.
 
 **Why this priority**: Completa el intercambio y permite que los Usuarios obtengan créditos por sus tenencias.
 
@@ -38,9 +41,10 @@ Como Usuario, quiero emitir una orden de venta indicando un jugador, una cantida
 
 **Acceptance Scenarios**:
 
-1. **Given** un Usuario con suficientes tokens libres del jugador, **When** emite una orden de venta válida, **Then** la orden queda Pendiente y se bloquea la cantidad de tokens ofertada.
+1. **Given** un Usuario con Estrategia de Valuación activa y suficientes tokens libres del jugador, **When** emite una orden de venta válida, **Then** la orden queda Pendiente y se bloquea la cantidad de tokens ofertada.
 2. **Given** una orden de venta Pendiente y una orden de compra Pendiente del mismo jugador y cantidad, **When** el precio de la compra está dentro del rango aceptado por la venta, **Then** se ejecuta una única operación, el comprador recibe los tokens, el vendedor recibe los créditos al precio de liquidación y ambas órdenes pasan a Ejecutada.
 3. **Given** un Usuario sin suficientes tokens libres, **When** intenta emitir una orden de venta por una cantidad superior a sus tokens disponibles, **Then** el sistema rechaza la orden y no bloquea tokens.
+4. **Given** un Usuario sin Estrategia de Valuación activa, **When** intenta emitir una orden de venta, **Then** el sistema rechaza la orden y no bloquea tokens.
 
 ---
 
@@ -81,6 +85,9 @@ Como Usuario, quiero consultar mis órdenes Pendientes, cancelar una orden propi
 - Los precios y tolerancias deben ser no negativos y tener como máximo dos decimales; valores con más decimales se rechazan en vez de redondearse silenciosamente.
 - Una compra no puede solicitar más de 100 tokens por orden ni comprometer, entre precio total y tolerancia, más créditos libres de los que tiene el comprador.
 - Una venta no puede superar los tokens libres del vendedor; tokens ya bloqueados por otra orden no cuentan como disponibles.
+- Un Usuario sin Estrategia de Valuación activa no puede emitir órdenes de compra ni de venta.
+- Al recibir tokens comprados, una Tenencia existente conserva su valor unitario; solo aumenta su cantidad y su valor total.
+- Si no existe una Tenencia del jugador comprado, el valor unitario inicial de la nueva Tenencia se determina mediante la Estrategia de Valuación activa del comprador.
 - La coincidencia exige el mismo jugador y la misma cantidad de tokens; las órdenes parciales no están contempladas.
 - Las órdenes no vencen y permanecen Pendientes hasta ejecutarse o cancelarse.
 - Una orden no puede ejecutarse contra otra orden del mismo Usuario.
@@ -95,27 +102,31 @@ Como Usuario, quiero consultar mis órdenes Pendientes, cancelar una orden propi
 
 - **FR-001**: El sistema MUST permitir a un Usuario crear una orden de compra para un único jugador, una cantidad entera positiva de tokens, un precio total y una tolerancia al alza.
 - **FR-002**: El sistema MUST permitir a un Usuario crear una orden de venta para un único jugador, una cantidad entera positiva de tokens, un precio total y una tolerancia a la baja.
-- **FR-003**: El sistema MUST validar que una orden de compra no solicite más de 100 tokens y que la suma de su precio total más la tolerancia al alza no supere los créditos libres del Usuario.
-- **FR-004**: El sistema MUST validar que una orden de venta no oferte más tokens libres de los que posee el Usuario.
-- **FR-005**: El sistema MUST aceptar créditos y tolerancias con un máximo de dos decimales y rechazar valores negativos o con mayor precisión.
-- **FR-006**: Toda orden creada correctamente MUST comenzar en estado Pendiente.
-- **FR-007**: Al crear una compra Pendiente, el sistema MUST bloquear de los créditos libres del comprador un importe igual al precio total más la tolerancia al alza mientras la orden permanezca Pendiente.
-- **FR-008**: Al crear una venta Pendiente, el sistema MUST bloquear de los tokens libres del vendedor la cantidad comprometida mientras la orden permanezca Pendiente.
-- **FR-009**: El sistema MUST considerar compatible una compra y una venta solo cuando pertenecen a Usuarios distintos, refieren al mismo jugador, tienen la misma cantidad y sus rangos de precio se superponen en al menos un valor válido.
-- **FR-010**: El rango de una compra MUST incluir los precios desde su precio total hasta su precio total más la tolerancia al alza; el rango de una venta MUST incluir los precios desde su precio total menos la tolerancia a la baja hasta su precio total.
-- **FR-011**: Al coincidir órdenes, el sistema MUST elegir un precio total dentro de ambos rangos, con como máximo dos decimales. Como criterio determinista, utilizará el precio base de la orden que estaba Pendiente antes de iniciar la coincidencia, siempre que pertenezca a ambos rangos.
-- **FR-012**: Al ejecutar una operación, el comprador MUST recibir los tokens, se le MUST debitar el importe liquidado y el vendedor MUST recibir ese importe y se le MUST debitar la cantidad de tokens; los créditos bloqueados por la compra que no se utilicen por ser el precio final inferior al importe reservado deben desbloquearse.
-- **FR-013**: Al ejecutar una operación, ambas órdenes consumidas MUST pasar a estado Ejecutada y registrar jugador, cantidad, precio liquidado, comprador, vendedor y fecha de ejecución.
-- **FR-014**: La liquidación de una coincidencia MUST ser atómica y no debe dejar transferencias parciales, órdenes Ejecutadas incompletas ni bloqueos inconsistentes.
-- **FR-015**: Cuando un Usuario cree una orden de compra, el sistema MUST priorizar la ejecución contra el Superusuario si este tiene suficientes tokens libres del jugador solicitado.
-- **FR-016**: Para esa ejecución prioritaria, el sistema MUST crear una orden de venta a nombre del Superusuario con la misma cantidad y jugador, tolerancia cero, y ejecutarla inmediatamente contra la compra del Usuario.
-- **FR-017**: Si el Superusuario no tiene suficientes tokens libres, el sistema MUST omitir la venta prioritaria y continuar la búsqueda normal de una orden de venta compatible.
-- **FR-018**: El sistema MUST impedir que una orden de compra y una de venta del mismo Usuario se ejecuten entre sí, incluido el Superusuario.
-- **FR-019**: El Usuario MUST poder cancelar una orden Pendiente propia; al cancelarla, la orden MUST pasar a Cancelada y liberarse todo saldo bloqueado.
-- **FR-020**: El sistema MUST rechazar la cancelación de órdenes de otros Usuarios y la cancelación de órdenes ya Ejecutadas o Canceladas.
-- **FR-021**: El sistema MUST permitir consultar a cada Usuario el registro de sus órdenes Pendientes de compra y venta.
-- **FR-022**: El sistema MUST permitir consultar a cada Usuario el historial de sus órdenes Ejecutadas de compra y venta, con sus datos de liquidación.
-- **FR-023**: Las órdenes MUST permanecer Pendientes sin vencimiento hasta que se ejecuten o sean canceladas por su propietario.
+- **FR-003**: El sistema MUST exigir que el Usuario tenga una Estrategia de Valuación activa para emitir cualquier orden de compra o de venta.
+- **FR-004**: El sistema MUST validar que una orden de compra no solicite más de 100 tokens y que la suma de su precio total más la tolerancia al alza no supere los créditos libres del Usuario.
+- **FR-005**: El sistema MUST validar que una orden de venta no oferte más tokens libres de los que posee el Usuario.
+- **FR-006**: El sistema MUST aceptar créditos y tolerancias con un máximo de dos decimales y rechazar valores negativos o con mayor precisión.
+- **FR-007**: Toda orden creada correctamente MUST comenzar en estado Pendiente.
+- **FR-008**: Al crear una compra Pendiente, el sistema MUST bloquear de los créditos libres del comprador un importe igual al precio total más la tolerancia al alza mientras la orden permanezca Pendiente.
+- **FR-009**: Al crear una venta Pendiente, el sistema MUST bloquear de los tokens libres del vendedor la cantidad comprometida mientras la orden permanezca Pendiente.
+- **FR-010**: El sistema MUST considerar compatible una compra y una venta solo cuando pertenecen a Usuarios distintos, refieren al mismo jugador, tienen la misma cantidad y sus rangos de precio se superponen en al menos un valor válido.
+- **FR-011**: El rango de una compra MUST incluir los precios desde su precio total hasta su precio total más la tolerancia al alza; el rango de una venta MUST incluir los precios desde su precio total menos la tolerancia a la baja hasta su precio total.
+- **FR-012**: Al coincidir órdenes, el sistema MUST elegir un precio total dentro de ambos rangos, con como máximo dos decimales. Como criterio determinista, utilizará el precio base de la orden que estaba Pendiente antes de iniciar la coincidencia, siempre que pertenezca a ambos rangos.
+- **FR-013**: Al ejecutar una operación, el comprador MUST recibir los tokens, se le MUST debitar el importe liquidado y el vendedor MUST recibir ese importe y se le MUST debitar la cantidad de tokens; los créditos bloqueados por la compra que no se utilicen por ser el precio final inferior al importe reservado deben desbloquearse.
+- **FR-014**: Al ejecutar una operación, ambas órdenes consumidas MUST pasar a estado Ejecutada y registrar jugador, cantidad, precio liquidado, comprador, vendedor y fecha de ejecución.
+- **FR-015**: La liquidación de una coincidencia MUST ser atómica y no debe dejar transferencias parciales, órdenes Ejecutadas incompletas ni bloqueos inconsistentes.
+- **FR-016**: Cuando un Usuario cree una orden de compra, el sistema MUST priorizar la ejecución contra el Superusuario si este tiene suficientes tokens libres del jugador solicitado.
+- **FR-017**: Para esa ejecución prioritaria, el sistema MUST crear una orden de venta a nombre del Superusuario con la misma cantidad y jugador, tolerancia cero, y ejecutarla inmediatamente contra la compra del Usuario.
+- **FR-018**: Si el Superusuario no tiene suficientes tokens libres, el sistema MUST omitir la venta prioritaria y continuar la búsqueda normal de una orden de venta compatible.
+- **FR-019**: El sistema MUST impedir que una orden de compra y una de venta del mismo Usuario se ejecuten entre sí, incluido el Superusuario.
+- **FR-020**: El Usuario MUST poder cancelar una orden Pendiente propia; al cancelarla, la orden MUST pasar a Cancelada y liberarse todo saldo bloqueado.
+- **FR-021**: El sistema MUST rechazar la cancelación de órdenes de otros Usuarios y la cancelación de órdenes ya Ejecutadas o Canceladas.
+- **FR-022**: El sistema MUST permitir consultar a cada Usuario el registro de sus órdenes Pendientes de compra y venta.
+- **FR-023**: El sistema MUST permitir consultar a cada Usuario el historial de sus órdenes Ejecutadas de compra y venta, con sus datos de liquidación.
+- **FR-024**: Al ejecutar una orden de compra, el sistema MUST incorporar la cantidad adquirida a la Tenencia del comprador para el jugador correspondiente.
+- **FR-025**: Si el comprador ya posee una Tenencia del jugador adquirido, el sistema MUST aumentar su cantidad en los tokens recibidos, conservar el valor unitario existente y recalcular el valor total a partir de la nueva cantidad.
+- **FR-026**: Si el comprador no posee una Tenencia del jugador adquirido, el sistema MUST crearla con la cantidad recibida y asignar a cada token un valor unitario determinado por la Estrategia de Valuación activa del comprador, sin usar el precio liquidado como valor unitario.
+- **FR-027**: Las órdenes MUST permanecer Pendientes sin vencimiento hasta que se ejecuten o sean canceladas por su propietario.
 
 ### Key Entities
 
@@ -125,6 +136,7 @@ Como Usuario, quiero consultar mis órdenes Pendientes, cancelar una orden propi
 - **Orden de compra**: Compromiso Pendiente o finalizado para adquirir una cantidad de tokens a un precio total y tolerancia al alza.
 - **Orden de venta**: Compromiso Pendiente o finalizado para transferir una cantidad de tokens a un precio total y tolerancia a la baja.
 - **Operación**: Liquidación de una orden de compra y una de venta compatibles, con precio elegido dentro de ambos rangos.
+- **Estrategia de Valuación**: Configuración activa del Usuario que determina el valor unitario de los tokens nuevos recibidos mediante una compra.
 - **Saldo de créditos**: Crédito total del Usuario, distinguido entre disponible, bloqueado y transferido.
 - **Tenencia de tokens**: Cantidad de tokens de un jugador del Usuario, distinguida entre disponible, bloqueada y transferida.
 
@@ -139,11 +151,16 @@ Como Usuario, quiero consultar mis órdenes Pendientes, cancelar una orden propi
 - **SC-005**: En pruebas de operación normal, al menos el 95% de los Usuarios puede crear una orden válida, consultar su estado y cancelar una orden Pendiente sin asistencia.
 - **SC-006**: En el 100% de las consultas de registro e historial, un Usuario solo puede observar sus propias órdenes y obtiene datos suficientes para identificar cada operación.
 - **SC-007**: El 100% de los importes persistidos y liquidados conserva como máximo dos decimales, y el 100% de las cantidades de tokens liquidadas es entero.
+- **SC-008**: El 100% de las órdenes emitidas por Usuarios sin Estrategia de Valuación activa es rechazado sin bloquear créditos ni tokens.
+- **SC-009**: El 100% de las compras ejecutadas incorpora la cantidad adquirida a la Tenencia del comprador; si la Tenencia existía, conserva su valor unitario, y si no existía, usa el valor unitario determinado por la Estrategia de Valuación activa.
 
 ## Assumptions
 
 - Los rangos de precio son inclusivos en ambos extremos; esto permite que tolerancia cero signifique coincidencia exacta.
 - En una orden de compra, el importe reservado mientras está Pendiente es `precio total + tolerancia al alza`; por ejemplo, una orden de 20 créditos con tolerancia de 2 créditos bloquea 22 créditos.
+- La Estrategia de Valuación activa se verifica al momento de emitir la orden; la orden no se crea si el Usuario no tiene una.
+- El valor unitario de una Tenencia existente no se promedia ni se modifica al agregar tokens comprados; solo aumenta la cantidad y el valor total resultante.
+- Para una Tenencia nueva, la valuación se determina con la Estrategia de Valuación activa del comprador y el valor vigente del jugador, no con el precio de la operación.
 - La orden que ya estaba Pendiente antes de iniciarse la coincidencia se considera la orden base para determinar el precio de liquidación; si ese precio no pertenece al rango contrapuesto, se elige un valor de dos decimales dentro de la intersección.
 - Una orden se consume completa: no se realizan ejecuciones parciales ni se dividen órdenes.
 - Cada Usuario comienza con 100 créditos disponibles, salvo que una funcionalidad existente de administración establezca otro saldo explícito.

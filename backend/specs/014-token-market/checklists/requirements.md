@@ -32,4 +32,5 @@
 ## Notes
 
 - La especificación resuelve la tolerancia cero mediante rangos inclusivos y explicita un criterio determinista para el precio de liquidación.
+- Se exige una Estrategia de Valuación activa para emitir órdenes y se define la valuación de tokens comprados según exista o no una Tenencia previa.
 - La especificación está lista para `/speckit-plan`.
