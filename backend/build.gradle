@@ -8,16 +8,14 @@ subprojects {
     group = 'com.dappunq'
     version = '0.0.1-SNAPSHOT'
 
-    apply plugin: 'jacoco'
-
-    jacocoTestReport {
-        dependsOn test
-        reports {
-            xml.required = true
+    tasks.named('jacocoTestReport') {
+            dependsOn tasks.named('test')
+            reports {
+                xml.required = true
+            }
         }
-    }
 
-    test {
+    tasks.named('test') {
         finalizedBy jacocoTestReport
     }
 }
