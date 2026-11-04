@@ -110,7 +110,8 @@ public class WeeklyValuationService {
 
             for (HoldingEntity holding : userHoldings) {
                 PlayerSnapshot playerSnapshot = mapper.toSnapshot(holding.getPlayer());
-                BigDecimal unitValue = calculator.calculate(playerSnapshot, domain, playerSnapshots);
+                BigDecimal unitValue = calculator.calculate(playerSnapshot, domain, playerSnapshots,
+                        holding.getValorUnitario());
                 holding.valuate(unitValue);
                 holdingRepository.save(holding);
 

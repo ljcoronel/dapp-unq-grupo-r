@@ -2,7 +2,11 @@ openapi: 3.0.3
 info:
   title: API de valuacion de tokens
   version: 1.0.0
-  description: Configuracion de estrategias, consulta de tenencias y valuaciones.
+  description: >-
+    Configuracion de estrategias, consulta de tenencias y valuaciones.
+    Cada valuacion aplica valorToken = valorBase + (result * 2), con redondeo
+    HALF_UP a dos decimales. El superusuario se inicializa al arranque con
+    tenencias, estrategia ACTUAL y valuacion inicial de sus tokens.
 servers:
   - url: /
 tags:

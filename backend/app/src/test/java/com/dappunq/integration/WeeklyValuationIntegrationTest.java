@@ -116,6 +116,7 @@ class WeeklyValuationIntegrationTest {
         TeamEntity team = teamRepository.save(new TeamEntity(1L, "Team A"));
         LeagueEntity league = leagueRepository.save(new LeagueEntity(1L, "League A", "Region A"));
         player = playerRepository.save(new PlayerEntity(10L, "Player 1", team, league, 25, 180, 75, "Defender", 10, 900, 2, 1, 0, 0, 1.5f, 85f, 3f, 1));
+        playerRepository.save(new PlayerEntity(11L, "Player 2", team, league, 0, 180, 75, "Forward", 0, 100, 0, 0, 0, 0, 0f, 50f, 1f, 0));
 
         Map<String, BigDecimal> weightsA = new HashMap<>();
         weightsA.put("goals", BigDecimal.valueOf(30));
@@ -148,6 +149,8 @@ class WeeklyValuationIntegrationTest {
         RecalculationSummary firstResult = weeklyValuationService.execute(ExecutionType.DOMINICAL);
         assertEquals("COMPLETED", firstResult.status());
         assertEquals(2, firstResult.recalculatedHoldings());
+        BigDecimal firstUserValue = holdingRepository.findByUserId(user1.getId()).get(0).getValorUnitario();
+        assertTrue(firstUserValue.compareTo(BigDecimal.ZERO) > 0);
 
         // Verificar que user2 ahora tiene Estrategia B como ACTUAL y 0 PENDIENTE
         StrategyConfigEntity user2Current = strategyConfigRepository.findFirstByUserIdAndEstado(user2.getId(), StrategyStatus.ACTUAL).orElseThrow();
@@ -172,6 +175,8 @@ class WeeklyValuationIntegrationTest {
         // Idempotencia: reejecutar en la misma ventana no debe duplicar historial ni valuaciones
         RecalculationSummary secondResult = weeklyValuationService.execute(ExecutionType.DOMINICAL);
         assertEquals("COMPLETED", secondResult.status());
+        BigDecimal secondUserValue = holdingRepository.findByUserId(user1.getId()).get(0).getValorUnitario();
+        assertTrue(secondUserValue.compareTo(firstUserValue) > 0);
 
         List<ValuationHistoryEntity> totalHistory = valuationHistoryRepository.findAll();
         assertEquals(2, totalHistory.size());

@@ -2,12 +2,15 @@ package com.dappunq.service;
 
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
+import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.persistence.JpaUserEntityRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
 import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.UserEntity;
 import com.dappunq.persistence.ValuationPersistenceMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,19 +30,33 @@ public class SuperuserInitializationService {
     private final HoldingsValuationService holdingsValuationService;
     private final ValuationPersistenceMapper mapper;
     private final PasswordEncoder passwordEncoder;
+    private final InitialHoldingsService initialHoldingsService;
 
     @Value("${valuation.superuser.username:superuser}")
     private String superuserUsername = DEFAULT_SUPERUSER_NAME;
 
+    @Autowired
     public SuperuserInitializationService(JpaUserEntityRepository userRepository,
                                           StrategyConfigRepository strategyConfigRepository,
                                           ValuationPersistenceMapper mapper,
-                                          PasswordEncoder passwordEncoder, HoldingsValuationService holdingsValuationService) {
+                                          PasswordEncoder passwordEncoder,
+                                          HoldingsValuationService holdingsValuationService,
+                                          @Lazy InitialHoldingsService initialHoldingsService) {
         this.userRepository = userRepository;
         this.strategyConfigRepository = strategyConfigRepository;
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
         this.holdingsValuationService = holdingsValuationService;
+        this.initialHoldingsService = initialHoldingsService;
+    }
+
+    public SuperuserInitializationService(JpaUserEntityRepository userRepository,
+                                          StrategyConfigRepository strategyConfigRepository,
+                                          ValuationPersistenceMapper mapper,
+                                          PasswordEncoder passwordEncoder,
+                                          HoldingsValuationService holdingsValuationService) {
+        this(userRepository, strategyConfigRepository, mapper, passwordEncoder,
+                holdingsValuationService, null);
     }
 
     public void setSuperuserUsername(String superuserUsername) {
@@ -77,5 +94,17 @@ public class SuperuserInitializationService {
                     );
                     return strategyConfigRepository.save(config);
                 });
+    }
+
+    @Transactional
+    public void initializeSuperuser() {
+        if (initialHoldingsService != null) {
+            initialHoldingsService.initializeHoldingsForAllPlayers();
+        }
+        UserEntity superuser = getOrCreateSuperuser();
+        if (strategyConfigRepository.findFirstByUserIdAndEstado(superuser.getId(), StrategyStatus.ACTUAL).isEmpty()) {
+            StrategyConfigEntity config = initializeSuperuserStrategy();
+            holdingsValuationService.revalue(superuser.getId(), config, ExecutionType.MANUAL);
+        }
     }
 }

@@ -22,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.inOrder;
 
 @ExtendWith(MockitoExtension.class)
 class SuperuserInitializationServiceTest {
@@ -34,6 +37,9 @@ class SuperuserInitializationServiceTest {
 
     @Mock
     private HoldingsValuationService holdingsValuationService;
+
+    @Mock
+    private InitialHoldingsService initialHoldingsService;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -67,5 +73,41 @@ class SuperuserInitializationServiceTest {
         assertEquals(BigDecimal.valueOf(15), weights.get("passSuccessPercentage"));
         assertEquals(BigDecimal.valueOf(15), weights.get("aerialsWon"));
         assertEquals(BigDecimal.valueOf(15), weights.get("timesManOfTheMatch"));
+    }
+
+    @Test
+    void initializeSuperuserEjecutaTenenciasEstrategiaYValuacionEnOrden() {
+        when(userRepository.findByNombreIgnoreCase("superuser")).thenReturn(Optional.of(superuser));
+        when(strategyConfigRepository.findFirstByUserIdAndEstado(999L, StrategyStatus.ACTUAL))
+                .thenReturn(Optional.empty());
+        when(strategyConfigRepository.save(any(StrategyConfigEntity.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        suService = new SuperuserInitializationService(userRepository, strategyConfigRepository,
+                mapper, passwordEncoder, holdingsValuationService, initialHoldingsService);
+
+        suService.initializeSuperuser();
+
+        var order = inOrder(initialHoldingsService, strategyConfigRepository, holdingsValuationService);
+        order.verify(initialHoldingsService).initializeHoldingsForAllPlayers();
+        order.verify(strategyConfigRepository).save(any(StrategyConfigEntity.class));
+        order.verify(holdingsValuationService).revalue(org.mockito.ArgumentMatchers.eq(999L),
+                any(StrategyConfigEntity.class),
+                org.mockito.ArgumentMatchers.eq(com.dappunq.model.valuation.ExecutionType.MANUAL));
+    }
+
+    @Test
+    void initializeSuperuserEsIdempotenteCuandoYaExisteEstrategiaActual() {
+        StrategyConfigEntity existing = new StrategyConfigEntity(superuser, StrategyType.ESTRATEGIA_A,
+                mapper.write(Map.of("goals", BigDecimal.valueOf(100))), StrategyStatus.ACTUAL, java.time.Instant.now());
+        when(userRepository.findByNombreIgnoreCase("superuser")).thenReturn(Optional.of(superuser));
+        when(strategyConfigRepository.findFirstByUserIdAndEstado(999L, StrategyStatus.ACTUAL))
+                .thenReturn(Optional.of(existing));
+        suService = new SuperuserInitializationService(userRepository, strategyConfigRepository,
+                mapper, passwordEncoder, holdingsValuationService, initialHoldingsService);
+
+        suService.initializeSuperuser();
+
+        verify(holdingsValuationService, never()).revalue(any(), any(), any());
+        verify(strategyConfigRepository, never()).save(any());
     }
 }

@@ -8,7 +8,19 @@ import java.util.Map;
 
 public class PlayerValuationCalculator {
 
-    public BigDecimal calculate(PlayerSnapshot p, StrategyConfig c, List<PlayerSnapshot> snapshot) {
+    public static final BigDecimal FACTOR_ESCALA = BigDecimal.valueOf(2);
+
+    public BigDecimal calculate(PlayerSnapshot p, StrategyConfig c, List<PlayerSnapshot> snapshot,
+                                BigDecimal valorBase) {
+        BigDecimal base = valorBase == null ? BigDecimal.ZERO : valorBase;
+        if (base.compareTo(BigDecimal.ZERO) < 0) {
+            throw new ValuationDomainException("El valor base no puede ser negativo");
+        }
+        return base.add(calculateRaw(p, c, snapshot).multiply(FACTOR_ESCALA))
+                .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateRaw(PlayerSnapshot p, StrategyConfig c, List<PlayerSnapshot> snapshot) {
         if (p == null || snapshot == null || snapshot.isEmpty() || c == null) {
             return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
         }
@@ -44,7 +56,7 @@ public class PlayerValuationCalculator {
             result = result.add(BigDecimal.valueOf(0.05));
         }
 
-        return result.setScale(2, RoundingMode.HALF_UP);
+        return result;
     }
 
     private boolean isMissing(PlayerSnapshot p, String m) {

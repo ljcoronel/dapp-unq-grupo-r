@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Token Valuation API",
-    "description": "Coleccion de pruebas para la API de valuacion de tokens de jugadores (especificacion 012-token-valuation). Incluye configuracion de estrategias, consulta de tenencias, historial y recalculo manual.",
+    "description": "Coleccion de pruebas para la API de valuacion de tokens de jugadores. Incluye configuracion de estrategias, consulta de tenencias, historial y recalculo manual. La valuacion es acumulativa: valorToken = valorBase + (result * 2). Tras el arranque, el superusuario dispone de tenencias y estrategia ACTUAL.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -385,7 +385,19 @@
               "host": ["{{baseUrl}}"],
               "path": ["quotes", "recalculate"]
             },
-            "description": "Endpoint publico sin autenticacion. Ejecuta scraping de 50 jugadores, promueve estrategias pendientes y recalcula las tenencias de todos los usuarios."
+            "description": "Endpoint publico sin autenticacion. Ejecuta scraping de 50 jugadores, promueve estrategias pendientes y recalcula las tenencias de todos los usuarios.",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text",
+                  "exec": [
+                    "pm.test(\"Recalculo completado\", function () { pm.response.to.have.status(200); });",
+                    "pm.test(\"La respuesta confirma COMPLETED\", function () { pm.expect(pm.response.json().status).to.eql(\"COMPLETED\"); });"
+                  ]
+                }
+              }
+            ]
           },
           "response": [
             {

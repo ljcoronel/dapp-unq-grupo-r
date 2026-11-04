@@ -5,6 +5,7 @@ import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.PlayerValuationCalculator;
 import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyType;
+import com.dappunq.model.valuation.ValuationDomainException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,11 +56,11 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot maxPlayer = new PlayerSnapshot(2L, "Forward", 20, 10, 100.0f, 10.0f, 5, 1000, 20);
         List<PlayerSnapshot> snapshot = List.of(minPlayer, maxPlayer);
 
-        BigDecimal minValuation = calculator.calculate(minPlayer, configA, snapshot);
-        BigDecimal maxValuation = calculator.calculate(maxPlayer, configA, snapshot);
+        BigDecimal minValuation = calculator.calculate(minPlayer, configA, snapshot, BigDecimal.ZERO);
+        BigDecimal maxValuation = calculator.calculate(maxPlayer, configA, snapshot, BigDecimal.ZERO);
 
         assertEquals(new BigDecimal("0.00"), minValuation);
-        assertEquals(new BigDecimal("1.00"), maxValuation);
+        assertEquals(new BigDecimal("2.00"), maxValuation);
     }
 
     @Test
@@ -73,9 +74,9 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot pMid = new PlayerSnapshot(3L, "Midfielder", 5, 5, 50.0f, 5.0f, 5, 500, 10);
         List<PlayerSnapshot> snapshot = List.of(p1, p2, pMid);
 
-        BigDecimal valuation = calculator.calculate(pMid, configA, snapshot);
+        BigDecimal valuation = calculator.calculate(pMid, configA, snapshot, BigDecimal.ZERO);
         // 0.5 * 30% + 0.5 * 25% + 0.5 * 15% + 0.5 * 15% + 0.5 * 15% = 0.50
-        assertEquals(new BigDecimal("0.50"), valuation);
+        assertEquals(new BigDecimal("1.00"), valuation);
     }
 
     @Test
@@ -89,9 +90,9 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot pPartial = new PlayerSnapshot(3L, "Forward", 10, null, 100.0f, 10.0f, null, 200, 10);
         List<PlayerSnapshot> snapshot = List.of(p1, p2, pPartial);
 
-        BigDecimal valuation = calculator.calculate(pPartial, configA, snapshot);
+        BigDecimal valuation = calculator.calculate(pPartial, configA, snapshot, BigDecimal.ZERO);
         // goals=1.0 (30%) + assists=0.0 (0%) + pass=1.0 (15%) + aerials=1.0 (15%) + motm=0.0 (0%) = 0.60
-        assertEquals(new BigDecimal("0.60"), valuation);
+        assertEquals(new BigDecimal("1.20"), valuation);
     }
 
     @Test
@@ -104,9 +105,9 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot p2 = new PlayerSnapshot(2L, "Forward", 5, 10, 100.0f, 10.0f, 10, 1000, 20);
         List<PlayerSnapshot> snapshot = List.of(p1, p2);
 
-        BigDecimal valP2 = calculator.calculate(p2, configA, snapshot);
+        BigDecimal valP2 = calculator.calculate(p2, configA, snapshot, BigDecimal.ZERO);
         // goals is 0 because min == max, assists=1.0 (25%) + pass=1.0 (15%) + aerials=1.0 (15%) + motm=1.0 (15%) = 0.70
-        assertEquals(new BigDecimal("0.70"), valP2);
+        assertEquals(new BigDecimal("1.40"), valP2);
     }
 
     @Test
@@ -121,16 +122,16 @@ class PlayerValuationCalculatorTest {
         List<PlayerSnapshot> snapshot = List.of(defenderMin, forwardMin, defenderMax, forwardMax);
 
         // Min stats: 0 from metrics. Defender gets +0.05, Forward gets 0.00
-        BigDecimal valDefMin = calculator.calculate(defenderMin, configB, snapshot);
-        BigDecimal valFwdMin = calculator.calculate(forwardMin, configB, snapshot);
-        assertEquals(new BigDecimal("0.05"), valDefMin);
+        BigDecimal valDefMin = calculator.calculate(defenderMin, configB, snapshot, BigDecimal.ZERO);
+        BigDecimal valFwdMin = calculator.calculate(forwardMin, configB, snapshot, BigDecimal.ZERO);
+        assertEquals(new BigDecimal("0.10"), valDefMin);
         assertEquals(new BigDecimal("0.00"), valFwdMin);
 
         // Max stats: 95% (0.95) from metrics. Defender gets 0.95 + 0.05 = 1.00, Forward gets 0.95
-        BigDecimal valDefMax = calculator.calculate(defenderMax, configB, snapshot);
-        BigDecimal valFwdMax = calculator.calculate(forwardMax, configB, snapshot);
-        assertEquals(new BigDecimal("1.00"), valDefMax);
-        assertEquals(new BigDecimal("0.95"), valFwdMax);
+        BigDecimal valDefMax = calculator.calculate(defenderMax, configB, snapshot, BigDecimal.ZERO);
+        BigDecimal valFwdMax = calculator.calculate(forwardMax, configB, snapshot, BigDecimal.ZERO);
+        assertEquals(new BigDecimal("2.00"), valDefMax);
+        assertEquals(new BigDecimal("1.90"), valFwdMax);
     }
 
     @Test
@@ -142,7 +143,7 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot other = new PlayerSnapshot(2L, "Forward", 10, 10, 100.0f, 10.0f, 10, 0, 0);
         List<PlayerSnapshot> snapshot = List.of(defender, other);
 
-        BigDecimal valDef = calculator.calculate(defender, configA, snapshot);
+        BigDecimal valDef = calculator.calculate(defender, configA, snapshot, BigDecimal.ZERO);
         // Defender has min stats in A -> 0.00 (no 5% bonus)
         assertEquals(new BigDecimal("0.00"), valDef);
     }
@@ -174,12 +175,12 @@ class PlayerValuationCalculatorTest {
 
         List<PlayerSnapshot> snapshot = List.of(pMin, pMax, p1, p2);
 
-        BigDecimal val1 = calculator.calculate(p1, configA, snapshot);
-        assertEquals(new BigDecimal("0.38"), val1);
+        BigDecimal val1 = calculator.calculate(p1, configA, snapshot, BigDecimal.ZERO);
+        assertEquals(new BigDecimal("0.75"), val1);
 
         // For p2: 0.15 + 0.075 + 0.075 + (4/10 * 0.15 = 0.06) = 0.36
-        BigDecimal val2 = calculator.calculate(p2, configA, snapshot);
-        assertEquals(new BigDecimal("0.36"), val2);
+        BigDecimal val2 = calculator.calculate(p2, configA, snapshot, BigDecimal.ZERO);
+        assertEquals(new BigDecimal("0.72"), val2);
     }
 
     @Test
@@ -188,9 +189,32 @@ class PlayerValuationCalculatorTest {
         StrategyConfig configA = new StrategyConfig(StrategyType.ESTRATEGIA_A, weightsA);
         PlayerSnapshot p = new PlayerSnapshot(1L, "Forward", 10, 5, 80f, 3f, 2, 500, 10);
 
-        assertEquals(new BigDecimal("0.00"), calculator.calculate(null, configA, List.of(p)));
-        assertEquals(new BigDecimal("0.00"), calculator.calculate(p, null, List.of(p)));
-        assertEquals(new BigDecimal("0.00"), calculator.calculate(p, configA, null));
-        assertEquals(new BigDecimal("0.00"), calculator.calculate(p, configA, List.of()));
+        assertEquals(new BigDecimal("0.00"), calculator.calculate(null, configA, List.of(p), BigDecimal.ZERO));
+        assertEquals(new BigDecimal("0.00"), calculator.calculate(p, null, List.of(p), BigDecimal.ZERO));
+        assertEquals(new BigDecimal("0.00"), calculator.calculate(p, configA, null, BigDecimal.ZERO));
+        assertEquals(new BigDecimal("0.00"), calculator.calculate(p, configA, List.of(), BigDecimal.ZERO));
+    }
+
+    @Test
+    @DisplayName("La valuacion acumula el valor base y aplica factor escala 2")
+    void formulaAcumulativa() {
+        StrategyConfig configA = new StrategyConfig(StrategyType.ESTRATEGIA_A, weightsA);
+        PlayerSnapshot min = new PlayerSnapshot(1L, "Forward", 0, 0, 0f, 0f, 0, 0, 0);
+        PlayerSnapshot max = new PlayerSnapshot(2L, "Forward", 10, 10, 10f, 10f, 10, 0, 0);
+        PlayerSnapshot middle = new PlayerSnapshot(3L, "Forward", 5, 5, 5f, 5f, 5, 0, 0);
+
+        assertEquals(new BigDecimal("1.00"), calculator.calculate(middle, configA,
+                List.of(min, max), BigDecimal.ZERO));
+        assertEquals(new BigDecimal("4.00"), calculator.calculate(middle, configA,
+                List.of(min, max), new BigDecimal("3.00")));
+    }
+
+    @Test
+    void valorBaseNegativoEsInvalido() {
+        StrategyConfig configA = new StrategyConfig(StrategyType.ESTRATEGIA_A, weightsA);
+        PlayerSnapshot player = new PlayerSnapshot(1L, "Forward", 0, 0, 0f, 0f, 0, 0, 0);
+
+        org.junit.jupiter.api.Assertions.assertThrows(ValuationDomainException.class,
+                () -> calculator.calculate(player, configA, List.of(player), new BigDecimal("-0.01")));
     }
 }

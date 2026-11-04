@@ -8,9 +8,13 @@ import com.dappunq.persistence.LeagueEntity;
 import com.dappunq.persistence.LeagueRepository;
 import com.dappunq.persistence.PlayerEntity;
 import com.dappunq.persistence.PlayerRepository;
+import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.UserEntity;
+import com.dappunq.persistence.ValuationHistoryRepository;
+import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.service.SuperuserInitializationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +58,27 @@ class InitialHoldingsIntegrationTest {
     @Autowired
     private LeagueRepository leagueRepository;
 
+    @Autowired
+    private StrategyConfigRepository strategyConfigRepository;
+
+    @Autowired
+    private ValuationRepository valuationRepository;
+
+    @Autowired
+    private ValuationHistoryRepository valuationHistoryRepository;
+
+    @Autowired
+    private SuperuserInitializationService superuserInitializationService;
+
     private UserEntity user;
     private PlayerEntity player;
 
     @BeforeEach
     void setUp() {
         holdingRepository.deleteAll();
+        valuationHistoryRepository.deleteAll();
+        valuationRepository.deleteAll();
+        strategyConfigRepository.deleteAll();
         playerRepository.deleteAll();
         teamRepository.deleteAll();
         leagueRepository.deleteAll();
@@ -95,5 +114,20 @@ class InitialHoldingsIntegrationTest {
         assertThrows(ValuationDomainException.class, () -> {
             new HoldingEntity(user, player, -10);
         });
+    }
+
+    @Test
+    void inicializacionSuperusuarioCreaEstrategiaTenenciaYValuacion() {
+        superuserInitializationService.initializeSuperuser();
+
+        UserEntity superuser = userRepository.findByNombreIgnoreCase("superuser").orElseThrow();
+        assertEquals(1, strategyConfigRepository.findAllByUserId(superuser.getId()).size());
+        HoldingEntity holding = holdingRepository.findByUserIdAndPlayerId(superuser.getId(), player.getId())
+                .orElseThrow();
+        assertEquals(100, holding.getTokens());
+        assertEquals(2, holding.getValorUnitario().scale());
+        assertEquals(1, valuationHistoryRepository.findAll().stream()
+                .filter(history -> history.getUser().getId().equals(superuser.getId()))
+                .count());
     }
 }
