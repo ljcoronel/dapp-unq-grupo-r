@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/login", "/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/quotes/recalculate").permitAll()
                         .requestMatchers(HttpMethod.POST, "/scrape").hasAuthority("scraping")
+                        .requestMatchers(HttpMethod.POST, "/orders/buy", "/orders/sell").authenticated()
                         .requestMatchers("/orders/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/**", "/players", "/players/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/users/{usuarioId}/strategy").permitAll()
@@ -55,7 +56,7 @@ public class SecurityConfig {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
-        response.getWriter().write("{\"message\":\"No autorizado. Se requiere una API key válida para scraping.\"}");
+        response.getWriter().write("{\"message\":\"No autorizado.\"}");
     }
 
     @Bean

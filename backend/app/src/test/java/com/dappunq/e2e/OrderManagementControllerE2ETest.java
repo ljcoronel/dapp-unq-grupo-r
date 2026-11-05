@@ -2,6 +2,7 @@ package com.dappunq.e2e;
 
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
+import com.dappunq.model.User;
 import com.dappunq.persistence.ApiKeyRepository;
 import com.dappunq.persistence.HoldingRepository;
 import com.dappunq.persistence.JpaUserEntityRepository;
@@ -19,11 +20,14 @@ import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
 import com.dappunq.persistence.order.JpaOrdenEntityRepository;
 import com.dappunq.service.WhoScoredScrapingService;
+import com.dappunq.security.JwtService;
+import com.dappunq.security.UserPrincipal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -73,6 +77,7 @@ class OrderManagementControllerE2ETest {
     @Autowired private ValuationHistoryRepository valuationHistory;
     @Autowired private ApiKeyRepository apiKeys;
     @Autowired private ValuationPersistenceMapper mapper;
+    @Autowired private JwtService jwtService;
 
     private MockMvc mockMvc;
     private UserEntity user;
@@ -113,7 +118,7 @@ class OrderManagementControllerE2ETest {
                 {"usuarioId":%d,"playerId":%d,"quantity":2,"price":10.00,"tolerance":1.00}
                 """.formatted(user.getId(), player.getId());
 
-        mockMvc.perform(post("/orders/buy").contentType(MediaType.APPLICATION_JSON).content(request))
+        mockMvc.perform(orderPost("/orders/buy", request, user))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("PENDIENTE"))
                 .andExpect(jsonPath("$.issuedAt").exists())
@@ -142,6 +147,26 @@ class OrderManagementControllerE2ETest {
     }
 
     @Test
+    void creacionDeOrdenRequiereJwtValidoYNoPermiteSuplantarUsuario() throws Exception {
+        String request = """
+                {"usuarioId":%d,"playerId":%d,"quantity":1,"price":10.00,"tolerance":0.00}
+                """.formatted(user.getId(), player.getId());
+
+        mockMvc.perform(post("/orders/buy").contentType(MediaType.APPLICATION_JSON).content(request))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(post("/orders/buy")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer invalid-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(orderPost("/orders/buy", request.replace(
+                        "\"usuarioId\":" + user.getId(), "\"usuarioId\":999999"), user))
+                .andExpect(status().isForbidden());
+
+        org.junit.jupiter.api.Assertions.assertTrue(orders.findAll().isEmpty());
+    }
+
+    @Test
     void endpointsDeVentaEHistorialSonPublicosYRechazanDatosInvalidos() throws Exception {
         UserEntity seller = users.save(new UserEntity("market_seller", "password"));
         Map<String, BigDecimal> weights = new HashMap<>();
@@ -157,28 +182,28 @@ class OrderManagementControllerE2ETest {
         String sellRequest = """
                 {"usuarioId":%d,"playerId":%d,"quantity":2,"price":10.00,"tolerance":0.00}
                 """.formatted(seller.getId(), player.getId());
-        mockMvc.perform(post("/orders/sell").contentType(MediaType.APPLICATION_JSON).content(sellRequest))
+        mockMvc.perform(orderPost("/orders/sell", sellRequest, seller))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("PENDIENTE"));
 
         String invalidSell = """
                 {"usuarioId":%d,"playerId":%d,"quantity":0,"price":10.00,"tolerance":0.00}
                 """.formatted(seller.getId(), player.getId());
-        mockMvc.perform(post("/orders/sell").contentType(MediaType.APPLICATION_JSON).content(invalidSell))
+        mockMvc.perform(orderPost("/orders/sell", invalidSell, seller))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").exists());
 
         String invalidBuy = """
                 {"usuarioId":%d,"playerId":%d,"quantity":101,"price":10.00,"tolerance":0.00}
                 """.formatted(user.getId(), player.getId());
-        mockMvc.perform(post("/orders/buy").contentType(MediaType.APPLICATION_JSON).content(invalidBuy))
+        mockMvc.perform(orderPost("/orders/buy", invalidBuy, user))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").exists());
 
         String buyRequest = """
                 {"usuarioId":%d,"playerId":%d,"quantity":2,"price":10.00,"tolerance":0.00}
                 """.formatted(user.getId(), player.getId());
-        mockMvc.perform(post("/orders/buy").contentType(MediaType.APPLICATION_JSON).content(buyRequest))
+        mockMvc.perform(orderPost("/orders/buy", buyRequest, user))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("EJECUTADA"))
                 .andExpect(jsonPath("$.settledPrice").value(10.0))
@@ -210,13 +235,22 @@ class OrderManagementControllerE2ETest {
                 {"usuarioId":%d,"playerId":%d,"quantity":2,"price":10.00,"tolerance":0.00}
                 """.formatted(user.getId(), player.getId());
 
-        mockMvc.perform(post("/orders/buy").contentType(MediaType.APPLICATION_JSON).content(request))
+        mockMvc.perform(orderPost("/orders/buy", request, user))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("EJECUTADA"));
-        mockMvc.perform(post("/orders/buy").contentType(MediaType.APPLICATION_JSON).content("""
+        mockMvc.perform(orderPost("/orders/buy", """
                 {"usuarioId":%d,"playerId":%d,"quantity":1,"price":10.00,"tolerance":0.00}
-                """.formatted(user.getId(), player.getId())))
+                """.formatted(user.getId(), player.getId()), user))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("PENDIENTE"));
+    }
+
+    private org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder orderPost(
+            String path, String content, UserEntity account) {
+        return post(path)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtService.generateToken(
+                        new UserPrincipal(new User(account.getId(), account.getNombre(), account.getPasswordHash()))))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content);
     }
 }
