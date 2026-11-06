@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public record StrategyRequest(
-        @NotNull StrategyType estrategia,
+        @NotNull StrategyType tipo,
         @NotEmpty Map<String, @NotNull @DecimalMin("0") BigDecimal> pesos,
         StrategyStatus estado
 ) {

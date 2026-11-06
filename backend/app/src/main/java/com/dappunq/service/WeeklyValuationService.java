@@ -90,14 +90,14 @@ public class WeeklyValuationService {
             strategyConfigRepository.save(pending);
         }
 
-        // 2. Recalcular tenencias de usuarios con estrategia actual (omitir usuarios sin estrategia)
+        // 2. Recalcular tenencias de usuarios con tipo actual (omitir usuarios sin tipo)
         String window = LocalDate.now(clock).toString() + "-" + executionType.name();
         List<StrategyConfigEntity> activeConfigs = strategyConfigRepository.findAllByEstado(StrategyStatus.ACTUAL);
         int recalculatedHoldings = 0;
 
         for (StrategyConfigEntity activeConfig : activeConfigs) {
             Long userId = activeConfig.getUser().getId();
-            StrategyConfig domain = new StrategyConfig(activeConfig.getEstrategia(), mapper.read(activeConfig.getPesos()));
+            StrategyConfig domain = new StrategyConfig(activeConfig.getTipoEstrategia(), mapper.read(activeConfig.getPesos()));
             List<HoldingEntity> userHoldings = holdingRepository.findByUserId(userId);
 
             for (HoldingEntity holding : userHoldings) {

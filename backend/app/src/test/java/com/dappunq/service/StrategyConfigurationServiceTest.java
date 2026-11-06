@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -79,8 +78,8 @@ class StrategyConfigurationServiceTest {
         StrategyRequest req = new StrategyRequest(StrategyType.ESTRATEGIA_A, validWeightsA);
         StrategyState resp = service.configure(1L, req);
 
-        assertEquals(StrategyStatus.ACTUAL, resp.estado());
-        assertEquals(StrategyType.ESTRATEGIA_A, resp.estrategia());
+        assertEquals(StrategyStatus.ACTUAL, resp.getEstadoActual());
+        assertEquals(StrategyType.ESTRATEGIA_A, resp.getTipoEstrategiaActual());
         verify(holdingsValuationService).revalue(eq(1L), any(StrategyConfigEntity.class), eq(ExecutionType.MANUAL));
     }
 
@@ -95,8 +94,8 @@ class StrategyConfigurationServiceTest {
         StrategyRequest req = new StrategyRequest(StrategyType.ESTRATEGIA_B, validWeightsB);
         StrategyState resp = service.configure(1L, req);
 
-        assertEquals(StrategyStatus.PENDIENTE, resp.estado());
-        assertEquals(StrategyType.ESTRATEGIA_B, resp.estrategia());
+        assertEquals(StrategyStatus.PENDIENTE, resp.getEstadoPendiente());
+        assertEquals(StrategyType.ESTRATEGIA_B, resp.getTipoEstrategiaPendiente());
         verify(holdingsValuationService, never()).revalue(any(), any(), any());
     }
 
@@ -114,17 +113,7 @@ class StrategyConfigurationServiceTest {
         StrategyState resp = service.configure(1L, req);
 
         verify(strategyConfigRepository).delete(existingPending);
-        assertEquals(StrategyStatus.PENDIENTE, resp.estado());
-    }
-
-    @Test
-    void rechazoSinActualAlSolicitarPendiente() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(strategyConfigRepository.findFirstByUserIdAndEstado(1L, StrategyStatus.ACTUAL)).thenReturn(Optional.empty());
-
-        StrategyRequest req = new StrategyRequest(StrategyType.ESTRATEGIA_A, validWeightsA, StrategyStatus.PENDIENTE);
-        assertThrows(ValuationDomainException.class, () -> service.configure(1L, req));
-        assertThrows(ValuationDomainException.class, () -> service.configurePending(1L, req));
+        assertEquals(StrategyStatus.PENDIENTE, resp.getEstadoPendiente());
     }
 
     @Test

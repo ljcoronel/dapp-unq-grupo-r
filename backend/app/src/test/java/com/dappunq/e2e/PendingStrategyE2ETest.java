@@ -73,7 +73,7 @@ class PendingStrategyE2ETest {
     void rechazoPorPesosInvalidosDevuelve400() throws Exception {
         String invalidJson = """
                 {
-                  "estrategia": "ESTRATEGIA_A",
+                  "tipo": "ESTRATEGIA_A",
                   "pesos": {
                     "goals": 50,
                     "assists": 50,
@@ -93,7 +93,7 @@ class PendingStrategyE2ETest {
     void solicitudDePendienteSinActualDevuelve409() throws Exception {
         String pendingJson = """
                 {
-                  "estrategia": "ESTRATEGIA_A",
+                  "tipo": "ESTRATEGIA_A",
                   "pesos": {
                     "goals": 30,
                     "assists": 25,
@@ -110,14 +110,14 @@ class PendingStrategyE2ETest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(pendingJson))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("No existe estrategia actual para crear una pendiente"));
+                .andExpect(jsonPath("$.message").value("No existe tipo actual para crear una pendiente"));
     }
 
     @Test
     void primerPutCreaActualYSegundoPutCreaPendiente() throws Exception {
         String firstStrategyJson = """
                 {
-                  "estrategia": "ESTRATEGIA_A",
+                  "tipo": "ESTRATEGIA_A",
                   "pesos": {
                     "goals": 30,
                     "assists": 25,
@@ -133,12 +133,12 @@ class PendingStrategyE2ETest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(firstStrategyJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.estado").value("ACTUAL"))
-                .andExpect(jsonPath("$.estrategia").value("ESTRATEGIA_A"));
+                .andExpect(jsonPath("$.actual").exists())
+                .andExpect(jsonPath("$.pendiente").doesNotExist());
 
         String secondStrategyJson = """
                 {
-                  "estrategia": "ESTRATEGIA_B",
+                  "tipo": "ESTRATEGIA_B",
                   "pesos": {
                     "passSuccessPercentage": 35,
                     "aerialsWon": 20,
@@ -153,13 +153,12 @@ class PendingStrategyE2ETest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(secondStrategyJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.estado").value("PENDIENTE"))
-                .andExpect(jsonPath("$.estrategia").value("ESTRATEGIA_B"));
+                .andExpect(jsonPath("$.actual").exists())
+                .andExpect(jsonPath("$.pendiente").exists());
 
         mockMvc.perform(get("/users/" + user.getId() + "/strategy")
                         .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.estado").value("PENDIENTE"))
                 .andExpect(jsonPath("$.actual.estrategia").value("ESTRATEGIA_A"))
                 .andExpect(jsonPath("$.pendiente.estrategia").value("ESTRATEGIA_B"));
     }

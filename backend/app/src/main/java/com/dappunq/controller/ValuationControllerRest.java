@@ -40,7 +40,7 @@ public class ValuationControllerRest {
                                      @Valid @RequestBody StrategyRequest r) {
         StrategyStatus targetStatus = (estado != null) ? estado : r.estado();
         if (targetStatus != null && targetStatus != r.estado()) {
-            r = new StrategyRequest(r.estrategia(), r.pesos(), targetStatus);
+            r = new StrategyRequest(r.tipo(), r.pesos(), targetStatus);
         }
         return mapper.toResponse(strategies.configure(usuarioId, r));
     }

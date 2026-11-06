@@ -36,13 +36,11 @@ class SuperuserStartupE2ETest {
                 "aerialsWon", BigDecimal.valueOf(15),
                 "timesManOfTheMatch", BigDecimal.valueOf(15));
         when(strategies.get(1L)).thenReturn(new StrategyState(
-                StrategyType.ESTRATEGIA_A,
-                weights,
                 StrategyStatus.ACTUAL,
-                Instant.parse("2026-01-01T00:00:00Z"),
                 StrategyType.ESTRATEGIA_A,
                 weights,
                 Instant.parse("2026-01-01T00:00:00Z"),
+                null,
                 null,
                 null,
                 null));

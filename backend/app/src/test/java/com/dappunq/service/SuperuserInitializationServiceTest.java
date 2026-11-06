@@ -64,7 +64,7 @@ class SuperuserInitializationServiceTest {
         StrategyConfigEntity config = suService.initializeSuperuserStrategy();
 
         assertNotNull(config);
-        assertEquals(StrategyType.ESTRATEGIA_A, config.getEstrategia());
+        assertEquals(StrategyType.ESTRATEGIA_A, config.getTipoEstrategia());
         assertEquals(StrategyStatus.ACTUAL, config.getEstado());
 
         Map<String, BigDecimal> weights = mapper.read(config.getPesos());

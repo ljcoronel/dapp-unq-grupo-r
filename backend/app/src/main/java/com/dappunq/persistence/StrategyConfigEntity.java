@@ -28,7 +28,7 @@ public class StrategyConfigEntity {
     private UserEntity user;
 
     @Enumerated(EnumType.STRING)
-    private StrategyType estrategia;
+    private StrategyType tipoEstrategia;
 
     @Column(nullable = false, length = 2000)
     private String pesos;
@@ -41,9 +41,9 @@ public class StrategyConfigEntity {
 
     protected StrategyConfigEntity() {}
 
-    public StrategyConfigEntity(UserEntity user, StrategyType estrategia, String pesos, StrategyStatus estado, Instant vigenteDesde) {
+    public StrategyConfigEntity(UserEntity user, StrategyType tipoEstrategia, String pesos, StrategyStatus estado, Instant vigenteDesde) {
         this.user = user;
-        this.estrategia = estrategia;
+        this.tipoEstrategia = tipoEstrategia;
         this.pesos = pesos;
         this.estado = estado;
         this.vigenteDesde = vigenteDesde;
@@ -57,8 +57,8 @@ public class StrategyConfigEntity {
         return user;
     }
 
-    public StrategyType getEstrategia() {
-        return estrategia;
+    public StrategyType getTipoEstrategia() {
+        return tipoEstrategia;
     }
 
     public String getPesos() {

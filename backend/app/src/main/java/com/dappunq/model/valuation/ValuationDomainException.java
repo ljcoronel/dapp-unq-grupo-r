@@ -11,7 +11,7 @@ public class ValuationDomainException extends RuntimeException {
     }
 
     public static ValuationDomainException pendingWithoutCurrent() {
-        return new ValuationDomainException("No existe estrategia actual para crear una pendiente");
+        return new ValuationDomainException("No existe tipo actual para crear una pendiente");
     }
 
     public static ValuationDomainException invalidWindow() {

@@ -52,7 +52,7 @@ public class HoldingsValuationService {
     public int revalue(Long userId, StrategyConfigEntity ce, ExecutionType type) {
         List<PlayerEntity> playerEntities = players.findAll();
         List<PlayerSnapshot> snapshot = playerEntities.stream().map(mapper::toSnapshot).toList();
-        StrategyConfig c = new StrategyConfig(ce.getEstrategia(), mapper.read(ce.getPesos()));
+        StrategyConfig c = new StrategyConfig(ce.getTipoEstrategia(), mapper.read(ce.getPesos()));
         int n = 0;
         String window = LocalDate.now().toString() + "-" + type;
 

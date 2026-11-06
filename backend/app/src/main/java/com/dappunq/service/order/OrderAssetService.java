@@ -181,7 +181,7 @@ public class OrderAssetService {
                 .map(valuationMapper::toSnapshot).toList();
         PlayerSnapshot target = valuationMapper.toSnapshot(player);
         Map<String, BigDecimal> weights = valuationMapper.read(active.getPesos());
-        StrategyConfig config = new StrategyConfig(active.getEstrategia(), weights);
+        StrategyConfig config = new StrategyConfig(active.getTipoEstrategia(), weights);
         BigDecimal unitValue = calculator.calculate(target, config, snapshots, BigDecimal.ZERO);
         return new HoldingEntity(comprador, player, cantidad, unitValue);
     }
