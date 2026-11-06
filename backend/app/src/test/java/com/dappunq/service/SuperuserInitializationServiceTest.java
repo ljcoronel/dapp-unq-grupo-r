@@ -51,7 +51,7 @@ class SuperuserInitializationServiceTest {
 
     @BeforeEach
     void setUp() {
-        suService = new SuperuserInitializationService(userRepository, strategyConfigRepository, mapper, passwordEncoder, holdingsValuationService);
+        suService = new SuperuserInitializationService(userRepository, strategyConfigRepository, mapper, passwordEncoder, holdingsValuationService, null);
         superuser = new UserEntity(999L, "superuser", "hash999");
     }
 

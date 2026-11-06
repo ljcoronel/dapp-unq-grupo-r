@@ -8,7 +8,6 @@ import com.dappunq.exception.InvalidPlayerIdException;
 import com.dappunq.exception.PlayerNotFoundException;
 import com.dappunq.persistence.PlayerEntity;
 import com.dappunq.persistence.PlayerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +19,8 @@ public class PlayerServiceImpl implements PlayerService {
     private final PlayerRepository playerRepository;
     private final InitialHoldingsService initialHoldingsService;
 
-    public PlayerServiceImpl(PlayerRepository playerRepository) {
-        this(playerRepository, null);
-    }
-
-    @Autowired
     public PlayerServiceImpl(PlayerRepository playerRepository,
-                             @Autowired(required = false) InitialHoldingsService initialHoldingsService) {
+                             InitialHoldingsService initialHoldingsService) {
         this.playerRepository = playerRepository;
         this.initialHoldingsService = initialHoldingsService;
     }
