@@ -4,7 +4,6 @@ import com.dappunq.dto.valuation.HoldingHistoryResponse;
 import com.dappunq.dto.valuation.HoldingResponse;
 import com.dappunq.dto.valuation.StrategyRequest;
 import com.dappunq.dto.valuation.StrategyStateResponse;
-import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.service.HoldingsValuationService;
 import com.dappunq.service.StrategyConfigurationService;
 import jakarta.validation.Valid;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -36,13 +34,8 @@ public class ValuationControllerRest {
 
     @PutMapping("/strategy")
     public StrategyStateResponse put(@PathVariable Long usuarioId,
-                                     @RequestParam(required = false) StrategyStatus estado,
                                      @Valid @RequestBody StrategyRequest r) {
-        StrategyStatus targetStatus = (estado != null) ? estado : r.estado();
-        if (targetStatus != null && targetStatus != r.estado()) {
-            r = new StrategyRequest(r.tipo(), r.pesos(), targetStatus);
-        }
-        return mapper.toResponse(strategies.configure(usuarioId, r));
+        return mapper.toResponse(strategies.configure(usuarioId, r.aModelo()));
     }
 
     @GetMapping("/strategy")

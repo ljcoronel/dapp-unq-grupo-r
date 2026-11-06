@@ -112,7 +112,7 @@ public class WeeklyValuationService {
                             holding.getUser(),
                             holding.getPlayer(),
                             window,
-                            domain.strategy(),
+                            domain.tipo(),
                             unitValue
                     ));
                 }
@@ -123,7 +123,7 @@ public class WeeklyValuationService {
                             holding.getPlayer(),
                             holding.getTokens(),
                             unitValue,
-                            domain.strategy(),
+                            domain.tipo(),
                             window,
                             executionType
                     ));

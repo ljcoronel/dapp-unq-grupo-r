@@ -52,7 +52,7 @@ public class PlayerValuationCalculator {
             result = result.add(weight.multiply(BigDecimal.valueOf(n)));
         }
 
-        if (c.strategy() == StrategyType.ESTRATEGIA_B && "Defender".equals(p.getPosition())) {
+        if (c.tipo() == StrategyType.ESTRATEGIA_B && "Defender".equals(p.getPosition())) {
             result = result.add(BigDecimal.valueOf(0.05));
         }
 

@@ -1,11 +1,9 @@
 package com.dappunq.service;
 
-import com.dappunq.dto.valuation.StrategyRequest;
 import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.StrategyStatus;
-import com.dappunq.model.valuation.ValuationDomainException;
 import com.dappunq.persistence.JpaUserEntityRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
 import com.dappunq.persistence.StrategyConfigRepository;
@@ -37,20 +35,15 @@ public class StrategyConfigurationService {
     }
 
     @Transactional
-    public StrategyState configure(Long id, StrategyRequest r) {
+    public StrategyState configure(Long id, StrategyConfig r) {
         UserEntity u = users.findById(id).orElseThrow(() -> new NoSuchElementException("Usuario inexistente"));
-        StrategyConfig domain = new StrategyConfig(r.tipo(), r.pesos());
 
         Optional<StrategyConfigEntity> current = configs.findFirstByUserIdAndEstado(id, StrategyStatus.ACTUAL);
         Optional<StrategyConfigEntity> pending = configs.findFirstByUserIdAndEstado(id, StrategyStatus.PENDIENTE);
 
-        if (r.estado() == StrategyStatus.PENDIENTE && current.isEmpty()) {
-            throw ValuationDomainException.pendingWithoutCurrent();
-        }
-
         if (current.isEmpty()) {
             StrategyConfigEntity saved = configs.save(new StrategyConfigEntity(u, r.tipo(),
-                mapper.write(domain.weights()), StrategyStatus.ACTUAL, Instant.now()));
+                mapper.write(r.weights()), StrategyStatus.ACTUAL, Instant.now()));
             // Este revalue no va acá. Se debe hacer en la inicialización del superusuario
             holdings.revalue(id, saved, ExecutionType.MANUAL);
             return new StrategyState(saved.getEstado(), saved.getTipoEstrategia(), mapper.read(saved.getPesos()),
@@ -64,7 +57,7 @@ public class StrategyConfigurationService {
         var vigenteDesdeActual = actual.getVigenteDesde();
 
         pending.ifPresent(configs::delete);
-        StrategyConfigEntity savedPendiente = configs.save(new StrategyConfigEntity(u, r.tipo(), mapper.write(domain.weights()),
+        StrategyConfigEntity savedPendiente = configs.save(new StrategyConfigEntity(u, r.tipo(), mapper.write(r.weights()),
             StrategyStatus.PENDIENTE, Instant.now()));
         return new StrategyState(estadoActual, tipoActual, pesosActual, vigenteDesdeActual, savedPendiente.getEstado(),
             savedPendiente.getTipoEstrategia(), mapper.read(savedPendiente.getPesos()), savedPendiente.getVigenteDesde());

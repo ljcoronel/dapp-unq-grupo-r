@@ -1,6 +1,6 @@
 package com.dappunq.dto.valuation;
 
-import com.dappunq.model.valuation.StrategyStatus;
+import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyType;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
@@ -11,10 +11,10 @@ import java.util.Map;
 
 public record StrategyRequest(
         @NotNull StrategyType tipo,
-        @NotEmpty Map<String, @NotNull @DecimalMin("0") BigDecimal> pesos,
-        StrategyStatus estado
+        @NotEmpty Map<String, @NotNull @DecimalMin("0") BigDecimal> pesos
 ) {
-    public StrategyRequest(@NotNull StrategyType estrategia, @NotEmpty Map<String, @NotNull @DecimalMin("0") BigDecimal> pesos) {
-        this(estrategia, pesos, null);
+
+    public StrategyConfig aModelo() {
+        return new StrategyConfig(tipo, pesos);
     }
 }

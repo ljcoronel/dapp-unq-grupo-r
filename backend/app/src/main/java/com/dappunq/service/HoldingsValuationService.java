@@ -61,7 +61,7 @@ public class HoldingsValuationService {
             BigDecimal v = calculator.calculate(playerSnapshot, c, snapshot, h.getValorUnitario());
             h.valuate(v);
             holdings.save(h);
-            history.save(new ValuationHistoryEntity(h.getUser(), h.getPlayer(), h.getTokens(), v, c.strategy(), window, type));
+            history.save(new ValuationHistoryEntity(h.getUser(), h.getPlayer(), h.getTokens(), v, c.tipo(), window, type));
             n++;
         }
         log.info("Revaluadas {} tenencias para el usuario {} con tipo {}", n, userId, type);

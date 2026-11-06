@@ -90,30 +90,6 @@ class PendingStrategyE2ETest {
     }
 
     @Test
-    void solicitudDePendienteSinActualDevuelve409() throws Exception {
-        String pendingJson = """
-                {
-                  "tipo": "ESTRATEGIA_A",
-                  "pesos": {
-                    "goals": 30,
-                    "assists": 25,
-                    "passSuccessPercentage": 15,
-                    "aerialsWon": 15,
-                    "timesManOfTheMatch": 15
-                  },
-                  "estado": "PENDIENTE"
-                }
-                """;
-
-        mockMvc.perform(put("/users/" + user.getId() + "/strategy")
-                        .header(HttpHeaders.AUTHORIZATION, token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(pendingJson))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("No existe tipo actual para crear una pendiente"));
-    }
-
-    @Test
     void primerPutCreaActualYSegundoPutCreaPendiente() throws Exception {
         String firstStrategyJson = """
                 {
