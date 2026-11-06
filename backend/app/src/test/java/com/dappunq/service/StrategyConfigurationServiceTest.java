@@ -1,6 +1,5 @@
 package com.dappunq.service;
 
-import com.dappunq.dto.valuation.StrategyRequest;
 import com.dappunq.model.valuation.*;
 import com.dappunq.persistence.JpaUserEntityRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
@@ -8,7 +7,6 @@ import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.UserEntity;
 import com.dappunq.persistence.ValuationPersistenceMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -21,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;

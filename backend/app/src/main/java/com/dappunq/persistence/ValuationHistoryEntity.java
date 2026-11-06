@@ -1,26 +1,40 @@
 package com.dappunq.persistence;
-import com.dappunq.model.valuation.*; import jakarta.persistence.*; import java.math.*; import java.time.*;
+
+import com.dappunq.model.valuation.*;
+import jakarta.persistence.*;
+import java.math.*;
+import java.time.*;
+
 @Entity @Table(name="historial_valuaciones",
     uniqueConstraints=@UniqueConstraint(columnNames={"usuario_id","jugador_id","ventana","tipo_ejecucion"}))
 public class ValuationHistoryEntity {
+
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne(optional=false) @JoinColumn(name="usuario_id")
+    @ManyToOne(optional=false)
+    @JoinColumn(name="usuario_id")
     UserEntity user;
 
-    @ManyToOne(optional=false) @JoinColumn(name="jugador_id")
-    PlayerEntity player; int tokens;
+    @ManyToOne(optional=false)
+    @JoinColumn(name="jugador_id")
+    PlayerEntity player;
+    int tokens;
 
-    @Column(name="valor_unitario") BigDecimal valorUnitario;
+    @Column(name="valor_unitario")
+    BigDecimal valorUnitario;
 
-    @Column(name="valor_total") BigDecimal valorTotal;
+    @Column(name="valor_total")
+    BigDecimal valorTotal;
 
-    @Enumerated(EnumType.STRING) StrategyType estrategia;
+    @Enumerated(EnumType.STRING)
+    StrategyType estrategia;
 
-    Instant ejecutadoEn=Instant.now(); String ventana;
+    Instant ejecutadoEn = Instant.now();
+    String ventana;
 
-    @Enumerated(EnumType.STRING) ExecutionType tipoEjecucion;
+    @Enumerated(EnumType.STRING)
+    ExecutionType tipoEjecucion;
 
     protected ValuationHistoryEntity(){}
     public ValuationHistoryEntity(UserEntity u,PlayerEntity p,int t,BigDecimal v,StrategyType s,String w,ExecutionType x) {
