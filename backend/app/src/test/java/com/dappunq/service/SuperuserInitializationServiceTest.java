@@ -57,7 +57,6 @@ class SuperuserInitializationServiceTest {
 
     @Test
     void superuserInitializationServiceCreaSuperusuarioYEstrategiaAConPesosCorrectos() {
-        when(userRepository.findByNombreIgnoreCase("superuser")).thenReturn(Optional.of(superuser));
         when(strategyConfigRepository.findFirstByUserIdAndEstado(999L, StrategyStatus.ACTUAL)).thenReturn(Optional.empty());
         when(strategyConfigRepository.save(any(StrategyConfigEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
