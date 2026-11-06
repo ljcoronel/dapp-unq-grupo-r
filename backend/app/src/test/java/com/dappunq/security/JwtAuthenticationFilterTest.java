@@ -1,5 +1,6 @@
 package com.dappunq.security;
 
+import com.dappunq.model.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,11 +14,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -44,10 +42,7 @@ class JwtAuthenticationFilterTest {
         request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer valid-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain chain = new MockFilterChain();
-        UserDetails user = User.withUsername("usuario1")
-                .password("secret")
-                .authorities(Collections.emptyList())
-                .build();
+        UserDetails user = new UserPrincipal(new User(42L, "usuario1", "secret"));
 
         when(jwtService.extractUsername("valid-token")).thenReturn("usuario1");
         when(userDetailsService.loadUserByUsername("usuario1")).thenReturn(user);
@@ -57,6 +52,8 @@ class JwtAuthenticationFilterTest {
 
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
         assertThat(SecurityContextHolder.getContext().getAuthentication().getName()).isEqualTo("usuario1");
+        assertThat(((UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                .getUserId()).isEqualTo(42L);
     }
 
     @Test

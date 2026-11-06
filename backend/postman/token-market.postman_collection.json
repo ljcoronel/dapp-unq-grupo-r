@@ -1,0 +1,165 @@
+{
+  "info": {
+    "name": "Token Market",
+    "description": "Flujos publicos del mercado de ordenes. No requieren JWT ni API key. Los escenarios de venta requieren tokens libres; el flujo prioritario requiere inventario del Superusuario; para la prueba de auto-coincidencia, el Superusuario no debe tener inventario del jugador.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "userId", "value": "2" },
+    { "key": "sellerId", "value": "3" },
+    { "key": "playerId", "value": "8" },
+    { "key": "orderId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Create buy order",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuarioId\":{{userId}},\"playerId\":{{playerId}},\"quantity\":2,\"price\":10.00,\"tolerance\":1.00}"
+        },
+        "url": "{{baseUrl}}/orders/buy"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Created without authentication', function () { pm.response.to.have.status(201); });",
+            "pm.test('Returns a valid order state', function () { pm.expect(['PENDIENTE', 'EJECUTADA']).to.include(pm.response.json().status); });",
+            "pm.test('Returns an ISO-8601 issue date', function () { pm.expect(pm.response.json().issuedAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T/); });",
+            "if (pm.response.code === 201 && pm.response.json().status === 'PENDIENTE') { pm.environment.set('orderId', pm.response.json().orderId); } else { pm.environment.unset('orderId'); }"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "Create sell order",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuarioId\":{{sellerId}},\"playerId\":{{playerId}},\"quantity\":2,\"price\":10.00,\"tolerance\":1.00}"
+        },
+        "url": "{{baseUrl}}/orders/sell"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Created without authentication', function () { pm.response.to.have.status(201); });",
+            "pm.test('Returns a valid order state', function () { pm.expect(['PENDIENTE', 'EJECUTADA']).to.include(pm.response.json().status); });"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "Incompatible sell remains pending",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuarioId\":{{sellerId}},\"playerId\":{{playerId}},\"quantity\":2,\"price\":9999.00,\"tolerance\":0.00}"
+        },
+        "url": "{{baseUrl}}/orders/sell"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('An incompatible sell stays pending', function () { pm.response.to.have.status(201); pm.expect(pm.response.json().status).to.eql('PENDIENTE'); });"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "Same-owner sell for self-trade check",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuarioId\":{{userId}},\"playerId\":{{playerId}},\"quantity\":1,\"price\":99.00,\"tolerance\":0.00}"
+        },
+        "url": "{{baseUrl}}/orders/sell"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Same-owner sell stays pending', function () { pm.response.to.have.status(201); pm.expect(pm.response.json().status).to.eql('PENDIENTE'); });"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "Same-owner buy does not self-match",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuarioId\":{{userId}},\"playerId\":{{playerId}},\"quantity\":1,\"price\":99.00,\"tolerance\":0.00}"
+        },
+        "url": "{{baseUrl}}/orders/buy"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('The user cannot fill their own sale', function () { pm.response.to.have.status(201); pm.expect(pm.response.json().status).to.eql('PENDIENTE'); });"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "Priority buy from Superuser inventory",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuarioId\":{{userId}},\"playerId\":{{playerId}},\"quantity\":1,\"price\":10.00,\"tolerance\":0.00}"
+        },
+        "url": "{{baseUrl}}/orders/buy"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Priority buy executes when Superuser inventory is available', function () { pm.response.to.have.status(201); pm.expect(pm.response.json().status).to.eql('EJECUTADA'); });"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "List pending orders",
+      "request": { "method": "GET", "url": "{{baseUrl}}/users/{{userId}}/orders" }
+    },
+    {
+      "name": "List executed transactions",
+      "request": { "method": "GET", "url": "{{baseUrl}}/users/{{userId}}/transactions" }
+    },
+    {
+      "name": "Cancel order",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/orders/{{orderId}}?usuarioId={{userId}}" },
+      "event": [{
+        "listen": "prerequest",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["if (!pm.environment.get('orderId')) { pm.execution.skipRequest(); }"]
+        }
+      }]
+    }
+  ]
+}

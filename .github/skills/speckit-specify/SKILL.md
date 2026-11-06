@@ -19,7 +19,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 ## Pre-Execution Checks
 
 **Check for extension hooks (before specification)**:
-- Check if `.specify/extensions.yml` exists in the project root.
+- Check if `../../../backend/.specify` exists in the project root.
 - If it exists, read it and look for entries under the `hooks.before_specify` key
 - If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
 - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
@@ -50,7 +50,7 @@ You **MUST** consider the user input before proceeding (if not empty).
     Wait for the result of the hook command before proceeding to the Outline.
     ```
     After emitting the block above you MUST actually invoke the hook and wait for it to finish before continuing. Run it the same way you would run the command yourself in this agent/session (the invocation may differ from the literal `{command}` id shown above, e.g. a skills-mode agent runs it as `/skill:speckit-...` or `$speckit-...`). Emitting the block alone does not run the hook.
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- If no hooks are registered or `../../../backend/.specify` does not exist, skip silently
 
 ## Outline
 
@@ -78,16 +78,16 @@ Given that feature description, do this:
 
 3. **Create the spec feature directory**:
 
-   Specs live under the default `specs/` directory unless the user explicitly provides `SPECIFY_FEATURE_DIRECTORY`.
+   Specs live under the default `../../../backend/specs` directory unless the user explicitly provides `SPECIFY_FEATURE_DIRECTORY`.
 
    **Resolution order for `SPECIFY_FEATURE_DIRECTORY`**:
    1. If the user explicitly provided `SPECIFY_FEATURE_DIRECTORY` (e.g., via environment variable, argument, or configuration), use it as-is
-   2. Otherwise, auto-generate it under `specs/`:
-      - Check `.specify/init-options.json` for `feature_numbering` (preferred) or `branch_numbering` (deprecated, migration only — will be removed in a future release)
+   2. Otherwise, auto-generate it under `../../../backend/specs`:
+      - Check `../../../backend/.specify` for `feature_numbering` (preferred) or `branch_numbering` (deprecated, migration only — will be removed in a future release)
       - If `"timestamp"`: prefix is `YYYYMMDD-HHMMSS` (current timestamp)
-      - If `"sequential"` or absent: prefix is `NNN` (next available 3-digit number after scanning existing directories in `specs/`)
+      - If `"sequential"` or absent: prefix is `NNN` (next available 3-digit number after scanning existing directories in `../../../backend/specs`)
       - Construct the directory name: `<prefix>-<short-name>` (e.g., `003-user-auth` or `20260319-143022-user-auth`)
-      - Set `SPECIFY_FEATURE_DIRECTORY` to `specs/<directory-name>`
+      - Set `SPECIFY_FEATURE_DIRECTORY` to `../../../backend/specs`
       - If `branch_numbering` was used (and `feature_numbering` was absent), emit a one-line warning: "⚠️ `branch_numbering` in init-options.json is deprecated. Rename to `feature_numbering`."
 
    **Create the directory and spec file**:
@@ -95,13 +95,13 @@ Given that feature description, do this:
    - Resolve the active `spec-template` through the Spec Kit preset/template resolution stack (equivalent to `specify preset resolve spec-template`)
    - Copy the resolved `spec-template` file to `SPECIFY_FEATURE_DIRECTORY/spec.md` as the starting point
    - Set `SPEC_FILE` to `SPECIFY_FEATURE_DIRECTORY/spec.md`
-   - Persist the resolved path to `.specify/feature.json`:
+   - Persist the resolved path to `../../../backend/.specify`:
      ```json
      {
        "feature_directory": "<resolved feature dir>"
      }
      ```
-     Write the actual resolved directory path value (for example, `specs/003-user-auth`), not the literal string `SPECIFY_FEATURE_DIRECTORY`.
+     Write the actual resolved directory path value (for example, `../../../backend/specs`), not the literal string `SPECIFY_FEATURE_DIRECTORY`.
      This allows downstream commands (`/speckit-plan`, `/speckit-tasks`, etc.) to locate the feature directory without relying on git branch name conventions.
 
    **IMPORTANT**:
@@ -111,7 +111,7 @@ Given that feature description, do this:
 
 4. Load the resolved active `spec-template` file to understand required sections.
 
-5. **IF EXISTS**: Load `.specify/memory/constitution.md` for project principles and governance constraints.
+5. **IF EXISTS**: Load `../../../backend/.specify` for project principles and governance constraints.
 
 6. Follow this execution flow:
     1. Parse user description from arguments
@@ -236,7 +236,7 @@ Given that feature description, do this:
 
 **You MUST complete this section before reporting completion to the user.**
 
-Check if `.specify/extensions.yml` exists in the project root.
+Check if `../../../backend/.specify` exists in the project root.
 - If it does not exist, or no hooks are registered under `hooks.after_specify`, skip to the Completion Report.
 - If it exists, read it and look for entries under the `hooks.after_specify` key.
 - If the YAML cannot be parsed or is invalid, skip hook checking silently and continue to the Completion Report.

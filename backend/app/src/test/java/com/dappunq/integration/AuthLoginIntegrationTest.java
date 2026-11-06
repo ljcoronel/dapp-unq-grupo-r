@@ -53,24 +53,48 @@ class AuthLoginIntegrationTest {
 
     @Test
     void shouldLoginWithValidCredentials() throws Exception {
-        userRepository.save(new User("usuario1", passwordEncoder.encode("secret")));
+        userRepository.save(new User("loginUsuario1", passwordEncoder.encode("secret")));
 
         mockMvc.perform(post("/login")
                         .contentType("application/json")
-                        .content("{\"nombre\":\"usuario1\",\"password\":\"secret\"}"))
+                        .content("{\"nombre\":\"loginUsuario1\",\"password\":\"secret\"}"))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.AUTHORIZATION, not(blankOrNullString())))
-                .andExpect(jsonPath("$.nombre").value("usuario1"));
+                .andExpect(jsonPath("$.nombre").value("loginUsuario1"));
     }
 
     @Test
     void shouldRejectInvalidCredentials() throws Exception {
-        userRepository.save(new User("usuario2", passwordEncoder.encode("secret")));
+        userRepository.save(new User("loginUsuario2", passwordEncoder.encode("secret")));
 
         mockMvc.perform(post("/login")
                         .contentType("application/json")
-                        .content("{\"nombre\":\"usuario2\",\"password\":\"wrong\"}"))
+                        .content("{\"nombre\":\"loginUsuario2\",\"password\":\"wrong\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Credenciales inválidas"));
+    }
+
+    @Test
+    void shouldLoginCaseInsensitively() throws Exception {
+        // The domain-facing repository uses findByNombreIgnoreCase; login must match regardless of case
+        userRepository.save(new User("CamelCaseUser", passwordEncoder.encode("secret")));
+
+        mockMvc.perform(post("/login")
+                        .contentType("application/json")
+                        .content("{\"nombre\":\"camelcaseuser\",\"password\":\"secret\"}"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.AUTHORIZATION, not(blankOrNullString())))
+                .andExpect(jsonPath("$.nombre").value("CamelCaseUser"));
+    }
+
+    @Test
+    void shouldReturnAuthorizationHeaderContainingBearerToken() throws Exception {
+        userRepository.save(new User("tokenUser", passwordEncoder.encode("pass")));
+
+        mockMvc.perform(post("/login")
+                        .contentType("application/json")
+                        .content("{\"nombre\":\"tokenUser\",\"password\":\"pass\"}"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.AUTHORIZATION, not(blankOrNullString())));
     }
 }

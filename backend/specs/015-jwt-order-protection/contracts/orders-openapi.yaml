@@ -1,0 +1,99 @@
+openapi: 3.0.3
+info:
+  title: Contrato de órdenes protegidas
+  version: 1.0.0
+  description: Delta contractual para la creación autenticada de órdenes.
+paths:
+  /orders/buy:
+    post:
+      summary: Crear orden de compra
+      operationId: createBuyOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearOrdenRequest'
+      responses:
+        '201':
+          description: Orden creada y procesada según las reglas de mercado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+        '400':
+          description: Datos de orden inválidos o regla funcional incumplida.
+        '401':
+          description: JWT ausente, inválido, vencido o no asociado a una identidad disponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+  /orders/sell:
+    post:
+      summary: Crear orden de venta
+      operationId: createSellOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearOrdenRequest'
+      responses:
+        '201':
+          description: Orden creada y procesada según las reglas de mercado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+        '400':
+          description: Datos de orden inválidos o regla funcional incumplida.
+        '401':
+          description: JWT ausente, inválido, vencido o no asociado a una identidad disponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CrearOrdenRequest:
+      type: object
+      required: [usuarioId, playerId, quantity, price, tolerance]
+      properties:
+        usuarioId: {type: integer, format: int64, minimum: 1}
+        playerId: {type: integer, format: int64, minimum: 1}
+        quantity: {type: integer, minimum: 1}
+        price: {type: number, format: double, minimum: 0}
+        tolerance: {type: number, format: double, minimum: 0}
+    OrdenResponse:
+      type: object
+      required: [orderId, userId, playerId, operation, quantity, price, tolerance, status, issuedAt]
+      properties:
+        orderId: {type: integer, format: int64}
+        userId: {type: integer, format: int64}
+        playerId: {type: integer, format: int64}
+        operation: {type: string}
+        quantity: {type: integer}
+        price: {type: number, format: double}
+        tolerance: {type: number, format: double}
+        status: {type: string}
+        issuedAt: {type: string, format: date-time}
+        executedAt: {type: string, format: date-time, nullable: true}
+        cancelledAt: {type: string, format: date-time, nullable: true}
+        settledPrice: {type: number, format: double, nullable: true}
+        buyerId: {type: integer, format: int64, nullable: true}
+        sellerId: {type: integer, format: int64, nullable: true}
+    MessageError:
+      type: object
+      required: [message]
+      properties:
+        message: {type: string}

@@ -58,6 +58,7 @@ class AuthRegisterIntegrationTest {
 
     @Test
     void shouldRejectDuplicateUser() throws Exception {
+        // Pre-persist via the domain repository boundary (as the new architecture requires)
         userRepository.save(new User("duplicado", passwordEncoder.encode("secret")));
 
         mockMvc.perform(post("/register")
@@ -65,5 +66,23 @@ class AuthRegisterIntegrationTest {
                         .content("{\"nombre\":\"duplicado\",\"password\":\"secret\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Usuario existente"));
+    }
+
+    @Test
+    void shouldNormalizeNameOnRegistration() throws Exception {
+        // Whitespace surrounding the name is trimmed by AuthService normalization
+        mockMvc.perform(post("/register")
+                        .contentType("application/json")
+                        .content("{\"nombre\":\"  normalizado  \",\"password\":\"secret\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombre").value("normalizado"));
+    }
+
+    @Test
+    void shouldRejectBlankName() throws Exception {
+        mockMvc.perform(post("/register")
+                        .contentType("application/json")
+                        .content("{\"nombre\":\"   \",\"password\":\"secret\"}"))
+                .andExpect(status().isBadRequest());
     }
 }

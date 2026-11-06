@@ -21,6 +21,8 @@ build/
 *.jar
 *.war
 *.ear
+*.tmp
+*.swp
 
 # Node / Frontend
 frontend/node_modules/

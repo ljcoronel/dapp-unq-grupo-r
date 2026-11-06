@@ -8,6 +8,6 @@ public record LeagueResponse(
         String pais
 ) {
     public static LeagueResponse from(LeagueEntity league) {
-        return new LeagueResponse(league.getCode(), league.getName(), league.getCountry());
+        return new LeagueResponse(String.valueOf(league.getExternalId()), league.getName(), league.getCountry());
     }
 }
