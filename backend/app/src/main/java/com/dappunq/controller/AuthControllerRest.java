@@ -2,7 +2,7 @@ package com.dappunq.controller;
 
 import com.dappunq.dto.UserRequestDTO;
 import com.dappunq.dto.UserResponseDTO;
-import com.dappunq.service.AuthService;
+import com.dappunq.service.AuthServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AuthControllerRest {
-    private final AuthService authService;
+    private final AuthServiceImpl authService;
 
-    public AuthControllerRest(AuthService authService) {
+    public AuthControllerRest(AuthServiceImpl authService) {
         this.authService = authService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody UserRequestDTO request) {
-        AuthService.AuthResult result = authService.login(request);
+        AuthServiceImpl.AuthResult result = authService.login(request);
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + result.token())
                 .body(result.user());

@@ -15,18 +15,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class PlayerCatalogReadService {
+public class PlayerServiceImpl implements PlayerService {
 
     private final PlayerRepository playerRepository;
     private final InitialHoldingsService initialHoldingsService;
 
-    public PlayerCatalogReadService(PlayerRepository playerRepository) {
+    public PlayerServiceImpl(PlayerRepository playerRepository) {
         this(playerRepository, null);
     }
 
     @Autowired
-    public PlayerCatalogReadService(PlayerRepository playerRepository,
-                                    @Autowired(required = false) InitialHoldingsService initialHoldingsService) {
+    public PlayerServiceImpl(PlayerRepository playerRepository,
+                             @Autowired(required = false) InitialHoldingsService initialHoldingsService) {
         this.playerRepository = playerRepository;
         this.initialHoldingsService = initialHoldingsService;
     }
