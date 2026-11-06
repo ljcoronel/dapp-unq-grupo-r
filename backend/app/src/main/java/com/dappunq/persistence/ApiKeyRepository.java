@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface ApiKeyRepository extends JpaRepository<ApiKeyEntity, Long> {
-    Optional<ApiKeyEntity> findByPermission(String permission);
 
     Optional<ApiKeyEntity> findByPermissionAndActiveTrue(String permission);
 

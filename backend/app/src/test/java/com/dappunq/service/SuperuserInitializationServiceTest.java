@@ -51,7 +51,7 @@ class SuperuserInitializationServiceTest {
 
     @BeforeEach
     void setUp() {
-        suService = new SuperuserInitializationService(userRepository, strategyConfigRepository, mapper, passwordEncoder, holdingsValuationService);
+        suService = new SuperuserInitializationService(userRepository, strategyConfigRepository, mapper, passwordEncoder, holdingsValuationService, null);
         superuser = new UserEntity(999L, "superuser", "hash999");
     }
 
@@ -64,7 +64,7 @@ class SuperuserInitializationServiceTest {
         StrategyConfigEntity config = suService.initializeSuperuserStrategy();
 
         assertNotNull(config);
-        assertEquals(StrategyType.ESTRATEGIA_A, config.getEstrategia());
+        assertEquals(StrategyType.ESTRATEGIA_A, config.getTipoEstrategia());
         assertEquals(StrategyStatus.ACTUAL, config.getEstado());
 
         Map<String, BigDecimal> weights = mapper.read(config.getPesos());

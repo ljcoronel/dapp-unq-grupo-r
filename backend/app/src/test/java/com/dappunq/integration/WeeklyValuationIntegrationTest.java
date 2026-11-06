@@ -154,7 +154,7 @@ class WeeklyValuationIntegrationTest {
 
         // Verificar que user2 ahora tiene Estrategia B como ACTUAL y 0 PENDIENTE
         StrategyConfigEntity user2Current = strategyConfigRepository.findFirstByUserIdAndEstado(user2.getId(), StrategyStatus.ACTUAL).orElseThrow();
-        assertEquals(StrategyType.ESTRATEGIA_B, user2Current.getEstrategia());
+        assertEquals(StrategyType.ESTRATEGIA_B, user2Current.getTipoEstrategia());
         assertTrue(strategyConfigRepository.findFirstByUserIdAndEstado(user2.getId(), StrategyStatus.PENDIENTE).isEmpty());
 
         // Verificar historial
@@ -168,7 +168,7 @@ class WeeklyValuationIntegrationTest {
         assertEquals(1, historyUser2.size());
         assertEquals(StrategyType.ESTRATEGIA_B, historyUser2.get(0).getEstrategia());
 
-        // User sin estrategia no debe tener historial
+        // User sin tipo no debe tener historial
         List<ValuationHistoryEntity> historyNoStrat = valuationHistoryRepository.findByUserIdOrderByEjecutadoEnDesc(userWithoutStrategy.getId());
         assertEquals(0, historyNoStrat.size());
 

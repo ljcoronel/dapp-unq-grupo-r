@@ -15,10 +15,6 @@ public interface PlayerRepository extends JpaRepository<PlayerEntity, Long> {
 
     List<PlayerEntity> findByExternalIdIn(Collection<Long> externalIds);
 
-    List<PlayerEntity> findByLeagueOrderByIdAsc(LeagueEntity league);
-
-    List<PlayerEntity> findByLeagueIdOrderByIdAsc(Long leagueId);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from PlayerEntity p where p.id = :id")
     Optional<PlayerEntity> findByIdForUpdate(@Param("id") Long id);

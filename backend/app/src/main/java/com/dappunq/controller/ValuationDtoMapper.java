@@ -23,17 +23,17 @@ public class ValuationDtoMapper {
         if (state == null) {
             return null;
         }
-        StrategyConfigDto actualDto = (state.getEstrategiaActual() != null)
-                ? new StrategyConfigDto(state.getEstrategiaActual(), state.getPesosActual(), state.getVigenteDesdeActual())
+        StrategyConfigDto actualDto = (state.getTipoEstrategiaActual() != null)
+                ? new StrategyConfigDto(state.getTipoEstrategiaActual(), state.getPesosActual(), state.getVigenteDesdeActual())
                 : null;
-        StrategyConfigDto pendienteDto = (state.getEstrategiaPendiente() != null)
-                ? new StrategyConfigDto(state.getEstrategiaPendiente(), state.getPesosPendiente(), state.getVigentesDesdePendiente())
+        StrategyConfigDto pendienteDto = (state.getTipoEstrategiaPendiente() != null)
+                ? new StrategyConfigDto(state.getTipoEstrategiaPendiente(), state.getPesosPendiente(), state.getVigenteDesdePendiente())
                 : null;
         return new StrategyStateResponse(
-                state.getEstrategia(),
-                state.getPesos(),
-                state.getEstado(),
-                state.getVigenteDesde(),
+                state.getTipoEstrategiaActual(),
+                state.getPesosActual(),
+                state.getEstadoActual(),
+                state.getVigenteDesdeActual(),
                 actualDto,
                 pendienteDto
         );
@@ -82,7 +82,7 @@ public class ValuationDtoMapper {
     }
 
     public StrategyStateResponse strategy(StrategyConfigEntity e, Map<String, BigDecimal> weights) {
-        return new StrategyStateResponse(e.getEstrategia(), weights, e.getEstado(), e.getVigenteDesde());
+        return new StrategyStateResponse(e.getTipoEstrategia(), weights, e.getEstado(), e.getVigenteDesde());
     }
 
     public HoldingResponse holding(HoldingEntity h) {

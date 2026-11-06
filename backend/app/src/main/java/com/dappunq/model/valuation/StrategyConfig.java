@@ -4,15 +4,15 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 
-public record StrategyConfig(StrategyType strategy, Map<String, BigDecimal> weights) {
+public record StrategyConfig(StrategyType tipo, Map<String, BigDecimal> weights) {
 
     public StrategyConfig {
         weights = Map.copyOf(weights);
-        validate(strategy, weights);
+        validate(tipo, weights);
     }
 
     public void validate() {
-        validate(strategy, weights);
+        validate(tipo, weights);
     }
 
     private static void validate(StrategyType strategy, Map<String, BigDecimal> weights) {

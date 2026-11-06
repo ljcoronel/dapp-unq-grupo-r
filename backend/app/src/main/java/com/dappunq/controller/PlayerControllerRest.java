@@ -1,7 +1,7 @@
 package com.dappunq.controller;
 
 import com.dappunq.dto.PlayerResponse;
-import com.dappunq.service.PlayerCatalogReadService;
+import com.dappunq.service.PlayerService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,9 +11,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/players")
 public class PlayerControllerRest {
-    private final PlayerCatalogReadService readService;
+    private final PlayerService readService;
 
-    public PlayerControllerRest(PlayerCatalogReadService readService) {
+    public PlayerControllerRest(PlayerService readService) {
         this.readService = readService;
     }
 

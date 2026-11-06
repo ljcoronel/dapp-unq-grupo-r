@@ -20,11 +20,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class PlayerCatalogReadServiceTest {
+class PlayerServiceImplTest {
     @Test
     void findCatalogMapsEveryEntityToFlatPlayerResponse() {
         var repository = mock(PlayerRepository.class);
-        var service = new PlayerCatalogReadService(repository);
+        var service = new PlayerServiceImpl(repository, null);
         var team = new TeamEntity(11L, "Equipo");
         var league = new LeagueEntity(22L, "Premier League", "Inglaterra");
         var entity = new PlayerEntity(
@@ -64,7 +64,7 @@ class PlayerCatalogReadServiceTest {
     @Test
     void findCatalogReturnsEmptyListWhenRepositoryIsEmpty() {
         var repository = mock(PlayerRepository.class);
-        var service = new PlayerCatalogReadService(repository);
+        var service = new PlayerServiceImpl(repository, null);
         when(repository.findAll()).thenReturn(List.of());
 
         var result = service.findCatalog();
@@ -76,7 +76,7 @@ class PlayerCatalogReadServiceTest {
     @Test
     void findCatalogPreservesNullsAndZeros() {
         var repository = mock(PlayerRepository.class);
-        var service = new PlayerCatalogReadService(repository);
+        var service = new PlayerServiceImpl(repository, null);
         var team = new TeamEntity(13L, "Equipo Nulls");
         var league = new LeagueEntity(7L, "LaLiga", "España");
         var entity = new PlayerEntity(
@@ -112,7 +112,7 @@ class PlayerCatalogReadServiceTest {
     @Test
     void findCatalogWrapsRepositoryFailures() {
         var repository = mock(PlayerRepository.class);
-        var service = new PlayerCatalogReadService(repository);
+        var service = new PlayerServiceImpl(repository, null);
         when(repository.findAll()).thenThrow(new RuntimeException("boom"));
 
         assertThrows(CatalogUnavailableException.class, service::findCatalog);
@@ -121,7 +121,7 @@ class PlayerCatalogReadServiceTest {
     @Test
     void findPlayerUsesExternalIdAndRejectsInvalidIds() {
         var repository = mock(PlayerRepository.class);
-        var service = new PlayerCatalogReadService(repository);
+        var service = new PlayerServiceImpl(repository, null);
         var team = new TeamEntity(33L, "Equipo");
         var league = new LeagueEntity(21L, "Bundesliga", "Alemania");
         var entity = new PlayerEntity(

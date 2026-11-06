@@ -14,7 +14,7 @@ public class ValuationExceptionHandler {
 
     @ExceptionHandler(ValuationDomainException.class)
     public ResponseEntity<Map<String, String>> invalid(ValuationDomainException e) {
-        if (e.getMessage() != null && e.getMessage().contains("No existe estrategia actual")) {
+        if (e.getMessage() != null && e.getMessage().contains("No existe tipo actual")) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
         }
         return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));

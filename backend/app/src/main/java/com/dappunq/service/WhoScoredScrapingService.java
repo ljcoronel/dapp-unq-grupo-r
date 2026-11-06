@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
-public class WhoScoredScrapingService {
+public class WhoScoredScrapingService implements ScrapingService {
     private final LeagueRepository leagueRepository;
     private final TeamRepository teamRepository;
     private final PlayerRepository playerRepository;
@@ -30,6 +30,7 @@ public class WhoScoredScrapingService {
     }
 
     @Transactional
+    @Override
     public void scrape(String numberOfPlayers) {
         validateNumberOfPlayers(numberOfPlayers);
         String URL = "https://www.whoscored.com/statisticsfeed/1/getplayerstatistics?category=summary&subcategory=all&statsAccumulationType=" +

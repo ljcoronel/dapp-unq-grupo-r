@@ -12,7 +12,6 @@ import java.util.Optional;
 @Repository
 public interface JpaUserEntityRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByNombreIgnoreCase(String nombre);
-    Optional<UserEntity> findByNombre(String nombre);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from UserEntity u where u.id = :id")

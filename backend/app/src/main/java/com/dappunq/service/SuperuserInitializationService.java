@@ -9,7 +9,6 @@ import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.UserEntity;
 import com.dappunq.persistence.ValuationPersistenceMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,6 @@ public class SuperuserInitializationService {
     @Value("${valuation.superuser.username:superuser}")
     private String superuserUsername = DEFAULT_SUPERUSER_NAME;
 
-    @Autowired
     public SuperuserInitializationService(JpaUserEntityRepository userRepository,
                                           StrategyConfigRepository strategyConfigRepository,
                                           ValuationPersistenceMapper mapper,
@@ -48,15 +46,6 @@ public class SuperuserInitializationService {
         this.passwordEncoder = passwordEncoder;
         this.holdingsValuationService = holdingsValuationService;
         this.initialHoldingsService = initialHoldingsService;
-    }
-
-    public SuperuserInitializationService(JpaUserEntityRepository userRepository,
-                                          StrategyConfigRepository strategyConfigRepository,
-                                          ValuationPersistenceMapper mapper,
-                                          PasswordEncoder passwordEncoder,
-                                          HoldingsValuationService holdingsValuationService) {
-        this(userRepository, strategyConfigRepository, mapper, passwordEncoder,
-                holdingsValuationService, null);
     }
 
     public void setSuperuserUsername(String superuserUsername) {

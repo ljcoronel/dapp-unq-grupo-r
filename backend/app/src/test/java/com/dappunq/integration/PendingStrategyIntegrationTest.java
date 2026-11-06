@@ -1,6 +1,7 @@
 package com.dappunq.integration;
 
 import com.dappunq.dto.valuation.StrategyRequest;
+import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
@@ -68,9 +69,9 @@ class PendingStrategyIntegrationTest {
         weightsA.put("timesManOfTheMatch", BigDecimal.valueOf(15));
 
         // 1. Primera configuración -> ACTUAL
-        StrategyState first = strategyService.configure(user.getId(), new StrategyRequest(StrategyType.ESTRATEGIA_A, weightsA));
-        assertEquals(StrategyStatus.ACTUAL, first.estado());
-        assertNotNull(first.vigenteDesde());
+        StrategyState first = strategyService.configure(user.getId(), new StrategyConfig(StrategyType.ESTRATEGIA_A, weightsA));
+        assertEquals(StrategyStatus.ACTUAL, first.getEstadoActual());
+        assertNotNull(first.getVigenteDesdeActual());
 
         Map<String, BigDecimal> weightsB = new HashMap<>();
         weightsB.put("passSuccessPercentage", BigDecimal.valueOf(35));
@@ -79,15 +80,15 @@ class PendingStrategyIntegrationTest {
         weightsB.put("appearances", BigDecimal.valueOf(20));
 
         // 2. Segunda configuración -> PENDIENTE
-        StrategyState second = strategyService.configure(user.getId(), new StrategyRequest(StrategyType.ESTRATEGIA_B, weightsB));
-        assertEquals(StrategyStatus.PENDIENTE, second.estado());
-        assertNotNull(second.vigenteDesde());
+        StrategyState second = strategyService.configure(user.getId(), new StrategyConfig(StrategyType.ESTRATEGIA_B, weightsB));
+        assertEquals(StrategyStatus.PENDIENTE, second.getEstadoPendiente());
+        assertNotNull(second.getVigenteDesdePendiente());
 
         // 3. Tercera configuración -> Reemplaza PENDIENTE
         weightsA.put("goals", BigDecimal.valueOf(40));
         weightsA.put("assists", BigDecimal.valueOf(15));
-        StrategyState third = strategyService.configure(user.getId(), new StrategyRequest(StrategyType.ESTRATEGIA_A, weightsA));
-        assertEquals(StrategyStatus.PENDIENTE, third.estado());
+        StrategyState third = strategyService.configure(user.getId(), new StrategyConfig(StrategyType.ESTRATEGIA_A, weightsA));
+        assertEquals(StrategyStatus.PENDIENTE, third.getEstadoPendiente());
 
         // Validar unicidad en base de datos: exactamente 1 ACTUAL y exactamente 1 PENDIENTE
         List<StrategyConfigEntity> allUserConfigs = strategyConfigRepository.findAllByUserId(user.getId());
@@ -99,6 +100,6 @@ class PendingStrategyIntegrationTest {
         assertEquals(1, actualCount);
 
         StrategyConfigEntity currentPending = strategyConfigRepository.findFirstByUserIdAndEstado(user.getId(), StrategyStatus.PENDIENTE).orElseThrow();
-        assertEquals(StrategyType.ESTRATEGIA_A, currentPending.getEstrategia());
+        assertEquals(StrategyType.ESTRATEGIA_A, currentPending.getTipoEstrategia());
     }
 }

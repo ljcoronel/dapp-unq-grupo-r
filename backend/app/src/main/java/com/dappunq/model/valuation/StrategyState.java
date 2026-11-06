@@ -5,51 +5,42 @@ import java.time.Instant;
 import java.util.Map;
 
 /**
- * Objeto de dominio que representa el estado de configuracion de estrategia de un usuario.
+ * Objeto de dominio que representa el estado de configuracion de tipo de un usuario.
  * No contiene anotaciones de framework ni de persistencia.
  */
 public class StrategyState {
 
-    private final StrategyType estrategia;
-    private final Map<String, BigDecimal> pesos;
-    private final StrategyStatus estado;
-    private final Instant vigenteDesde;
-    private final StrategyType estrategiaActual;
+    private final StrategyStatus estadoActual;
+    private final StrategyType tipoEstrategiaActual;
     private final Map<String, BigDecimal> pesosActual;
     private final Instant vigenteDesdeActual;
-    private final StrategyType estrategiaPendiente;
+    private final StrategyStatus estadoPendiente;
+    private final StrategyType tipoEstrategiaPendiente;
     private final Map<String, BigDecimal> pesosPendiente;
-    private final Instant vigentesDesdePendiente;
+    private final Instant vigenteDesdePendiente;
 
-    public StrategyState(StrategyType estrategia, Map<String, BigDecimal> pesos,
-                         StrategyStatus estado, Instant vigenteDesde,
-                         StrategyType estrategiaActual, Map<String, BigDecimal> pesosActual, Instant vigenteDesdeActual,
-                         StrategyType estrategiaPendiente, Map<String, BigDecimal> pesosPendiente, Instant vigentesDesdePendiente) {
-        this.estrategia = estrategia;
-        this.pesos = pesos;
-        this.estado = estado;
-        this.vigenteDesde = vigenteDesde;
-        this.estrategiaActual = estrategiaActual;
+    public StrategyState(StrategyStatus estadoActual,
+                         StrategyType tipoEstrategiaActual, Map<String, BigDecimal> pesosActual, Instant vigenteDesdeActual,
+                         StrategyStatus estadoPendiente,
+                         StrategyType tipoEstrategiaPendiente, Map<String, BigDecimal> pesosPendiente, Instant vigenteDesdePendiente) {
+        this.estadoActual = estadoActual;
+        this.tipoEstrategiaActual = tipoEstrategiaActual;
         this.pesosActual = pesosActual;
         this.vigenteDesdeActual = vigenteDesdeActual;
-        this.estrategiaPendiente = estrategiaPendiente;
+        this.estadoPendiente = estadoPendiente;
+        this.tipoEstrategiaPendiente = tipoEstrategiaPendiente;
         this.pesosPendiente = pesosPendiente;
-        this.vigentesDesdePendiente = vigentesDesdePendiente;
+        this.vigenteDesdePendiente = vigenteDesdePendiente;
     }
 
-    public StrategyType getEstrategia() { return estrategia; }
-    public Map<String, BigDecimal> getPesos() { return pesos; }
-    public StrategyStatus getEstado() { return estado; }
-    public Instant getVigenteDesde() { return vigenteDesde; }
-    public StrategyType getEstrategiaActual() { return estrategiaActual; }
+    public StrategyStatus getEstadoActual() { return estadoActual; }
+    public StrategyType getTipoEstrategiaActual() { return tipoEstrategiaActual; }
     public Map<String, BigDecimal> getPesosActual() { return pesosActual; }
     public Instant getVigenteDesdeActual() { return vigenteDesdeActual; }
-    public StrategyType getEstrategiaPendiente() { return estrategiaPendiente; }
+    public StrategyStatus getEstadoPendiente() { return estadoPendiente; }
+    public StrategyType getTipoEstrategiaPendiente() { return tipoEstrategiaPendiente; }
     public Map<String, BigDecimal> getPesosPendiente() { return pesosPendiente; }
-    public Instant getVigentesDesdePendiente() { return vigentesDesdePendiente; }
+    public Instant getVigenteDesdePendiente() { return vigenteDesdePendiente; }
 
-    public StrategyType estrategia() { return estrategia; }
-    public Map<String, BigDecimal> pesos() { return pesos; }
-    public StrategyStatus estado() { return estado; }
-    public Instant vigenteDesde() { return vigenteDesde; }
+    public StrategyStatus estado() { return estadoActual; }
 }

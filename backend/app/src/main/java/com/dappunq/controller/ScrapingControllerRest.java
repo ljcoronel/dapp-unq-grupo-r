@@ -1,6 +1,6 @@
 package com.dappunq.controller;
 
-import com.dappunq.service.WhoScoredScrapingService;
+import com.dappunq.service.ScrapingService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ScrapingControllerRest {
 
-    private final WhoScoredScrapingService scrapingService;
+    private final ScrapingService scrapingService;
 
-    public ScrapingControllerRest(WhoScoredScrapingService service) {
+    public ScrapingControllerRest(ScrapingService service) {
         this.scrapingService = service;
     }
 

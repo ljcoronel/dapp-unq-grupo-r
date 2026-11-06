@@ -4,7 +4,7 @@ import com.dappunq.controller.PlayerControllerRest;
 import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.PlayerResponse;
 import com.dappunq.dto.TeamResponse;
-import com.dappunq.service.PlayerCatalogReadService;
+import com.dappunq.service.PlayerServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PlayerCatalogGroupingE2ETest {
     @Test
     void returnsPlayersInOneFlatArrayWithoutLeagueGrouping() throws Exception {
-        var readService = mock(PlayerCatalogReadService.class);
+        var readService = mock(PlayerServiceImpl.class);
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(readService))
                 .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
                 .build();

@@ -66,14 +66,6 @@ public class WeeklyValuationService {
         this.mapper = mapper;
     }
 
-    public void setClock(Clock clock) {
-        this.clock = clock;
-    }
-
-    public void setPlayersLimit(String playersLimit) {
-        this.playersLimit = playersLimit;
-    }
-
     @Transactional
     public RecalculationSummary execute(ExecutionType executionType) {
         log.info("Iniciando ejecucion de valuacion tipo {} con limite de {} jugadores", executionType, playersLimit);
@@ -98,14 +90,14 @@ public class WeeklyValuationService {
             strategyConfigRepository.save(pending);
         }
 
-        // 2. Recalcular tenencias de usuarios con estrategia actual (omitir usuarios sin estrategia)
+        // 2. Recalcular tenencias de usuarios con tipo actual (omitir usuarios sin tipo)
         String window = LocalDate.now(clock).toString() + "-" + executionType.name();
         List<StrategyConfigEntity> activeConfigs = strategyConfigRepository.findAllByEstado(StrategyStatus.ACTUAL);
         int recalculatedHoldings = 0;
 
         for (StrategyConfigEntity activeConfig : activeConfigs) {
             Long userId = activeConfig.getUser().getId();
-            StrategyConfig domain = new StrategyConfig(activeConfig.getEstrategia(), mapper.read(activeConfig.getPesos()));
+            StrategyConfig domain = new StrategyConfig(activeConfig.getTipoEstrategia(), mapper.read(activeConfig.getPesos()));
             List<HoldingEntity> userHoldings = holdingRepository.findByUserId(userId);
 
             for (HoldingEntity holding : userHoldings) {
@@ -120,7 +112,7 @@ public class WeeklyValuationService {
                             holding.getUser(),
                             holding.getPlayer(),
                             window,
-                            domain.strategy(),
+                            domain.tipo(),
                             unitValue
                     ));
                 }
@@ -131,7 +123,7 @@ public class WeeklyValuationService {
                             holding.getPlayer(),
                             holding.getTokens(),
                             unitValue,
-                            domain.strategy(),
+                            domain.tipo(),
                             window,
                             executionType
                     ));

@@ -36,7 +36,7 @@ La suite cubre:
      -H "Authorization: Bearer <TOKEN>" \
      -H "Content-Type: application/json" \
      -d '{
-       "estrategia": "ESTRATEGIA_A",
+       "tipo": "ESTRATEGIA_A",
        "pesos": {
          "goals": 30.0,
          "assists": 25.0,
@@ -71,7 +71,7 @@ La suite cubre:
      -H "Authorization: Bearer <TOKEN>" \
      -H "Content-Type: application/json" \
      -d '{
-       "estrategia": "ESTRATEGIA_B",
+       "tipo": "ESTRATEGIA_B",
        "pesos": {
          "passSuccessPercentage": 30.0,
          "aerialsWon": 25.0,
@@ -96,7 +96,7 @@ La suite cubre:
        -H "Authorization: Bearer <TOKEN>" \
        -H "Content-Type: application/json" \
        -d '{
-         "estrategia": "ESTRATEGIA_A",
+         "tipo": "ESTRATEGIA_A",
          "pesos": {"goals": 30.0, "assists": 25.0, "passSuccessPercentage": 15.0, "aerialsWon": 15.0, "timesManOfTheMatch": 15.0}
        }'
      ```

@@ -52,7 +52,7 @@ public class HoldingsValuationService {
     public int revalue(Long userId, StrategyConfigEntity ce, ExecutionType type) {
         List<PlayerEntity> playerEntities = players.findAll();
         List<PlayerSnapshot> snapshot = playerEntities.stream().map(mapper::toSnapshot).toList();
-        StrategyConfig c = new StrategyConfig(ce.getEstrategia(), mapper.read(ce.getPesos()));
+        StrategyConfig c = new StrategyConfig(ce.getTipoEstrategia(), mapper.read(ce.getPesos()));
         int n = 0;
         String window = LocalDate.now().toString() + "-" + type;
 
@@ -61,7 +61,7 @@ public class HoldingsValuationService {
             BigDecimal v = calculator.calculate(playerSnapshot, c, snapshot, h.getValorUnitario());
             h.valuate(v);
             holdings.save(h);
-            history.save(new ValuationHistoryEntity(h.getUser(), h.getPlayer(), h.getTokens(), v, c.strategy(), window, type));
+            history.save(new ValuationHistoryEntity(h.getUser(), h.getPlayer(), h.getTokens(), v, c.tipo(), window, type));
             n++;
         }
         log.info("Revaluadas {} tenencias para el usuario {} con tipo {}", n, userId, type);
