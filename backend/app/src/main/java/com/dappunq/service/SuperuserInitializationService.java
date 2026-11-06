@@ -9,7 +9,6 @@ import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.UserEntity;
 import com.dappunq.persistence.ValuationPersistenceMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,17 +38,13 @@ public class SuperuserInitializationService {
                                           ValuationPersistenceMapper mapper,
                                           PasswordEncoder passwordEncoder,
                                           HoldingsValuationService holdingsValuationService,
-                                          @Lazy InitialHoldingsService initialHoldingsService) {
+                                          InitialHoldingsService initialHoldingsService) {
         this.userRepository = userRepository;
         this.strategyConfigRepository = strategyConfigRepository;
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
         this.holdingsValuationService = holdingsValuationService;
         this.initialHoldingsService = initialHoldingsService;
-    }
-
-    public void setSuperuserUsername(String superuserUsername) {
-        this.superuserUsername = superuserUsername;
     }
 
     @Transactional
@@ -62,9 +57,7 @@ public class SuperuserInitializationService {
     }
 
     @Transactional
-    public StrategyConfigEntity initializeSuperuserStrategy() {
-        UserEntity superuser = getOrCreateSuperuser();
-
+    public StrategyConfigEntity initializeSuperuserStrategy(UserEntity superuser) {
         return strategyConfigRepository.findFirstByUserIdAndEstado(superuser.getId(), StrategyStatus.ACTUAL)
                 .orElseGet(() -> {
                     Map<String, BigDecimal> weights = new HashMap<>();
@@ -87,12 +80,10 @@ public class SuperuserInitializationService {
 
     @Transactional
     public void initializeSuperuser() {
-        if (initialHoldingsService != null) {
-            initialHoldingsService.initializeHoldingsForAllPlayers();
-        }
         UserEntity superuser = getOrCreateSuperuser();
+        initialHoldingsService.initializeHoldingsForAllPlayers(superuser);
         if (strategyConfigRepository.findFirstByUserIdAndEstado(superuser.getId(), StrategyStatus.ACTUAL).isEmpty()) {
-            StrategyConfigEntity config = initializeSuperuserStrategy();
+            StrategyConfigEntity config = initializeSuperuserStrategy(superuser);
             holdingsValuationService.revalue(superuser.getId(), config, ExecutionType.MANUAL);
         }
     }

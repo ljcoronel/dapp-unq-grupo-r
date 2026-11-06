@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/login", "/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/quotes/recalculate").permitAll()
                         .requestMatchers(HttpMethod.POST, "/scrape").hasAuthority("scraping")
+                        .requestMatchers(HttpMethod.POST, "/scrapeSome").permitAll()
                         .requestMatchers(HttpMethod.POST, "/orders/buy", "/orders/sell").authenticated()
                         .requestMatchers("/orders/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/**", "/players", "/players/**").permitAll()

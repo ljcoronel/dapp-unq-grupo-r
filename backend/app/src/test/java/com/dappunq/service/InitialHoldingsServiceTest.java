@@ -45,7 +45,7 @@ class InitialHoldingsServiceTest {
 
     @BeforeEach
     void setUp() {
-        initialHoldingsService = new InitialHoldingsService(superuserService, holdingRepository, playerRepository);
+        initialHoldingsService = new InitialHoldingsService(holdingRepository, playerRepository);
         superuser = new UserEntity(999L, "superuser", "hash999");
 
         TeamEntity team = new TeamEntity(1L, "Team A");
@@ -62,7 +62,7 @@ class InitialHoldingsServiceTest {
         when(holdingRepository.findByUserIdAndPlayerId(999L, 1L)).thenReturn(Optional.empty());
         when(holdingRepository.save(any(HoldingEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        HoldingEntity result = initialHoldingsService.initializeHoldingForPlayer(player1);
+        HoldingEntity result = initialHoldingsService.initializeHoldingForPlayer(player1, superuser);
 
         assertNotNull(result);
         assertEquals(999L, result.getUser().getId());
@@ -77,7 +77,7 @@ class InitialHoldingsServiceTest {
         when(superuserService.getOrCreateSuperuser()).thenReturn(superuser);
         when(holdingRepository.findByUserIdAndPlayerId(999L, 1L)).thenReturn(Optional.of(existingHolding));
 
-        HoldingEntity result = initialHoldingsService.initializeHoldingForPlayer(player1);
+        HoldingEntity result = initialHoldingsService.initializeHoldingForPlayer(player1, superuser);
 
         assertEquals(100, result.getTokens());
         verify(holdingRepository, never()).save(any(HoldingEntity.class));
@@ -85,13 +85,18 @@ class InitialHoldingsServiceTest {
 
     @Test
     void inicializacionParaTodosLosJugadoresRegistra100TokensPorJugador() {
+        HoldingEntity holding1 = new HoldingEntity(superuser, player1, 100);
+        HoldingEntity holding2 = new HoldingEntity(superuser, player2, 100);
         when(superuserService.getOrCreateSuperuser()).thenReturn(superuser);
         when(playerRepository.findAll()).thenReturn(List.of(player1, player2));
-        when(holdingRepository.findByUserIdAndPlayerId(999L, 1L)).thenReturn(Optional.empty());
+        when(holdingRepository.existsByPlayerId(1L)).thenReturn(false);
+        when(holdingRepository.existsByPlayerId(2L)).thenReturn(false);
         when(holdingRepository.findByUserIdAndPlayerId(999L, 2L)).thenReturn(Optional.empty());
+        when(holdingRepository.findAll()).thenReturn(List.of(holding1, holding2));
         when(holdingRepository.save(any(HoldingEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        List<HoldingEntity> results = initialHoldingsService.initializeHoldingsForAllPlayers();
+        initialHoldingsService.initializeHoldingsForAllPlayers(superuser);
+        List<HoldingEntity> results = holdingRepository.findAll();
 
         assertEquals(2, results.size());
         assertEquals(100, results.get(0).getTokens());

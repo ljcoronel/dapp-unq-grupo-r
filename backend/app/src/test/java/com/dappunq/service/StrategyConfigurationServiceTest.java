@@ -46,7 +46,7 @@ class StrategyConfigurationServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new StrategyConfigurationService(userRepository, strategyConfigRepository, mapper, holdingsValuationService);
+        service = new StrategyConfigurationService(userRepository, strategyConfigRepository, mapper);
         user = new UserEntity(1L, "testuser", "hash");
 
         validWeightsA = new HashMap<>();
@@ -64,7 +64,7 @@ class StrategyConfigurationServiceTest {
     }
 
     @Test
-    void primeraConfiguracionEsActualYValuaInmediatamente() {
+    void primeraConfiguracionEsActual() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(strategyConfigRepository.findFirstByUserIdAndEstado(1L, StrategyStatus.ACTUAL)).thenReturn(Optional.empty());
         when(strategyConfigRepository.save(any(StrategyConfigEntity.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -74,11 +74,10 @@ class StrategyConfigurationServiceTest {
 
         assertEquals(StrategyStatus.ACTUAL, resp.getEstadoActual());
         assertEquals(StrategyType.ESTRATEGIA_A, resp.getTipoEstrategiaActual());
-        verify(holdingsValuationService).revalue(eq(1L), any(StrategyConfigEntity.class), eq(ExecutionType.MANUAL));
     }
 
     @Test
-    void segundaConfiguracionEsPendienteYNoValuaInmediatamente() {
+    void segundaConfiguracionEsPendiente() {
         StrategyConfigEntity current = new StrategyConfigEntity(user, StrategyType.ESTRATEGIA_A, mapper.write(validWeightsA), StrategyStatus.ACTUAL, Instant.now());
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(strategyConfigRepository.findFirstByUserIdAndEstado(1L, StrategyStatus.ACTUAL)).thenReturn(Optional.of(current));
@@ -90,7 +89,6 @@ class StrategyConfigurationServiceTest {
 
         assertEquals(StrategyStatus.PENDIENTE, resp.getEstadoPendiente());
         assertEquals(StrategyType.ESTRATEGIA_B, resp.getTipoEstrategiaPendiente());
-        verify(holdingsValuationService, never()).revalue(any(), any(), any());
     }
 
     @Test
