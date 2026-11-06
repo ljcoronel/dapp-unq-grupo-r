@@ -61,7 +61,7 @@ class SuperuserInitializationServiceTest {
         when(strategyConfigRepository.findFirstByUserIdAndEstado(999L, StrategyStatus.ACTUAL)).thenReturn(Optional.empty());
         when(strategyConfigRepository.save(any(StrategyConfigEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        StrategyConfigEntity config = suService.initializeSuperuserStrategy();
+        StrategyConfigEntity config = suService.initializeSuperuserStrategy(superuser);
 
         assertNotNull(config);
         assertEquals(StrategyType.ESTRATEGIA_A, config.getTipoEstrategia());
@@ -88,7 +88,7 @@ class SuperuserInitializationServiceTest {
         suService.initializeSuperuser();
 
         var order = inOrder(initialHoldingsService, strategyConfigRepository, holdingsValuationService);
-        order.verify(initialHoldingsService).initializeHoldingsForAllPlayers();
+        order.verify(initialHoldingsService).initializeHoldingsForAllPlayers(superuser);
         order.verify(strategyConfigRepository).save(any(StrategyConfigEntity.class));
         order.verify(holdingsValuationService).revalue(org.mockito.ArgumentMatchers.eq(999L),
                 any(StrategyConfigEntity.class),

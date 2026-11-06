@@ -15,7 +15,7 @@ public class ScrapingControllerRest {
     }
 
     @PostMapping("/scrape")
-    public void scrape(@RequestParam(defaultValue = "1000") int numberOfPlayers) {
+    public void scrape(@RequestParam(defaultValue = "50") int numberOfPlayers) {
         scrapingService.scrape(String.valueOf(numberOfPlayers));
     }
 }

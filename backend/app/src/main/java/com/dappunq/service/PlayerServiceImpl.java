@@ -27,16 +27,9 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Transactional
     public List<PlayerResponse> findCatalog() {
-        try {
-            if (initialHoldingsService != null) {
-                initialHoldingsService.initializeHoldingsForAllPlayers();
-            }
-            return playerRepository.findAll().stream()
+        return playerRepository.findAll().stream()
                     .map(this::toResponse)
                     .toList();
-        } catch (RuntimeException exception) {
-            throw new CatalogUnavailableException("No fue posible leer el catálogo de jugadores", exception);
-        }
     }
 
     @Transactional
@@ -46,9 +39,6 @@ public class PlayerServiceImpl implements PlayerService {
         }
         PlayerEntity entity = playerRepository.findByExternalId(Long.valueOf(id))
                 .orElseThrow(() -> new PlayerNotFoundException(id));
-        if (initialHoldingsService != null) {
-            initialHoldingsService.initializeHoldingForPlayer(entity);
-        }
         return toResponse(entity);
     }
 

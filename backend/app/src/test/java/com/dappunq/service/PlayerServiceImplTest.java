@@ -110,15 +110,6 @@ class PlayerServiceImplTest {
     }
 
     @Test
-    void findCatalogWrapsRepositoryFailures() {
-        var repository = mock(PlayerRepository.class);
-        var service = new PlayerServiceImpl(repository, null);
-        when(repository.findAll()).thenThrow(new RuntimeException("boom"));
-
-        assertThrows(CatalogUnavailableException.class, service::findCatalog);
-    }
-
-    @Test
     void findPlayerUsesExternalIdAndRejectsInvalidIds() {
         var repository = mock(PlayerRepository.class);
         var service = new PlayerServiceImpl(repository, null);

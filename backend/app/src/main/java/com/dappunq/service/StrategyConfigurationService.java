@@ -1,6 +1,5 @@
 package com.dappunq.service;
 
-import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.StrategyStatus;
@@ -22,16 +21,13 @@ public class StrategyConfigurationService {
     private final JpaUserEntityRepository users;
     private final StrategyConfigRepository configs;
     private final ValuationPersistenceMapper mapper;
-    private final HoldingsValuationService holdings;
 
     public StrategyConfigurationService(JpaUserEntityRepository users,
                                         StrategyConfigRepository configs,
-                                        ValuationPersistenceMapper mapper,
-                                        HoldingsValuationService holdings) {
+                                        ValuationPersistenceMapper mapper) {
         this.users = users;
         this.configs = configs;
         this.mapper = mapper;
-        this.holdings = holdings;
     }
 
     @Transactional
@@ -44,8 +40,6 @@ public class StrategyConfigurationService {
         if (current.isEmpty()) {
             StrategyConfigEntity saved = configs.save(new StrategyConfigEntity(u, r.tipo(),
                 mapper.write(r.weights()), StrategyStatus.ACTUAL, Instant.now()));
-            // Este revalue no va acá. Se debe hacer en la inicialización del superusuario
-            holdings.revalue(id, saved, ExecutionType.MANUAL);
             return new StrategyState(saved.getEstado(), saved.getTipoEstrategia(), mapper.read(saved.getPesos()),
                 saved.getVigenteDesde(), null, null, null, null);
         }
