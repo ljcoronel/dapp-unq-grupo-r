@@ -7,6 +7,4 @@ import java.util.Optional;
 
 public interface ValuationRepository extends JpaRepository<ValuationEntity, Long> {
     boolean existsByUserIdAndPlayerIdAndVentana(Long userId, Long playerId, String ventana);
-    Optional<ValuationEntity> findByUserIdAndPlayerIdAndVentana(Long userId, Long playerId, String ventana);
-    List<ValuationEntity> findByVentana(String ventana);
 }

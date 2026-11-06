@@ -8,5 +8,4 @@ import java.util.List;
 public interface ValuationHistoryRepository extends JpaRepository<ValuationHistoryEntity, Long> {
     List<ValuationHistoryEntity> findByUserIdOrderByEjecutadoEnDesc(Long id);
     boolean existsByUserIdAndPlayerIdAndVentanaAndTipoEjecucion(Long userId, Long playerId, String ventana, ExecutionType tipoEjecucion);
-    List<ValuationHistoryEntity> findByVentana(String ventana);
 }

@@ -1,5 +1,6 @@
 package com.dappunq.service;
 
+import com.dappunq.dto.AuthResult;
 import com.dappunq.dto.UserRequestDTO;
 import com.dappunq.dto.UserResponseDTO;
 import com.dappunq.exception.InvalidCredentialsException;
@@ -58,8 +59,5 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("El nombre es obligatorio");
         }
         return normalized;
-    }
-
-    public record AuthResult(UserResponseDTO user, String token) {
     }
 }

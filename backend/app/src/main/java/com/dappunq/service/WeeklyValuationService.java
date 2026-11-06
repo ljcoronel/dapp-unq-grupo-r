@@ -66,14 +66,6 @@ public class WeeklyValuationService {
         this.mapper = mapper;
     }
 
-    public void setClock(Clock clock) {
-        this.clock = clock;
-    }
-
-    public void setPlayersLimit(String playersLimit) {
-        this.playersLimit = playersLimit;
-    }
-
     @Transactional
     public RecalculationSummary execute(ExecutionType executionType) {
         log.info("Iniciando ejecucion de valuacion tipo {} con limite de {} jugadores", executionType, playersLimit);

@@ -2,7 +2,6 @@ package com.dappunq.persistence.order;
 
 import com.dappunq.model.order.EstadoOrden;
 import com.dappunq.model.order.Orden;
-import com.dappunq.model.order.TipoOperacionOrden;
 
 import java.util.List;
 import java.util.Optional;

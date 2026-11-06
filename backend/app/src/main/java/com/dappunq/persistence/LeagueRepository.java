@@ -10,6 +10,4 @@ public interface LeagueRepository extends JpaRepository<LeagueEntity, Long> {
     Optional<LeagueEntity> findByExternalId(Long externalId);
 
     List<LeagueEntity> findByExternalIdIn(Collection<Long> externalIds);
-
-    List<LeagueEntity> findAllByOrderByIdAsc();
 }

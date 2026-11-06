@@ -1,6 +1,5 @@
 package com.dappunq.controller;
 
-import com.dappunq.model.order.exception.CodigoErrorOrden;
 import com.dappunq.model.order.exception.OrdenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

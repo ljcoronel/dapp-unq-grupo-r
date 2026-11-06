@@ -12,7 +12,6 @@ import java.util.Optional;
 public interface HoldingRepository extends JpaRepository<HoldingEntity, Long> {
     List<HoldingEntity> findByUserId(Long id);
     Optional<HoldingEntity> findByUserIdAndPlayerId(Long userId, Long playerId);
-    boolean existsByUserIdAndPlayerId(Long userId, Long playerId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select h from HoldingEntity h where h.user.id = :userId and h.player.id = :playerId")
