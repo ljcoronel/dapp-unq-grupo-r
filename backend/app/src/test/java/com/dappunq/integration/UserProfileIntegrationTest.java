@@ -2,7 +2,6 @@ package com.dappunq.integration;
 
 import com.dappunq.model.User;
 import com.dappunq.persistence.UserRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,16 +50,28 @@ class UserProfileIntegrationTest {
 
     @Test
     void shouldReturnUserProfileWhenUserExists() throws Exception {
-        userRepository.save(new User("usuario1", passwordEncoder.encode("secret")));
+        User saved = userRepository.save(new User("perfilUsuario", passwordEncoder.encode("secret")));
+        Long id = saved.getId();
 
-        mockMvc.perform(get("/users/1/"))
+        mockMvc.perform(get("/users/" + id + "/"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre").value("usuario1"));
+                .andExpect(jsonPath("$.nombre").value("perfilUsuario"));
+    }
+
+    @Test
+    void shouldReturnNormalizedNameThroughPersistenceBoundary() throws Exception {
+        // Whitespace is trimmed by the domain model; verify the full stack preserves this
+        User saved = userRepository.save(new User("  normalizado  ", passwordEncoder.encode("secret")));
+        Long id = saved.getId();
+
+        mockMvc.perform(get("/users/" + id + "/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombre").value("normalizado"));
     }
 
     @Test
     void shouldReturn404WhenUserDoesNotExist() throws Exception {
-        mockMvc.perform(get("/users/999/"))
+        mockMvc.perform(get("/users/999999/"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(containsString("Usuario no encontrado")));
     }

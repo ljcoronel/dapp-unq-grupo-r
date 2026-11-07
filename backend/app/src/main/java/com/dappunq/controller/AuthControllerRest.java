@@ -1,5 +1,6 @@
 package com.dappunq.controller;
 
+import com.dappunq.dto.AuthResult;
 import com.dappunq.dto.UserRequestDTO;
 import com.dappunq.dto.UserResponseDTO;
 import com.dappunq.service.AuthService;
@@ -20,7 +21,7 @@ public class AuthControllerRest {
 
     @PostMapping("/login")
     public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody UserRequestDTO request) {
-        AuthService.AuthResult result = authService.login(request);
+        AuthResult result = authService.login(request);
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + result.token())
                 .body(result.user());

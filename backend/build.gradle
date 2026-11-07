@@ -7,11 +7,27 @@ plugins {
 subprojects {
     group = 'com.dappunq'
     version = '0.0.1-SNAPSHOT'
+
+    pluginManager.withPlugin('java') {
+        apply plugin: 'jacoco'
+
+        tasks.withType(JacocoReport).configureEach {
+            dependsOn tasks.withType(Test)
+            reports {
+                xml.required = true
+            }
+        }
+
+        tasks.withType(Test).configureEach {
+            finalizedBy tasks.withType(JacocoReport)
+        }
+    }
 }
 
 sonar {
     properties {
         property "sonar.projectKey", "ljcoronel_dapp-unq-grupo-r"
         property "sonar.organization", "ljcoronel"
+        property "sonar.coverage.jacoco.xmlReportPaths", "**/build/reports/jacoco/test/jacocoTestReport.xml"
     }
 }
