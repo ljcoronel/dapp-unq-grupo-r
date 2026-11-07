@@ -13,6 +13,14 @@ tags:
     description: Consulta del perfil de usuario.
   - name: Jugadores
     description: Consulta del catalogo persistido de jugadores.
+  - name: Ordenes
+    description: Creacion y consulta de ordenes y transacciones.
+  - name: Valuacion
+    description: Configuracion de estrategia y consulta de tenencias.
+  - name: Cotizaciones
+    description: Recalculo manual de cotizaciones.
+  - name: Scraping
+    description: Operaciones de carga de datos de jugadores.
 paths:
   /login:
     post:
@@ -235,12 +243,268 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageError'
+  /users/{usuarioId}/orders:
+    get:
+      tags: [Ordenes]
+      summary: Consultar ordenes pendientes
+      description: Devuelve las ordenes pendientes del usuario indicado.
+      operationId: getPendingOrders
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Ordenes pendientes del usuario.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdenPendienteResponse'
+        '404':
+          description: El usuario no existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+  /users/{usuarioId}/transactions:
+    get:
+      tags: [Ordenes]
+      summary: Consultar transacciones ejecutadas
+      description: Devuelve las transacciones ejecutadas del usuario indicado.
+      operationId: getExecutedTransactions
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Transacciones ejecutadas del usuario.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransaccionEjecutadaResponse'
+        '404':
+          description: El usuario no existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+  /orders/{orderId}:
+    delete:
+      tags: [Ordenes]
+      summary: Cancelar orden
+      description: Cancela una orden pendiente perteneciente al usuario indicado.
+      operationId: cancelOrder
+      security: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: usuarioId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '204':
+          description: Orden cancelada.
+        '400':
+          description: La orden no puede cancelarse.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+        '403':
+          description: La orden no pertenece al usuario indicado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+        '404':
+          description: No existe la orden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+  /quotes/recalculate:
+    post:
+      tags: [Cotizaciones]
+      summary: Recalcular cotizaciones
+      description: Ejecuta manualmente el scraping y recalcula las cotizaciones y tenencias.
+      operationId: recalculateQuotes
+      security: []
+      responses:
+        '200':
+          description: Recalculo completado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecalculationResult'
+        '503':
+          description: No se pudo completar el scraping o el recalculo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+  /users/{usuarioId}/strategy:
+    put:
+      tags: [Valuacion]
+      summary: Configurar estrategia de valuacion
+      description: Configura la estrategia de valuacion para el usuario.
+      operationId: configureValuationStrategy
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyRequest'
+      responses:
+        '200':
+          description: Estrategia configurada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrategyStateResponse'
+        '400':
+          description: Configuracion invalida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+        '409':
+          description: No existe una estrategia actual compatible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+    get:
+      tags: [Valuacion]
+      summary: Consultar estrategia de valuacion
+      description: Devuelve el estado de la estrategia del usuario.
+      operationId: getValuationStrategy
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Estado de la estrategia.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrategyStateResponse'
+        '404':
+          description: No existe la configuracion solicitada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+  /users/{usuarioId}/holdings:
+    get:
+      tags: [Valuacion]
+      summary: Consultar tenencias
+      description: Devuelve las tenencias actuales del usuario.
+      operationId: getHoldings
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Tenencias actuales.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HoldingResponse'
+  /users/{usuarioId}/holdings/history:
+    get:
+      tags: [Valuacion]
+      summary: Consultar historial de tenencias
+      description: Devuelve el historial de valuaciones de las tenencias del usuario.
+      operationId: getHoldingsHistory
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Historial de tenencias.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HoldingHistoryResponse'
+  /scrape:
+    post:
+      tags: [Scraping]
+      summary: Ejecutar scraping
+      description: Carga datos de jugadores usando una API key de scraping.
+      operationId: scrapePlayers
+      security:
+        - scrapingApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/NumberOfPlayers'
+      responses:
+        '200':
+          description: Scraping completado.
+        '401':
+          description: API key ausente o invalida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+  /scrapeSome:
+    post:
+      tags: [Scraping]
+      summary: Ejecutar scraping parcial
+      description: Carga datos de una cantidad limitada de jugadores.
+      operationId: scrapeSomePlayers
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/NumberOfPlayers'
+      responses:
+        '200':
+          description: Scraping completado.
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    scrapingApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  parameters:
+    UserId:
+      name: usuarioId
+      in: path
+      required: true
+      description: Identificador numerico positivo del usuario.
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    NumberOfPlayers:
+      name: numberOfPlayers
+      in: query
+      required: false
+      description: Cantidad de jugadores a procesar.
+      schema:
+        type: integer
+        minimum: 1
+        default: 50
   schemas:
     UserRequest:
       type: object
@@ -366,6 +630,105 @@ components:
         settledPrice: {type: number, format: double, nullable: true}
         buyerId: {type: integer, format: int64, nullable: true}
         sellerId: {type: integer, format: int64, nullable: true}
+    OrdenPendienteResponse:
+      type: object
+      required: [orderId, operation, playerId, quantity, price, tolerance, status, issuedAt]
+      properties:
+        orderId: {type: integer, format: int64}
+        operation: {type: string}
+        playerId: {type: integer, format: int64}
+        quantity: {type: integer}
+        price: {type: number, format: double}
+        tolerance: {type: number, format: double}
+        status: {type: string}
+        issuedAt: {type: string, format: date-time}
+    TransaccionEjecutadaResponse:
+      type: object
+      required: [orderId, operation, playerId, quantity, settledPrice, issuedAt, executedAt]
+      properties:
+        orderId: {type: integer, format: int64}
+        operation: {type: string}
+        playerId: {type: integer, format: int64}
+        quantity: {type: integer}
+        settledPrice: {type: number, format: double, nullable: true}
+        buyerId: {type: integer, format: int64, nullable: true}
+        sellerId: {type: integer, format: int64, nullable: true}
+        issuedAt: {type: string, format: date-time}
+        executedAt: {type: string, format: date-time, nullable: true}
+    StrategyRequest:
+      type: object
+      required: [tipo, pesos]
+      properties:
+        tipo:
+          type: string
+          enum: [ESTRATEGIA_A, ESTRATEGIA_B]
+        pesos:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+            minimum: 0
+    StrategyConfig:
+      type: object
+      required: [estrategia, pesos, vigenteDesde]
+      properties:
+        estrategia:
+          type: string
+          enum: [ESTRATEGIA_A, ESTRATEGIA_B]
+        pesos:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+        vigenteDesde: {type: string, format: date-time}
+    StrategyStateResponse:
+      type: object
+      properties:
+        estrategia: {type: string, nullable: true, enum: [ESTRATEGIA_A, ESTRATEGIA_B]}
+        pesos:
+          type: object
+          nullable: true
+          additionalProperties: {type: number, format: double}
+        estado: {type: string, enum: [ACTUAL, PENDIENTE, SIN_ESTRATEGIA]}
+        vigenteDesde: {type: string, format: date-time, nullable: true}
+        actual:
+          allOf:
+            - $ref: '#/components/schemas/StrategyConfig'
+          nullable: true
+        pendiente:
+          allOf:
+            - $ref: '#/components/schemas/StrategyConfig'
+          nullable: true
+    HoldingResponse:
+      type: object
+      required: [id, usuarioId, jugadorId, tokens, valorTotal, valorUnitario]
+      properties:
+        id: {type: integer, format: int64}
+        usuarioId: {type: integer, format: int64}
+        jugadorId: {type: integer, format: int64}
+        tokens: {type: integer}
+        valorTotal: {type: number, format: double}
+        valorUnitario: {type: number, format: double}
+    HoldingHistoryResponse:
+      type: object
+      required: [usuarioId, jugadorId, tokens, valorUnitario, valorTotal, estrategia, ejecutadoEn, tipoEjecucion]
+      properties:
+        usuarioId: {type: integer, format: int64}
+        jugadorId: {type: integer, format: int64}
+        tokens: {type: integer}
+        valorUnitario: {type: number, format: double}
+        valorTotal: {type: number, format: double}
+        estrategia: {type: string, enum: [ESTRATEGIA_A, ESTRATEGIA_B]}
+        ejecutadoEn: {type: string, format: date-time}
+        tipoEjecucion: {type: string, enum: [DOMINICAL, MANUAL]}
+    RecalculationResult:
+      type: object
+      required: [status, playersScraped, recalculatedHoldings, executedAt]
+      properties:
+        status: {type: string}
+        playersScraped: {type: integer}
+        recalculatedHoldings: {type: integer}
+        executedAt: {type: string, format: date-time}
     PlayerError:
       type: object
       required: [mensaje]
