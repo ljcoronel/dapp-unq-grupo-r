@@ -49,19 +49,6 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-def openApiSource = file("${rootProject.projectDir}/specs/005-swagger/contracts/openapi.yaml")
-
-tasks.register('copyOpenApiSpec', Copy) {
-    from(openApiSource)
-    into(layout.projectDirectory.dir('src/main/resources/static'))
-    rename { 'openapi.yaml' }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.named('processResources') {
-    dependsOn tasks.named('copyOpenApiSpec')
-}
-
 tasks.named('test') {
     useJUnitPlatform()
 }
