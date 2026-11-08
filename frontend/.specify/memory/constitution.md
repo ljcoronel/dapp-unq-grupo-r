@@ -1,85 +1,105 @@
 <!--
 Sync Impact Report
-- Version change: 0.0.0 -> 1.0.0
+- Version change: 1.0.0 -> 2.0.0
 - Modified principles:
-  - [PRINCIPLE_1_NAME] -> Responsabilidad Unica por Componente
-  - [PRINCIPLE_2_NAME] -> Modularizacion del Consumo de API
-  - [PRINCIPLE_3_NAME] -> Robustez de Requests y Manejo de Fallos
-  - [PRINCIPLE_4_NAME] -> Feedback de Estado para el Usuario
-  - [PRINCIPLE_5_NAME] -> Estandares de Codigo y Estilo
+  - Responsabilidad Unica por Componente -> Single Responsibility per Component
+  - Modularizacion del Consumo de API -> Modular API Consumption
+  - Robustez de Requests y Manejo de Fallos -> Request Robustness and Failure Handling
+  - Feedback de Estado para el Usuario -> User State Feedback
+  - Estandares de Codigo y Estilo -> Code and Style Standards
 - Added sections:
-  - Stack Tecnologico
-  - Flujo de Desarrollo y Cumplimiento
+  - Responsive Web Application (new principle)
 - Removed sections:
-  - Ninguna
+  - None
 - Follow-up TODOs:
-  - TODO(RATIFICATION_DATE): confirmar fecha de ratificacion inicial si difiere de la fecha actual.
+  - TODO(RATIFICATION_DATE): confirm initial ratification date if it differs from the current date.
 -->
 # Frontend Constitution
 
 ## Core Principles
 
-### Responsabilidad Unica por Componente
-Cada componente de UI MUST tener una unica responsabilidad funcional claramente definida.
-La composicion entre componentes MUST realizarse sin mezclar logica de dominio, renderizado
-y efectos secundarios en una misma unidad, salvo casos explicitamente justificados en revision.
-Rationale: facilita mantenibilidad, testeo y evolucion incremental del frontend.
+### Responsive Web Application
+The frontend MUST be a responsive web application that adapts its layout and
+interactions to all common screen sizes and device types (desktop, tablet, and
+mobile). Every view and component MUST render correctly and remain fully usable
+across viewport widths from 320px to wide-screen monitors. Responsive behavior
+MUST be implemented using TailwindCSS responsive utilities (breakpoint prefixes)
+rather than separate mobile-specific codebases or third-party responsive
+frameworks.
+Rationale: ensures accessibility and usability for the widest possible audience
+without maintaining parallel implementations.
 
-### Modularizacion del Consumo de API
-Todo llamado a servicios externos MUST estar extraido en modulos de API dedicados. Los
-componentes MUST consumir funciones de esos modulos y MUST NOT construir requests HTTP
-directamente en la capa de presentacion.
-Rationale: centraliza contratos de red, reduce duplicacion y mejora trazabilidad de cambios.
+### Single Responsibility per Component
+Each UI component MUST have a single, clearly defined functional responsibility.
+Composition between components MUST be performed without mixing domain logic,
+rendering, and side effects in the same unit, unless explicitly justified during
+review.
+Rationale: improves maintainability, testability, and incremental evolution of
+the frontend.
 
-### Robustez de Requests y Manejo de Fallos
-Todas las requests a la API MUST realizarse con Axios. Cada request MUST contemplar manejo
-explicito de errores de red, respuestas fallidas y escenarios de datos nulos (`null`) segun
-el contrato esperado.
-Rationale: evita fallos silenciosos y establece un comportamiento consistente ante incidentes.
+### Modular API Consumption
+All calls to external services MUST be extracted into dedicated API modules.
+Components MUST consume functions from those modules and MUST NOT construct HTTP
+requests directly in the presentation layer.
+Rationale: centralizes network contracts, reduces duplication, and improves
+change traceability.
 
-### Feedback de Estado para el Usuario
-La interfaz MUST comunicar de forma amigable y visible los estados de carga, error y respuesta
-sin datos validos (`null`) durante el ciclo de una request. El usuario MUST recibir mensajes
-accionables y comprensibles en lugar de fallas tecnicas sin contexto.
-Rationale: mejora la experiencia de uso y reduce ambiguedad en flujos criticos.
+### Request Robustness and Failure Handling
+All API requests MUST be made using Axios. Each request MUST include explicit
+handling of network errors, failed responses, and null-data scenarios according
+to the expected contract.
+Rationale: prevents silent failures and establishes consistent behavior during
+incidents.
 
-### Estandares de Codigo y Estilo
-El estilado MUST implementarse con TailwindCSS. La indentacion MUST ser de 2 espacios.
-El codigo JavaScript/TypeScript de frontend MUST priorizar arrow functions, desestructuracion
-de objetos y async/await cuando aplique.
-Rationale: estandariza legibilidad y reduce friccion en colaboracion del equipo.
+### User State Feedback
+The interface MUST communicate loading, error, and null-data states in a
+user-friendly and visible manner throughout the lifecycle of a request. The user
+MUST receive actionable and understandable messages instead of raw technical
+failures without context.
+Rationale: improves the user experience and reduces ambiguity in critical flows.
 
-## Stack Tecnologico
+### Code and Style Standards
+Styling MUST be implemented with TailwindCSS. Indentation MUST be 2 spaces.
+Frontend JavaScript/TypeScript code MUST favor arrow functions, object
+destructuring, and async/await where applicable.
+Rationale: standardizes readability and reduces collaboration friction within
+the team.
 
-El frontend oficial de este proyecto MUST construirse con React.js. El enrutamiento MUST
-implementarse con React Router. El cliente HTTP MUST ser Axios y el sistema de estilos MUST
-ser TailwindCSS.
+## Technology Stack
 
-No se permite introducir librerias alternativas para estas responsabilidades sin una enmienda
-explicita de esta constitucion.
+The official frontend of this project MUST be built with React.js. Routing MUST
+be implemented with React Router. The HTTP client MUST be Axios and the styling
+system MUST be TailwindCSS.
 
-## Flujo de Desarrollo y Cumplimiento
+Introducing alternative libraries for these responsibilities is not permitted
+without an explicit amendment to this constitution.
 
-Toda propuesta de cambio en frontend MUST demostrar conformidad con los principios anteriores
-durante review. Las excepciones MUST documentar justificacion tecnica, alcance y plan de
-normalizacion.
+## Development Workflow and Compliance
 
-Las decisiones de arquitectura de componentes y consumo de API MUST evaluarse contra esta
-constitucion antes de mergear cambios relevantes.
+Every frontend change proposal MUST demonstrate conformity with the principles
+above during review. Exceptions MUST document technical justification, scope,
+and a normalization plan.
+
+Component architecture and API consumption decisions MUST be evaluated against
+this constitution before merging relevant changes.
 
 ## Governance
 
-Esta constitucion prevalece sobre practicas ad hoc del frontend. Toda enmienda MUST registrarse
-en este documento e incluir motivo, impacto y actualizacion de version semanticamente correcta.
+This constitution supersedes ad-hoc frontend practices. Every amendment MUST be
+recorded in this document and MUST include the rationale, impact, and a
+semantically correct version update.
 
-Politica de versionado constitucional:
-- MAJOR: eliminacion o redefinicion incompatible de principios o reglas de gobierno.
-- MINOR: agregado de nuevos principios/secciones o expansion material de lineamientos.
-- PATCH: aclaraciones no semanticas, redaccion o correcciones editoriales.
+Constitutional versioning policy:
+- MAJOR: backward-incompatible removal or redefinition of principles or
+  governance rules.
+- MINOR: addition of new principles/sections or material expansion of
+  guidelines.
+- PATCH: non-semantic clarifications, wording, or editorial corrections.
 
-Cumplimiento:
-- Toda revision de cambios de frontend MUST verificar cumplimiento constitucional.
-- Incumplimientos MUST corregirse antes del merge o aprobarse como excepcion documentada.
-- Se recomienda una revision periodica de cumplimiento en hitos de release.
+Compliance:
+- Every frontend change review MUST verify constitutional compliance.
+- Non-compliances MUST be corrected before merge or approved as a documented
+  exception.
+- A periodic compliance review at release milestones is recommended.
 
-**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): confirmar fecha inicial | **Last Amended**: 2026-09-18
+**Version**: 2.0.0 | **Ratified**: TODO(RATIFICATION_DATE): confirm initial date | **Last Amended**: 2026-11-08
