@@ -1,7 +1,7 @@
 # Specification Quality Checklist: Mercado de Tokens de Jugadores
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-11-08
+**Created**: 2026-11-09
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality
@@ -31,5 +31,8 @@
 
 ## Notes
 
-- All items pass validation. The spec is ready for `/speckit-clarify` or `/speckit-plan`.
-- One assumption documents an interpretation: the user wrote "el 0.5 restante" when describing Estrategia B, but the declared sum is 0.95, so the remainder should be 0.05 (1 − 0.95). This is documented in the Assumptions section for user review.
+- Updated spec with three user-requested changes:
+  1. Added User Story 7 scenario for user without Strategy (must create one)
+  2. Removed User Story 11 (Matching de órdenes)
+  3. Added Strategy prerequisite for buy/sell orders (US3, US4, FR-014)
+- All checklist items pass. Spec is ready for `/speckit-clarify` or `/speckit-plan`.

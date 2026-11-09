@@ -57,12 +57,13 @@ Un usuario quiere comprar tokens de un jugador de fútbol. Desde la sección "Co
 
 **Acceptance Scenarios**:
 
-1. **Given** el usuario está en la sección "Comerciar", **When** presiona el botón "Comprar", **Then** se abre un modal con los campos: cantidad de tokens, jugador de fútbol y tolerancia de variación de precio.
-2. **Given** el modal de compra está abierto, **When** el usuario intenta ingresar una cantidad mayor a 100, **Then** el sistema no permite enviar la orden.
-3. **Given** el modal de compra está abierto, **When** el usuario completa los campos, **Then** el sistema muestra el precio total sin tolerancia (cantidad × precio unitario según Estrategia) y el precio total con tolerancia (precio total + tolerancia).
-4. **Given** el precio total con tolerancia supera los créditos disponibles del usuario, **When** el usuario revisa el modal, **Then** puede ver que no puede realizar la compra porque sus créditos son insuficientes.
-5. **Given** el usuario completa una orden de compra válida, **When** confirma la operación, **Then** la orden de compra queda registrada como activa.
-6. **Given** el modal de compra está abierto, **When** el usuario selecciona un jugador, **Then** el precio unitario viene determinado por la Estrategia de valuación del usuario.
+1. **Given** el usuario no tiene una Estrategia de valuación configurada, **When** presiona el botón "Comprar", **Then** el sistema no permite abrir el modal de compra y muestra un mensaje indicando que debe configurar una Estrategia antes de operar.
+2. **Given** el usuario tiene una Estrategia de valuación configurada y está en la sección "Comerciar", **When** presiona el botón "Comprar", **Then** se abre un modal con los campos: cantidad de tokens, jugador de fútbol y tolerancia de variación de precio.
+3. **Given** el modal de compra está abierto, **When** el usuario intenta ingresar una cantidad mayor a 100, **Then** el sistema no permite enviar la orden.
+4. **Given** el modal de compra está abierto, **When** el usuario completa los campos, **Then** el sistema muestra el precio total sin tolerancia (cantidad × precio unitario según Estrategia) y el precio total con tolerancia (precio total + tolerancia).
+5. **Given** el precio total con tolerancia supera los créditos disponibles del usuario, **When** el usuario revisa el modal, **Then** puede ver que no puede realizar la compra porque sus créditos son insuficientes.
+6. **Given** el usuario completa una orden de compra válida, **When** confirma la operación, **Then** la orden de compra queda registrada como activa.
+7. **Given** el modal de compra está abierto, **When** el usuario selecciona un jugador, **Then** el precio unitario viene determinado por la Estrategia de valuación del usuario.
 
 ---
 
@@ -76,12 +77,13 @@ Un usuario quiere vender tokens de un jugador. Desde la sección "Comerciar", pr
 
 **Acceptance Scenarios**:
 
-1. **Given** el usuario está en la sección "Comerciar", **When** presiona el botón "Vender", **Then** se abre un modal con los campos: cantidad de tokens, jugador de fútbol y tolerancia de variación de precio.
-2. **Given** el modal de venta está abierto, **When** el usuario intenta ingresar una cantidad mayor a sus tokens disponibles para ese jugador, **Then** el sistema no permite enviar la orden.
-3. **Given** el modal de venta está abierto, **When** el usuario completa los campos, **Then** el sistema muestra el precio total sin tolerancia (cantidad × precio unitario según Estrategia) y el precio total con tolerancia (precio total − tolerancia total).
-4. **Given** el usuario tiene 5 tokens del jugador B y una orden de venta activa de 3 tokens de ese jugador, **When** intenta emitir otra orden de venta del jugador B, **Then** solo puede vender hasta 2 tokens.
-5. **Given** el usuario completa una orden de venta válida, **When** confirma la operación, **Then** la orden de venta queda registrada como activa y los tokens correspondientes quedan bloqueados.
-6. **Given** el modal de venta está abierto, **When** el usuario selecciona un jugador, **Then** el precio unitario viene determinado por la Estrategia de valuación del usuario.
+1. **Given** el usuario no tiene una Estrategia de valuación configurada, **When** presiona el botón "Vender", **Then** el sistema no permite abrir el modal de venta y muestra un mensaje indicando que debe configurar una Estrategia antes de operar.
+2. **Given** el usuario tiene una Estrategia de valuación configurada y está en la sección "Comerciar", **When** presiona el botón "Vender", **Then** se abre un modal con los campos: cantidad de tokens, jugador de fútbol y tolerancia de variación de precio.
+3. **Given** el modal de venta está abierto, **When** el usuario intenta ingresar una cantidad mayor a sus tokens disponibles para ese jugador, **Then** el sistema no permite enviar la orden.
+4. **Given** el modal de venta está abierto, **When** el usuario completa los campos, **Then** el sistema muestra el precio total sin tolerancia (cantidad × precio unitario según Estrategia) y el precio total con tolerancia (precio total − tolerancia total).
+5. **Given** el usuario tiene 5 tokens del jugador B y una orden de venta activa de 3 tokens de ese jugador, **When** intenta emitir otra orden de venta del jugador B, **Then** solo puede vender hasta 2 tokens.
+6. **Given** el usuario completa una orden de venta válida, **When** confirma la operación, **Then** la orden de venta queda registrada como activa y los tokens correspondientes quedan bloqueados.
+7. **Given** el modal de venta está abierto, **When** el usuario selecciona un jugador, **Then** el precio unitario viene determinado por la Estrategia de valuación del usuario.
 
 ---
 
@@ -126,14 +128,15 @@ Un usuario quiere ver su estrategia de valuación actual y, si lo desea, cambiar
 
 **Acceptance Scenarios**:
 
-1. **Given** el usuario selecciona "Estrategia" en el sidebar, **When** se carga la vista, **Then** ve la estrategia de valuación actual con las métricas afectadas y el peso de cada una.
-2. **Given** el usuario está en la vista de Estrategia, **When** presiona "Cambiar Estrategia", **Then** se abre un modal que le permite seleccionar Estrategia A o Estrategia B.
-3. **Given** el usuario selecciona la Estrategia A en el modal, **When** aparecen los inputs de métricas, **Then** ve un input por cada una de las métricas: "goals", "assists", "passSuccessPercentage", "aerialsWon", "timesManOfTheMatch".
-4. **Given** el usuario configura la Estrategia A, **When** la suma de los pesos no es igual a 1, **Then** el sistema no permite confirmar la configuración.
-5. **Given** el usuario configura la Estrategia A, **When** la suma de los pesos es igual a 1, **Then** el sistema permite confirmar y aplica la nueva estrategia.
-6. **Given** el usuario selecciona la Estrategia B en el modal, **When** aparecen los inputs de métricas, **Then** ve un input por cada una de las métricas: "passSuccessPercentage", "aerialsWon", "minutesPlayed", "appearances".
-7. **Given** el usuario configura la Estrategia B, **When** la suma de los pesos configurables no es igual a 0.95, **Then** el sistema no permite confirmar la configuración.
-8. **Given** el usuario configura la Estrategia B, **When** la suma de los pesos configurables es igual a 0.95, **Then** el sistema permite confirmar y aplica la nueva estrategia, completando internamente el 0.05 restante.
+1. **Given** el usuario no tiene una Estrategia de valuación configurada, **When** selecciona "Estrategia" en el sidebar, **Then** se muestra un mensaje indicando que debe crear una Estrategia antes de poder operar, junto con la opción de crearla.
+2. **Given** el usuario selecciona "Estrategia" en el sidebar y ya tiene una Estrategia configurada, **When** se carga la vista, **Then** ve la estrategia de valuación actual con las métricas afectadas y el peso de cada una.
+3. **Given** el usuario está en la vista de Estrategia, **When** presiona "Cambiar Estrategia", **Then** se abre un modal que le permite seleccionar Estrategia A o Estrategia B.
+4. **Given** el usuario selecciona la Estrategia A en el modal, **When** aparecen los inputs de métricas, **Then** ve un input por cada una de las métricas: "goals", "assists", "passSuccessPercentage", "aerialsWon", "timesManOfTheMatch".
+5. **Given** el usuario configura la Estrategia A, **When** la suma de los pesos no es igual a 1, **Then** el sistema no permite confirmar la configuración.
+6. **Given** el usuario configura la Estrategia A, **When** la suma de los pesos es igual a 1, **Then** el sistema permite confirmar y aplica la nueva estrategia.
+7. **Given** el usuario selecciona la Estrategia B en el modal, **When** aparecen los inputs de métricas, **Then** ve un input por cada una de las métricas: "passSuccessPercentage", "aerialsWon", "minutesPlayed", "appearances".
+8. **Given** el usuario configura la Estrategia B, **When** la suma de los pesos configurables no es igual a 0.95, **Then** el sistema no permite confirmar la configuración.
+9. **Given** el usuario configura la Estrategia B, **When** la suma de los pesos configurables es igual a 0.95, **Then** el sistema permite confirmar y aplica la nueva estrategia, completando internamente el 0.05 restante.
 
 ---
 
@@ -181,22 +184,6 @@ Un usuario quiere ver el valor actual de todos sus tokens en un gráfico de tort
 2. **Given** el usuario tiene tokens de más de 10 jugadores, **When** se muestra el gráfico de torta, **Then** los jugadores que representan menos se agrupan en una categoría "Otros", mostrando como máximo 10 segmentos individuales más "Otros".
 3. **Given** el usuario no tiene tokens, **When** accede al Portfolio, **Then** no se muestra el gráfico de torta o se indica que no hay datos.
 
----
-
-### User Story 11 - Matching de órdenes de compra y venta (Priority: P1)
-
-Las órdenes de compra y venta pueden hacer match entre sí. El matching considera la tolerancia de precio de cada parte. Una orden de compra con tolerancia amplía el precio máximo que está dispuesto a pagar. Una orden de venta con tolerancia reduce el precio mínimo que está dispuesto a aceptar. Dos órdenes solo hacen match si los rangos de precio se solapan para la misma cantidad y jugador.
-
-**Why this priority**: El matching es el mecanismo central que concreta las transacciones en la plataforma.
-
-**Independent Test**: Crear órdenes de compra y venta con diferentes precios y tolerancias, y verificar que solo hacen match cuando los rangos se solapan.
-
-**Acceptance Scenarios**:
-
-1. **Given** existe una orden de compra de 2 tokens a 3 créditos cada uno con tolerancia de 2 créditos (precio total: 6, máximo: 8), **When** se evalúa contra una orden de venta de 2 tokens cuyo valor unitario es de 5 créditos (precio total: 10), **Then** las órdenes NO hacen match (8 < 10).
-2. **Given** existe una orden de venta de 4 tokens a 5 créditos cada uno con tolerancia de 1 crédito por token, **When** se evalúa contra una orden de compra de 4 tokens a 4 créditos cada uno, **Then** las órdenes SÍ hacen match (el vendedor acepta un mínimo de 4 créditos por token).
-3. **Given** se concreta un match entre dos órdenes, **When** la transacción se completa, **Then** los tokens se transfieren del vendedor al comprador, los créditos se transfieren del comprador al vendedor, y ambas órdenes se cierran.
-
 ### Edge Cases
 
 - Si el usuario no tiene créditos suficientes para cubrir el precio total con tolerancia, debe poder ver el desglose de precios pero no emitir la orden de compra.
@@ -240,47 +227,49 @@ Las órdenes de compra y venta pueden hacer match entre sí. El matching conside
 - **FR-011**: La sección "Comerciar" MUST mostrar las órdenes de compra activas del usuario, las órdenes de venta activas del usuario y dos botones: "Comprar" y "Vender".
 - **FR-012**: La cantidad de tokens en toda operación MUST ser un número entero.
 - **FR-013**: Los créditos MUST expresarse como número decimal de hasta dos decimales.
+- **FR-014**: El usuario MUST NOT poder emitir una orden de compra ni de venta si no tiene una Estrategia de valuación configurada. El sistema MUST mostrar un mensaje indicando que debe configurar una Estrategia antes de operar.
 
 **Compra de tokens**
 
-- **FR-014**: Al presionar "Comprar" MUST abrirse un modal con los campos: cantidad de tokens a comprar, jugador de fútbol y tolerancia de variación de precio.
-- **FR-015**: La cantidad de tokens a comprar MUST NOT superar el número 100.
-- **FR-016**: El precio unitario en una orden de compra MUST ser el determinado por la Estrategia de valuación del usuario.
-- **FR-017**: La tolerancia aplica al precio total de la orden. El precio total con tolerancia es: (cantidad × precio unitario) + tolerancia.
-- **FR-018**: El modal de compra MUST mostrar el precio total sin tolerancia y el precio total con tolerancia.
-- **FR-019**: Si el precio total con tolerancia supera los créditos disponibles del usuario, MUST mostrarse una indicación visual que explique por qué no puede realizar la compra.
+- **FR-015**: Al presionar "Comprar" (con Estrategia configurada) MUST abrirse un modal con los campos: cantidad de tokens a comprar, jugador de fútbol y tolerancia de variación de precio.
+- **FR-016**: La cantidad de tokens a comprar MUST NOT superar el número 100.
+- **FR-017**: El precio unitario en una orden de compra MUST ser el determinado por la Estrategia de valuación del usuario.
+- **FR-018**: La tolerancia aplica al precio total de la orden. El precio total con tolerancia es: (cantidad × precio unitario) + tolerancia.
+- **FR-019**: El modal de compra MUST mostrar el precio total sin tolerancia y el precio total con tolerancia.
+- **FR-020**: Si el precio total con tolerancia supera los créditos disponibles del usuario, MUST mostrarse una indicación visual que explique por qué no puede realizar la compra.
 
 **Venta de tokens**
 
-- **FR-020**: Al presionar "Vender" MUST abrirse un modal con los campos: cantidad de tokens a vender, jugador de fútbol y tolerancia de variación de precio.
-- **FR-021**: La cantidad de tokens a vender MUST NOT superar la cantidad de tokens disponibles (no bloqueados) que tenga el usuario para ese jugador.
-- **FR-022**: El precio unitario en una orden de venta MUST ser el determinado por la Estrategia de valuación del usuario.
-- **FR-023**: La tolerancia de venta indica cuánto menos por token está dispuesto a recibir el usuario. El precio total con tolerancia es: (cantidad × precio unitario) − (cantidad × tolerancia por token).
-- **FR-024**: El modal de venta MUST mostrar el precio total sin tolerancia y el precio total con tolerancia.
-- **FR-025**: Los tokens puestos en venta MUST quedar bloqueados mientras la orden esté activa, reduciendo la cantidad de tokens disponibles para nuevas órdenes de venta de ese jugador.
+- **FR-021**: Al presionar "Vender" (con Estrategia configurada) MUST abrirse un modal con los campos: cantidad de tokens a vender, jugador de fútbol y tolerancia de variación de precio.
+- **FR-022**: La cantidad de tokens a vender MUST NOT superar la cantidad de tokens disponibles (no bloqueados) que tenga el usuario para ese jugador.
+- **FR-023**: El precio unitario en una orden de venta MUST ser el determinado por la Estrategia de valuación del usuario.
+- **FR-024**: La tolerancia de venta indica cuánto menos por token está dispuesto a recibir el usuario. El precio total con tolerancia es: (cantidad × precio unitario) − (cantidad × tolerancia por token).
+- **FR-025**: El modal de venta MUST mostrar el precio total sin tolerancia y el precio total con tolerancia.
+- **FR-026**: Los tokens puestos en venta MUST quedar bloqueados mientras la orden esté activa, reduciendo la cantidad de tokens disponibles para nuevas órdenes de venta de ese jugador.
 
 **Portfolio**
 
-- **FR-026**: La sección "Portfolio" MUST mostrar, por cada jugador que el usuario posea, la cantidad de tokens, el precio promedio de compra y el valor actual de todos los tokens.
-- **FR-027**: La sección "Portfolio" MUST mostrar un historial de todas las operaciones de compra y venta concretadas por el usuario.
-- **FR-028**: Cada operación del historial MUST mostrar: tipo de operación (compra en verde, venta en rojo), jugador de fútbol, cantidad de tokens comerciados, importe total y fecha de operación.
-- **FR-029**: El portfolio MUST incluir un gráfico de torta que muestre el valor actual de todos los tokens del usuario discriminado por jugador.
-- **FR-030**: Si el usuario tiene tokens de más de 10 jugadores, los que representen menos en el portfolio MUST agruparse en una categoría "Otros".
+- **FR-027**: La sección "Portfolio" MUST mostrar, por cada jugador que el usuario posea, la cantidad de tokens, el precio promedio de compra y el valor actual de todos los tokens.
+- **FR-028**: La sección "Portfolio" MUST mostrar un historial de todas las operaciones de compra y venta concretadas por el usuario.
+- **FR-029**: Cada operación del historial MUST mostrar: tipo de operación (compra en verde, venta en rojo), jugador de fútbol, cantidad de tokens comerciados, importe total y fecha de operación.
+- **FR-030**: El portfolio MUST incluir un gráfico de torta que muestre el valor actual de todos los tokens del usuario discriminado por jugador.
+- **FR-031**: Si el usuario tiene tokens de más de 10 jugadores, los que representen menos en el portfolio MUST agruparse en una categoría "Otros".
 
 **Estrategia de valuación**
 
-- **FR-031**: La sección "Estrategia" MUST mostrar la estrategia de valuación actual del usuario con las métricas afectadas y el peso de cada una.
-- **FR-032**: La sección MUST incluir un botón "Cambiar Estrategia" que abra un modal para seleccionar Estrategia A o Estrategia B.
-- **FR-033**: Al seleccionar Estrategia A, MUST aparecer un input por cada métrica: "goals", "assists", "passSuccessPercentage", "aerialsWon", "timesManOfTheMatch".
-- **FR-034**: La suma de los pesos de la Estrategia A MUST ser igual a 1 para poder confirmar la configuración.
-- **FR-035**: Al seleccionar Estrategia B, MUST aparecer un input por cada métrica: "passSuccessPercentage", "aerialsWon", "minutesPlayed", "appearances".
-- **FR-036**: La suma de los pesos configurables de la Estrategia B MUST ser igual a 0.95, ya que el 0.05 restante lo completa la propia Estrategia.
+- **FR-032**: La sección "Estrategia" MUST mostrar la estrategia de valuación actual del usuario con las métricas afectadas y el peso de cada una.
+- **FR-033**: Si el usuario no tiene una Estrategia configurada, la sección "Estrategia" MUST mostrar un mensaje indicando que debe crear una Estrategia, junto con la opción de crearla.
+- **FR-034**: La sección MUST incluir un botón "Cambiar Estrategia" que abra un modal para seleccionar Estrategia A o Estrategia B.
+- **FR-035**: Al seleccionar Estrategia A, MUST aparecer un input por cada métrica: "goals", "assists", "passSuccessPercentage", "aerialsWon", "timesManOfTheMatch".
+- **FR-036**: La suma de los pesos de la Estrategia A MUST ser igual a 1 para poder confirmar la configuración.
+- **FR-037**: Al seleccionar Estrategia B, MUST aparecer un input por cada métrica: "passSuccessPercentage", "aerialsWon", "minutesPlayed", "appearances".
+- **FR-038**: La suma de los pesos configurables de la Estrategia B MUST ser igual a 0.95, ya que el 0.05 restante lo completa la propia Estrategia.
 
 **Visualización de datos**
 
-- **FR-037**: MUST existir un gráfico de líneas que muestre la evolución de la cotización de un jugador.
-- **FR-038**: MUST existir un buscador donde el usuario pueda ingresar el nombre del jugador para ver su gráfico de cotización.
-- **FR-039**: Si se encuentra el jugador buscado, MUST mostrarse el gráfico con la evolución de su cotización. Si no se encuentra, MUST mostrarse un mensaje informativo.
+- **FR-039**: MUST existir un gráfico de líneas que muestre la evolución de la cotización de un jugador.
+- **FR-040**: MUST existir un buscador donde el usuario pueda ingresar el nombre del jugador para ver su gráfico de cotización.
+- **FR-041**: Si se encuentra el jugador buscado, MUST mostrarse el gráfico con la evolución de su cotización. Si no se encuentra, MUST mostrarse un mensaje informativo.
 
 ### Key Entities
 
@@ -307,6 +296,7 @@ Las órdenes de compra y venta pueden hacer match entre sí. El matching conside
 - **SC-008**: El gráfico de cotización se muestra correctamente cuando el usuario busca un jugador existente.
 - **SC-009**: El botón "Ir a mi perfil" navega exitosamente a la vista de perfil donde se muestra el nombre de usuario.
 - **SC-010**: Todas las validaciones de datos (enteros para tokens, máximo dos decimales para créditos, máximo 100 tokens en compra, disponibilidad en venta) funcionan correctamente.
+- **SC-011**: Un usuario sin Estrategia de valuación configurada no puede emitir órdenes de compra ni de venta, y recibe un mensaje claro indicando que debe configurar una Estrategia.
 
 ## Assumptions
 
