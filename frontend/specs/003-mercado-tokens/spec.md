@@ -155,21 +155,6 @@ Un usuario quiere acceder a su perfil para ver su nombre de usuario. Presiona el
 
 ---
 
-### User Story 9 - Visualizar la evolución de cotización de un jugador (Priority: P3)
-
-Un usuario quiere ver la evolución de la cotización de un jugador en un gráfico de líneas. Utiliza un buscador para ingresar el nombre del jugador. Si se encuentra el jugador, se muestra el gráfico con la evolución de su cotización.
-
-**Why this priority**: La visualización de cotizaciones es valiosa para la toma de decisiones pero no es crítica para las operaciones comerciales básicas.
-
-**Independent Test**: Buscar un jugador por nombre y verificar que se muestra un gráfico de líneas con la evolución de su cotización.
-
-**Acceptance Scenarios**:
-
-1. **Given** el usuario accede al buscador de cotizaciones, **When** ingresa el nombre de un jugador existente, **Then** se muestra un gráfico de líneas con la evolución de su cotización.
-2. **Given** el usuario accede al buscador de cotizaciones, **When** ingresa el nombre de un jugador que no existe, **Then** el sistema indica que no se encontró el jugador.
-
----
-
 ### User Story 10 - Visualizar distribución del portfolio en gráfico de torta (Priority: P3)
 
 Un usuario quiere ver el valor actual de todos sus tokens en un gráfico de torta, discriminando por jugador. Si tiene tokens de más de 10 jugadores, los que representan menos en el portfolio se agrupan en una categoría "Otros".
@@ -195,7 +180,6 @@ Un usuario quiere ver el valor actual de todos sus tokens en un gráfico de tort
 - Si el usuario intenta ingresar créditos con más de dos decimales, el sistema aplica el formato de hasta dos decimales.
 - Si todos los tokens de un jugador están bloqueados por órdenes de venta activas, el usuario no puede emitir nuevas órdenes de venta para ese jugador.
 - Si el usuario tiene tokens de más de 10 jugadores en su portfolio, la agrupación en "Otros" en el gráfico de torta debe incluir a los jugadores de menor representación.
-- Si el nombre del jugador buscado en el gráfico de cotizaciones no se encuentra, el sistema muestra un mensaje informativo.
 - Si la Estrategia A o B tiene pesos que no suman el valor requerido (1 o 0.95 respectivamente), el sistema muestra un mensaje de error y no permite confirmar.
 - Si el usuario no tiene una Estrategia configurada, no debería poder emitir órdenes de compra ni de venta.
 
@@ -265,12 +249,6 @@ Un usuario quiere ver el valor actual de todos sus tokens en un gráfico de tort
 - **FR-037**: Al seleccionar Estrategia B, MUST aparecer un input por cada métrica: "passSuccessPercentage", "aerialsWon", "minutesPlayed", "appearances".
 - **FR-038**: La suma de los pesos configurables de la Estrategia B MUST ser igual a 0.95, ya que el 0.05 restante lo completa la propia Estrategia.
 
-**Visualización de datos**
-
-- **FR-039**: MUST existir un gráfico de líneas que muestre la evolución de la cotización de un jugador.
-- **FR-040**: MUST existir un buscador donde el usuario pueda ingresar el nombre del jugador para ver su gráfico de cotización.
-- **FR-041**: Si se encuentra el jugador buscado, MUST mostrarse el gráfico con la evolución de su cotización. Si no se encuentra, MUST mostrarse un mensaje informativo.
-
 ### Key Entities
 
 - **Usuario**: Persona autenticada en la plataforma. Posee un nombre de usuario, créditos disponibles, un portfolio de tokens, órdenes activas y una estrategia de valuación configurada.
@@ -280,7 +258,6 @@ Un usuario quiere ver el valor actual de todos sus tokens en un gráfico de tort
 - **Orden de Venta**: Solicitud emitida por un usuario para vender una cantidad de tokens de un jugador a un precio determinado por su Estrategia, con una tolerancia que reduce el mínimo dispuesto a aceptar. Los tokens de la orden quedan bloqueados.
 - **Estrategia de Valuación**: Configuración del usuario que define cómo se calcula el precio de los tokens. Puede ser Estrategia A (5 métricas, pesos que suman 1) o Estrategia B (4 métricas configurables con pesos que suman 0.95, más 0.05 completado internamente).
 - **Operación Concretada**: Registro histórico de una transacción completada entre dos usuarios, con tipo (compra/venta), jugador, cantidad, importe total y fecha.
-- **Cotización**: Valor de un jugador en un momento dado, cuya evolución temporal se visualiza en gráficos de líneas.
 
 ## Success Criteria *(mandatory)*
 
@@ -293,10 +270,9 @@ Un usuario quiere ver el valor actual de todos sus tokens en un gráfico de tort
 - **SC-005**: El bloqueo de tokens por órdenes de venta activas impide que el usuario ofrezca más tokens de los que realmente tiene disponibles, en el 100% de los casos.
 - **SC-006**: El portfolio muestra correctamente las tenencias, precios promedio, valores actuales, historial de operaciones y gráfico de torta.
 - **SC-007**: La configuración de estrategia valida correctamente las sumas de pesos (1 para Estrategia A, 0.95 para Estrategia B) en el 100% de los intentos.
-- **SC-008**: El gráfico de cotización se muestra correctamente cuando el usuario busca un jugador existente.
-- **SC-009**: El botón "Ir a mi perfil" navega exitosamente a la vista de perfil donde se muestra el nombre de usuario.
-- **SC-010**: Todas las validaciones de datos (enteros para tokens, máximo dos decimales para créditos, máximo 100 tokens en compra, disponibilidad en venta) funcionan correctamente.
-- **SC-011**: Un usuario sin Estrategia de valuación configurada no puede emitir órdenes de compra ni de venta, y recibe un mensaje claro indicando que debe configurar una Estrategia.
+- **SC-008**: El botón "Ir a mi perfil" navega exitosamente a la vista de perfil donde se muestra el nombre de usuario.
+- **SC-009**: Todas las validaciones de datos (enteros para tokens, máximo dos decimales para créditos, máximo 100 tokens en compra, disponibilidad en venta) funcionan correctamente.
+- **SC-010**: Un usuario sin Estrategia de valuación configurada no puede emitir órdenes de compra ni de venta, y recibe un mensaje claro indicando que debe configurar una Estrategia.
 
 ## Assumptions
 
@@ -305,6 +281,5 @@ Un usuario quiere ver el valor actual de todos sus tokens en un gráfico de tort
 - Los créditos del usuario y los tokens que posee son gestionados y provistos por el sistema existente.
 - El matching de órdenes (compra contra venta) es procesado por el sistema; esta especificación describe las reglas de matching desde la perspectiva del usuario pero no define el mecanismo de procesamiento.
 - El menú desplegable con "Ir a mi perfil" y "Cerrar sesión" continúa existiendo; el sidebar no reemplaza dicho menú sino que complementa la navegación.
-- La vista del buscador de cotizaciones de jugadores puede integrarse dentro de la sección "Catálogo" o como una subsección accesible, ya que el usuario no especificó una sección independiente en el sidebar para ella.
 - El texto y la interfaz continúan estando en español, como en la versión actual de la aplicación.
 - La suma de pesos de la Estrategia B que debe ser 0.95 (no 0.5 como se menciona en la descripción original al decir "el 0.5 restante"). Se interpreta que el usuario se refirió al 0.05 restante (1 − 0.95 = 0.05), manteniendo coherencia con el valor declarado de 0.95.
