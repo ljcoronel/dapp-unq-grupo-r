@@ -15,9 +15,8 @@ import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.UserEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.security.JwtService;
 import com.dappunq.security.UserPrincipal;
 import com.dappunq.service.WhoScoredScrapingService;
@@ -91,9 +90,6 @@ class HoldingsInvariantE2ETest {
     private ValuationRepository valuationRepository;
 
     @Autowired
-    private ValuationHistoryRepository valuationHistoryRepository;
-
-    @Autowired
     private ValuationPersistenceMapper mapper;
 
     @Autowired
@@ -110,7 +106,6 @@ class HoldingsInvariantE2ETest {
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
 
-        valuationHistoryRepository.deleteAll();
         valuationRepository.deleteAll();
         holdingRepository.deleteAll();
         strategyConfigRepository.deleteAll();

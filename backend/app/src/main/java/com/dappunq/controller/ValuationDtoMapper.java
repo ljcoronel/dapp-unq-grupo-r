@@ -1,6 +1,6 @@
 package com.dappunq.controller;
 
-import com.dappunq.dto.valuation.HoldingHistoryResponse;
+import com.dappunq.dto.valuation.ValuationResponse;
 import com.dappunq.dto.valuation.HoldingResponse;
 import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.dto.valuation.StrategyConfigDto;
@@ -8,7 +8,7 @@ import com.dappunq.dto.valuation.StrategyStateResponse;
 import com.dappunq.model.valuation.Holding;
 import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyState;
-import com.dappunq.model.valuation.ValuationHistoryRecord;
+import com.dappunq.model.valuation.Valuation;
 import com.dappunq.persistence.HoldingEntity;
 import com.dappunq.persistence.StrategyConfigEntity;
 import org.springframework.stereotype.Component;
@@ -53,11 +53,11 @@ public class ValuationDtoMapper {
         );
     }
 
-    public HoldingHistoryResponse toResponse(ValuationHistoryRecord r) {
+    public ValuationResponse toResponse(Valuation r) {
         if (r == null) {
             return null;
         }
-        return new HoldingHistoryResponse(
+        return new ValuationResponse(
                 r.getUsuarioId(),
                 r.getJugadorId(),
                 r.getTokens(),

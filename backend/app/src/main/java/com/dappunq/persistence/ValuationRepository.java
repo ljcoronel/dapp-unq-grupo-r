@@ -1,10 +1,11 @@
 package com.dappunq.persistence;
 
+import com.dappunq.model.valuation.ExecutionType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ValuationRepository extends JpaRepository<ValuationEntity, Long> {
-    boolean existsByUserIdAndPlayerIdAndVentana(Long userId, Long playerId, String ventana);
+    List<ValuationEntity> findByUserIdOrderByEjecutadoEnDesc(Long id);
+    boolean existsByUserIdAndPlayerIdAndVentanaAndTipoEjecucion(Long userId, Long playerId, String ventana, ExecutionType tipoEjecucion);
 }

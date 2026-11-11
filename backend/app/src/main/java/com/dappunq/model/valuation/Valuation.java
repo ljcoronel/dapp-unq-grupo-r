@@ -7,7 +7,7 @@ import java.time.Instant;
  * Objeto de dominio inmutable que representa un snapshot del historial de valuacion.
  * No contiene anotaciones de framework ni de persistencia.
  */
-public class ValuationHistoryRecord {
+public class Valuation {
 
     private final Long usuarioId;
     private final Long jugadorId;
@@ -18,10 +18,10 @@ public class ValuationHistoryRecord {
     private final Instant ejecutadoEn;
     private final ExecutionType tipoEjecucion;
 
-    public ValuationHistoryRecord(Long usuarioId, Long jugadorId, int tokens,
-                                   BigDecimal valorUnitario, BigDecimal valorTotal,
-                                   StrategyType estrategia, Instant ejecutadoEn,
-                                   ExecutionType tipoEjecucion) {
+    public Valuation(Long usuarioId, Long jugadorId, int tokens,
+                     BigDecimal valorUnitario, BigDecimal valorTotal,
+                     StrategyType estrategia, Instant ejecutadoEn,
+                     ExecutionType tipoEjecucion) {
         this.usuarioId = usuarioId;
         this.jugadorId = jugadorId;
         this.tokens = tokens;

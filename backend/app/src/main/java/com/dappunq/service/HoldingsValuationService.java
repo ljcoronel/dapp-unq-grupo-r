@@ -1,19 +1,14 @@
 package com.dappunq.service;
 
-import com.dappunq.model.valuation.ExecutionType;
-import com.dappunq.model.valuation.Holding;
-import com.dappunq.model.valuation.PlayerSnapshot;
-import com.dappunq.model.valuation.PlayerValuationCalculator;
-import com.dappunq.model.valuation.StrategyConfig;
-import com.dappunq.model.valuation.ValuationHistoryRecord;
+import com.dappunq.model.valuation.*;
 import com.dappunq.persistence.HoldingEntity;
 import com.dappunq.persistence.HoldingRepository;
 import com.dappunq.persistence.PlayerEntity;
 import com.dappunq.persistence.PlayerRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
 import com.dappunq.persistence.StrategyConfigRepository;
-import com.dappunq.persistence.ValuationHistoryEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
+import com.dappunq.persistence.ValuationEntity;
+import com.dappunq.persistence.ValuationRepository;
 import com.dappunq.persistence.ValuationPersistenceMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -30,14 +26,14 @@ public class HoldingsValuationService {
     private static final Logger log = LoggerFactory.getLogger(HoldingsValuationService.class);
 
     private final HoldingRepository holdings;
-    private final ValuationHistoryRepository history;
+    private final ValuationRepository history;
     private final PlayerRepository players;
     private final StrategyConfigRepository configs;
     private final ValuationPersistenceMapper mapper;
     private final PlayerValuationCalculator calculator = new PlayerValuationCalculator();
 
     public HoldingsValuationService(HoldingRepository holdings,
-                                    ValuationHistoryRepository history,
+                                    ValuationRepository history,
                                     PlayerRepository players,
                                     StrategyConfigRepository configs,
                                     ValuationPersistenceMapper mapper) {
@@ -61,7 +57,7 @@ public class HoldingsValuationService {
             BigDecimal v = calculator.calculate(playerSnapshot, c, snapshot, h.getValorUnitario());
             h.valuate(v);
             holdings.save(h);
-            history.save(new ValuationHistoryEntity(h.getUser(), h.getPlayer(), h.getTokens(), v, c.tipo(), window, type));
+            history.save(new ValuationEntity(h.getUser(), h.getPlayer(), h.getTokens(), v, c.tipo(), window, type));
             n++;
         }
         log.info("Revaluadas {} tenencias para el usuario {} con tipo {}", n, userId, type);
@@ -74,9 +70,13 @@ public class HoldingsValuationService {
                 .toList();
     }
 
-    public List<ValuationHistoryRecord> history(Long id) {
+    public List<Valuation> history(Long id) {
         return history.findByUserIdOrderByEjecutadoEnDesc(id).stream()
                 .map(mapper::toModel)
                 .toList();
+    }
+
+    public Valuation getClosestValue(Long userId, Long playerId, Instant timestamp) {
+        return null;
     }
 }

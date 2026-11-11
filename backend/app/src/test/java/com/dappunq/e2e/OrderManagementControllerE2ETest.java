@@ -15,9 +15,8 @@ import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.UserEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.order.JpaOrdenEntityRepository;
 import com.dappunq.service.WhoScoredScrapingService;
 import com.dappunq.security.JwtService;
@@ -32,6 +31,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -73,8 +73,7 @@ class OrderManagementControllerE2ETest {
     @Autowired private LeagueRepository leagues;
     @Autowired private HoldingRepository holdings;
     @Autowired private JpaOrdenEntityRepository orders;
-    @Autowired private ValuationRepository valuations;
-    @Autowired private ValuationHistoryRepository valuationHistory;
+    @Autowired private ValuationRepository valuationHistory;
     @Autowired private ApiKeyRepository apiKeys;
     @Autowired private ValuationPersistenceMapper mapper;
     @Autowired private JwtService jwtService;
@@ -88,7 +87,6 @@ class OrderManagementControllerE2ETest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         orders.deleteAll();
         valuationHistory.deleteAll();
-        valuations.deleteAll();
         holdings.deleteAll();
         strategies.deleteAll();
         apiKeys.deleteAll();
@@ -245,7 +243,7 @@ class OrderManagementControllerE2ETest {
                 .andExpect(jsonPath("$.status").value("PENDIENTE"));
     }
 
-    private org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder orderPost(
+    private MockHttpServletRequestBuilder orderPost(
             String path, String content, UserEntity account) {
         return post(path)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtService.generateToken(

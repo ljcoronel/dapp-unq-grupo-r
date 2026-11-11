@@ -1,6 +1,8 @@
 package com.dappunq.service;
 
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.StrategyStatus;
+import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.persistence.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +20,19 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HoldingsValuationServiceTest {
-    @Mock HoldingRepository holdings;
-    @Mock ValuationHistoryRepository history;
-    @Mock PlayerRepository players;
-    @Mock StrategyConfigRepository configs;
+
+    @Mock
+    HoldingRepository holdings;
+
+    @Mock
+    ValuationRepository history;
+
+    @Mock
+    PlayerRepository players;
+
+    @Mock
+    StrategyConfigRepository configs;
+
     private final ValuationPersistenceMapper mapper = new ValuationPersistenceMapper();
 
     @Test
@@ -33,11 +44,11 @@ class HoldingsValuationServiceTest {
                 "Forward", 0, 100, 0, 0, 0, 0, 0f, 50f, 1f, 0);
         HoldingEntity holding = new HoldingEntity(user, player, 100, BigDecimal.valueOf(3));
         StrategyConfigEntity config = new StrategyConfigEntity(user,
-                com.dappunq.model.valuation.StrategyType.ESTRATEGIA_A,
+                StrategyType.ESTRATEGIA_A,
                 mapper.write(Map.of("goals", BigDecimal.valueOf(30), "assists", BigDecimal.valueOf(25),
                         "passSuccessPercentage", BigDecimal.valueOf(15), "aerialsWon", BigDecimal.valueOf(15),
                         "timesManOfTheMatch", BigDecimal.valueOf(15))),
-                com.dappunq.model.valuation.StrategyStatus.ACTUAL, Instant.now());
+                StrategyStatus.ACTUAL, Instant.now());
         when(players.findAll()).thenReturn(List.of(player));
         when(holdings.findByUserId(1L)).thenReturn(List.of(holding));
 
@@ -47,6 +58,6 @@ class HoldingsValuationServiceTest {
         assertEquals(1, count);
         assertEquals(BigDecimal.valueOf(3.00).setScale(2), holding.getValorUnitario());
         verify(holdings).save(holding);
-        verify(history).save(any(ValuationHistoryEntity.class));
+        verify(history).save(any(ValuationEntity.class));
     }
 }

@@ -14,10 +14,8 @@ import com.dappunq.persistence.PlayerRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
 import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.ValuationEntity;
-import com.dappunq.persistence.ValuationHistoryEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.ValuationPersistenceMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +39,6 @@ public class WeeklyValuationService {
     private final StrategyConfigRepository strategyConfigRepository;
     private final HoldingRepository holdingRepository;
     private final ValuationRepository valuationRepository;
-    private final ValuationHistoryRepository valuationHistoryRepository;
     private final ValuationPersistenceMapper mapper;
     private final PlayerValuationCalculator calculator = new PlayerValuationCalculator();
 
@@ -55,14 +52,12 @@ public class WeeklyValuationService {
                                   StrategyConfigRepository strategyConfigRepository,
                                   HoldingRepository holdingRepository,
                                   ValuationRepository valuationRepository,
-                                  ValuationHistoryRepository valuationHistoryRepository,
                                   ValuationPersistenceMapper mapper) {
         this.scrapingService = scrapingService;
         this.playerRepository = playerRepository;
         this.strategyConfigRepository = strategyConfigRepository;
         this.holdingRepository = holdingRepository;
         this.valuationRepository = valuationRepository;
-        this.valuationHistoryRepository = valuationHistoryRepository;
         this.mapper = mapper;
     }
 
@@ -107,18 +102,8 @@ public class WeeklyValuationService {
                 holding.valuate(unitValue);
                 holdingRepository.save(holding);
 
-                if (!valuationRepository.existsByUserIdAndPlayerIdAndVentana(userId, holding.getPlayer().getId(), window)) {
+                if (!valuationRepository.existsByUserIdAndPlayerIdAndVentanaAndTipoEjecucion(userId, holding.getPlayer().getId(), window, executionType)) {
                     valuationRepository.save(new ValuationEntity(
-                            holding.getUser(),
-                            holding.getPlayer(),
-                            window,
-                            domain.tipo(),
-                            unitValue
-                    ));
-                }
-
-                if (!valuationHistoryRepository.existsByUserIdAndPlayerIdAndVentanaAndTipoEjecucion(userId, holding.getPlayer().getId(), window, executionType)) {
-                    valuationHistoryRepository.save(new ValuationHistoryEntity(
                             holding.getUser(),
                             holding.getPlayer(),
                             holding.getTokens(),
