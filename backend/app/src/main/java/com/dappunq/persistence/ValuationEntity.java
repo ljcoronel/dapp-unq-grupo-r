@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.math.*;
 import java.time.*;
 
-@Entity @Table(name="historial_valuaciones",
+@Entity @Table(name="valuaciones",
     uniqueConstraints=@UniqueConstraint(columnNames={"usuario_id","jugador_id","ventana","tipo_ejecucion"}))
 public class ValuationEntity {
 
