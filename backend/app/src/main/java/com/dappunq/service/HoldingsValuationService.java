@@ -70,13 +70,13 @@ public class HoldingsValuationService {
                 .toList();
     }
 
-    public List<ValuationHistoryRecord> history(Long id) {
+    public List<Valuation> history(Long id) {
         return history.findByUserIdOrderByEjecutadoEnDesc(id).stream()
                 .map(mapper::toModel)
                 .toList();
     }
 
-    public ValuationHistoryRecord getClosestValue(Long userId, Long playerId, Instant timestamp) {
+    public Valuation getClosestValue(Long userId, Long playerId, Instant timestamp) {
         return null;
     }
 }

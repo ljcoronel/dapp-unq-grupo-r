@@ -1,6 +1,6 @@
 package com.dappunq.controller;
 
-import com.dappunq.dto.valuation.HoldingHistoryResponse;
+import com.dappunq.dto.valuation.ValuationResponse;
 import com.dappunq.dto.valuation.HoldingResponse;
 import com.dappunq.dto.valuation.StrategyRequest;
 import com.dappunq.dto.valuation.StrategyStateResponse;
@@ -51,7 +51,7 @@ public class ValuationControllerRest {
     }
 
     @GetMapping("/holdings/history")
-    public List<HoldingHistoryResponse> history(@PathVariable Long usuarioId) {
+    public List<ValuationResponse> history(@PathVariable Long usuarioId) {
         return holdings.history(usuarioId).stream()
                 .map(mapper::toResponse)
                 .toList();

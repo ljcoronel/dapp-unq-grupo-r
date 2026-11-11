@@ -2,8 +2,10 @@ package com.dappunq.persistence;
 
 import com.dappunq.model.valuation.*;
 import jakarta.persistence.*;
-import java.math.*;
-import java.time.*;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+
 
 @Entity @Table(name="valuaciones",
     uniqueConstraints=@UniqueConstraint(columnNames={"usuario_id","jugador_id","ventana","tipo_ejecucion"}))
@@ -40,14 +42,14 @@ public class ValuationEntity {
     public ValuationEntity(UserEntity user, PlayerEntity player, int tokens,
                            BigDecimal valorUnitario, StrategyType tipoEstrategia,
                            String ventana, ExecutionType tipoEjecucion) {
-        this.user =user;
-        this.player =player;
-        this.tokens =tokens;
-        this.valorUnitario =valorUnitario;
-        valorTotal=valorUnitario.multiply(BigDecimal.valueOf(tokens));
-        estrategia=tipoEstrategia;
-        this.ventana =ventana;
-        this.tipoEjecucion =tipoEjecucion;
+        this.user = user;
+        this.player = player;
+        this.tokens = tokens;
+        this.valorUnitario = valorUnitario;
+        valorTotal = valorUnitario.multiply(BigDecimal.valueOf(tokens));
+        estrategia = tipoEstrategia;
+        this.ventana = ventana;
+        this.tipoEjecucion = tipoEjecucion;
     }
 
     public Long getId() {

@@ -3,7 +3,7 @@ package com.dappunq.persistence;
 import com.dappunq.model.valuation.Holding;
 import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.ValuationDomainException;
-import com.dappunq.model.valuation.ValuationHistoryRecord;
+import com.dappunq.model.valuation.Valuation;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
@@ -62,11 +62,11 @@ public class ValuationPersistenceMapper {
         );
     }
 
-    public ValuationHistoryRecord toModel(ValuationEntity entity) {
+    public Valuation toModel(ValuationEntity entity) {
         if (entity == null) {
             return null;
         }
-        return new ValuationHistoryRecord(
+        return new Valuation(
                 entity.getUser().getId(),
                 entity.getPlayer().getId(),
                 entity.getTokens(),
