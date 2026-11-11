@@ -17,10 +17,8 @@ import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.UserEntity;
 import com.dappunq.persistence.ValuationEntity;
-import com.dappunq.persistence.ValuationHistoryEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.service.WeeklyValuationService;
 import com.dappunq.service.WhoScoredScrapingService;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,9 +84,6 @@ class WeeklyValuationIntegrationTest {
     private ValuationRepository valuationRepository;
 
     @Autowired
-    private ValuationHistoryRepository valuationHistoryRepository;
-
-    @Autowired
     private ValuationPersistenceMapper mapper;
 
     private UserEntity user1;
@@ -98,7 +93,6 @@ class WeeklyValuationIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        valuationHistoryRepository.deleteAll();
         valuationRepository.deleteAll();
         holdingRepository.deleteAll();
         strategyConfigRepository.deleteAll();
@@ -158,18 +152,18 @@ class WeeklyValuationIntegrationTest {
         assertTrue(strategyConfigRepository.findFirstByUserIdAndEstado(user2.getId(), StrategyStatus.PENDIENTE).isEmpty());
 
         // Verificar historial
-        List<ValuationHistoryEntity> historyUser1 = valuationHistoryRepository.findByUserIdOrderByEjecutadoEnDesc(user1.getId());
+        List<ValuationEntity> historyUser1 = valuationRepository.findByUserIdOrderByEjecutadoEnDesc(user1.getId());
         assertEquals(1, historyUser1.size());
         assertEquals(StrategyType.ESTRATEGIA_A, historyUser1.get(0).getEstrategia());
         assertEquals(100, historyUser1.get(0).getTokens());
         assertNotNull(historyUser1.get(0).getValorUnitario());
 
-        List<ValuationHistoryEntity> historyUser2 = valuationHistoryRepository.findByUserIdOrderByEjecutadoEnDesc(user2.getId());
+        List<ValuationEntity> historyUser2 = valuationRepository.findByUserIdOrderByEjecutadoEnDesc(user2.getId());
         assertEquals(1, historyUser2.size());
         assertEquals(StrategyType.ESTRATEGIA_B, historyUser2.get(0).getEstrategia());
 
         // User sin tipo no debe tener historial
-        List<ValuationHistoryEntity> historyNoStrat = valuationHistoryRepository.findByUserIdOrderByEjecutadoEnDesc(userWithoutStrategy.getId());
+        List<ValuationEntity> historyNoStrat = valuationRepository.findByUserIdOrderByEjecutadoEnDesc(userWithoutStrategy.getId());
         assertEquals(0, historyNoStrat.size());
 
         // Idempotencia: reejecutar en la misma ventana no debe duplicar historial ni valuaciones
@@ -178,7 +172,7 @@ class WeeklyValuationIntegrationTest {
         BigDecimal secondUserValue = holdingRepository.findByUserId(user1.getId()).get(0).getValorUnitario();
         assertTrue(secondUserValue.compareTo(firstUserValue) > 0);
 
-        List<ValuationHistoryEntity> totalHistory = valuationHistoryRepository.findAll();
+        List<ValuationEntity> totalHistory = valuationRepository.findAll();
         assertEquals(2, totalHistory.size());
 
         List<ValuationEntity> totalValuations = valuationRepository.findAll();

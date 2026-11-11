@@ -19,9 +19,8 @@ import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.UserEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.order.JpaOrdenEntityRepository;
 import com.dappunq.persistence.order.OrdenEntity;
 import com.dappunq.service.WhoScoredScrapingService;
@@ -81,8 +80,7 @@ class OrderMarketIntegrationTest {
     @Autowired private LeagueRepository leagues;
     @Autowired private HoldingRepository holdings;
     @Autowired private JpaOrdenEntityRepository orders;
-    @Autowired private ValuationRepository valuations;
-    @Autowired private ValuationHistoryRepository valuationHistory;
+    @Autowired private ValuationRepository valuationHistory;
     @Autowired private ApiKeyRepository apiKeys;
     @Autowired private ValuationPersistenceMapper valuationMapper;
 
@@ -287,7 +285,6 @@ class OrderMarketIntegrationTest {
     private void clean() {
         orders.deleteAll();
         valuationHistory.deleteAll();
-        valuations.deleteAll();
         holdings.deleteAll();
         strategies.deleteAll();
         apiKeys.deleteAll();

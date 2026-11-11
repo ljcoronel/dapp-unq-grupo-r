@@ -14,9 +14,8 @@ import com.dappunq.persistence.StrategyConfigEntity;
 import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.UserEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.ValuationPersistenceMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,9 +60,6 @@ class WeeklyValuationServiceTest {
     @Mock
     private ValuationRepository valuationRepository;
 
-    @Mock
-    private ValuationHistoryRepository valuationHistoryRepository;
-
     private final ValuationPersistenceMapper mapper = new ValuationPersistenceMapper();
     private WeeklyValuationService service;
 
@@ -81,7 +77,6 @@ class WeeklyValuationServiceTest {
                 strategyConfigRepository,
                 holdingRepository,
                 valuationRepository,
-                valuationHistoryRepository,
                 mapper
         );
 
@@ -137,7 +132,6 @@ class WeeklyValuationServiceTest {
         verify(playerRepository, never()).findAll();
         verify(holdingRepository, never()).save(any());
         verify(valuationRepository, never()).save(any());
-        verify(valuationHistoryRepository, never()).save(any());
     }
 
     @Test

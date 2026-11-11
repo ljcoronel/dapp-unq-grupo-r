@@ -29,7 +29,7 @@ description: "Tareas de implementacion para la valuacion de tokens de jugadores"
 
 - [X] T006 [P] Crear enums para estrategias, metricas, estados, tipo de ejecucion y estado de valuacion en `backend/app/src/main/java/com/dappunq/model/valuation`
 - [X] T007 [P] Implementar errores de dominio para pesos invalidos, estrategia pendiente sin actual, ventana invalida y fallo de snapshot en `backend/app/src/main/java/com/dappunq/model/valuation/ValuationDomainException.java`
-- [X] T008 [P] Crear entidades JPA `StrategyConfigEntity`, `HoldingEntity`, `ValuationEntity` y `ValuationHistoryEntity` con FK, restricciones y claves unicas en `backend/app/src/main/java/com/dappunq/persistence`
+- [X] T008 [P] Crear entidades JPA `StrategyConfigEntity`, `HoldingEntity`, `ValuationEntityDeprecated` y `ValuationEntity` con FK, restricciones y claves unicas en `backend/app/src/main/java/com/dappunq/persistence`
 - [X] T009 [P] Crear repositorios para configuraciones, tenencias, valuaciones e historial con consultas por usuario, estado, jugador y ventana en `backend/app/src/main/java/com/dappunq/persistence`
 - [X] T010 Implementar mapeos entre modelos de dominio y entidades JPA sin trasladar reglas de negocio al servicio en `backend/app/src/main/java/com/dappunq/persistence/ValuationPersistenceMapper.java`
 - [X] T011 [P] Crear DTOs y validaciones de requests/responses de estrategia, tenencia, historial y recalculo en `backend/app/src/main/java/com/dappunq/dto/valuation`

@@ -62,7 +62,7 @@ public class ValuationPersistenceMapper {
         );
     }
 
-    public ValuationHistoryRecord toModel(ValuationHistoryEntity entity) {
+    public ValuationHistoryRecord toModel(ValuationEntity entity) {
         if (entity == null) {
             return null;
         }
