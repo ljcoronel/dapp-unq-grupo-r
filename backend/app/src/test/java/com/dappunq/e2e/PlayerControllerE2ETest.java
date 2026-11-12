@@ -73,7 +73,7 @@ class PlayerControllerE2ETest {
             0
         );
 
-        when(playerService.findCatalog()).thenReturn(List.of(first, second));
+        when(playerService.getAll()).thenReturn(List.of(first, second));
 
         mockMvc.perform(get("/players"))
             .andExpect(status().isOk())
@@ -139,7 +139,7 @@ class PlayerControllerE2ETest {
             null
         );
 
-        when(playerService.findCatalog()).thenReturn(List.of(premierLeaguePlayer, serieAPlayer));
+        when(playerService.getAll()).thenReturn(List.of(premierLeaguePlayer, serieAPlayer));
 
         mockMvc.perform(get("/players"))
             .andExpect(status().isOk())
@@ -159,7 +159,7 @@ class PlayerControllerE2ETest {
         var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
-        when(playerService.findCatalog()).thenReturn(List.of(new PlayerResponse(
+        when(playerService.getAll()).thenReturn(List.of(new PlayerResponse(
             42L,
             "Jugador",
             new TeamResponse(99L, "Equipo"),
@@ -197,7 +197,7 @@ class PlayerControllerE2ETest {
         var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
-        when(playerService.findCatalog()).thenThrow(
+        when(playerService.getAll()).thenThrow(
             new CatalogUnavailableException("fallo interno", new RuntimeException()));
 
         mockMvc.perform(get("/players"))

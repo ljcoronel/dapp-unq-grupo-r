@@ -28,7 +28,7 @@ public class PlayerControllerRest {
 
     @GetMapping
     public List<PlayerResponse> getPlayers() {
-        return playerService.findCatalog();
+        return playerService.getAll();
     }
 
     @GetMapping("/{id}")
@@ -37,8 +37,8 @@ public class PlayerControllerRest {
     }
 
     @GetMapping("/{playerId}/quotes/{userId}")
-    public List<ValuationResponse> history(@PathVariable Long playerId, @PathVariable Long userId) {
-        return holdings.history(userId).stream()
+    public List<ValuationResponse> getAllValuationsByUserAndPlayer(@PathVariable Long playerId, @PathVariable Long userId) {
+        return holdings.getAllValuationsByUserAndPlayer(userId, playerId).stream()
             .map(mapper::toResponse)
             .toList();
     }

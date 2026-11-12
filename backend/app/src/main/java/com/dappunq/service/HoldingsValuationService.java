@@ -26,19 +26,19 @@ public class HoldingsValuationService {
     private static final Logger log = LoggerFactory.getLogger(HoldingsValuationService.class);
 
     private final HoldingRepository holdings;
-    private final ValuationRepository history;
+    private final ValuationRepository valuationRepository;
     private final PlayerRepository players;
     private final StrategyConfigRepository configs;
     private final ValuationPersistenceMapper mapper;
     private final PlayerValuationCalculator calculator = new PlayerValuationCalculator();
 
     public HoldingsValuationService(HoldingRepository holdings,
-                                    ValuationRepository history,
+                                    ValuationRepository valuationRepository,
                                     PlayerRepository players,
                                     StrategyConfigRepository configs,
                                     ValuationPersistenceMapper mapper) {
         this.holdings = holdings;
-        this.history = history;
+        this.valuationRepository = valuationRepository;
         this.players = players;
         this.configs = configs;
         this.mapper = mapper;
@@ -57,7 +57,7 @@ public class HoldingsValuationService {
             BigDecimal v = calculator.calculate(playerSnapshot, c, snapshot, h.getValorUnitario());
             h.valuate(v);
             holdings.save(h);
-            history.save(new ValuationEntity(h.getUser(), h.getPlayer(), h.getTokens(), v, c.tipo(), window, type));
+            valuationRepository.save(new ValuationEntity(h.getUser(), h.getPlayer(), h.getTokens(), v, c.tipo(), window, type));
             n++;
         }
         log.info("Revaluadas {} tenencias para el usuario {} con tipo {}", n, userId, type);
@@ -70,8 +70,8 @@ public class HoldingsValuationService {
                 .toList();
     }
 
-    public List<Valuation> history(Long id) {
-        return history.findByUserIdOrderByEjecutadoEnDesc(id).stream()
+    public List<Valuation> getAllValuationsByUserAndPlayer(Long userId, Long playerId) {
+        return valuationRepository.findAllByUserAndPlayer(userId, playerId).stream()
                 .map(mapper::toModel)
                 .toList();
     }

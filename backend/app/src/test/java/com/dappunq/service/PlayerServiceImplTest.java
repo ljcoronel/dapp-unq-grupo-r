@@ -1,7 +1,6 @@
 package com.dappunq.service;
 
 import com.dappunq.dto.PlayerResponse;
-import com.dappunq.exception.CatalogUnavailableException;
 import com.dappunq.exception.InvalidPlayerIdException;
 import com.dappunq.persistence.LeagueEntity;
 import com.dappunq.persistence.PlayerEntity;
@@ -49,7 +48,7 @@ class PlayerServiceImplTest {
         );
         when(repository.findAll()).thenReturn(List.of(entity));
 
-        List<PlayerResponse> result = service.findCatalog();
+        List<PlayerResponse> result = service.getAll();
 
         assertEquals(1, result.size());
         assertEquals(7L, result.get(0).externalId());
@@ -67,7 +66,7 @@ class PlayerServiceImplTest {
         var service = new PlayerServiceImpl(repository, null);
         when(repository.findAll()).thenReturn(List.of());
 
-        var result = service.findCatalog();
+        var result = service.getAll();
 
         assertTrue(result.isEmpty());
         verify(repository).findAll();
@@ -101,7 +100,7 @@ class PlayerServiceImplTest {
         );
         when(repository.findAll()).thenReturn(List.of(entity));
 
-        PlayerResponse response = service.findCatalog().get(0);
+        PlayerResponse response = service.getAll().get(0);
 
         assertNull(response.age());
         assertNull(response.assists());

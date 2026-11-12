@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface PlayerService {
 
-    List<PlayerResponse> findCatalog();
+    List<PlayerResponse> getAll();
 
     PlayerResponse findPlayer(Integer id);
 }

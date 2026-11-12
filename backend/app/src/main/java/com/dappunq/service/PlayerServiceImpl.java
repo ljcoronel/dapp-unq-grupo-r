@@ -3,7 +3,6 @@ package com.dappunq.service;
 import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.PlayerResponse;
 import com.dappunq.dto.TeamResponse;
-import com.dappunq.exception.CatalogUnavailableException;
 import com.dappunq.exception.InvalidPlayerIdException;
 import com.dappunq.exception.PlayerNotFoundException;
 import com.dappunq.persistence.PlayerEntity;
@@ -26,7 +25,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Transactional
-    public List<PlayerResponse> findCatalog() {
+    public List<PlayerResponse> getAll() {
         return playerRepository.findAll().stream()
                     .map(this::toResponse)
                     .toList();
