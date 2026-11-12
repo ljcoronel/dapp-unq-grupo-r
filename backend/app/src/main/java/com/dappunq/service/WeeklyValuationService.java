@@ -102,12 +102,11 @@ public class WeeklyValuationService {
                 holding.valuate(unitValue);
                 holdingRepository.save(holding);
 
-                valuationRepository.findCurrentByUserAndPlayer(holding.getUser().getId(), holding.getPlayer().getId())
-                    // TODO: Tirar error si no está presente
-                    .ifPresent(valuacionActual -> {
-                        valuacionActual.setIsCurrent(false);
-                        valuationRepository.saveAndFlush(valuacionActual);
-                    });
+                ValuationEntity valuacionActual = valuationRepository.findCurrentByUserAndPlayer(holding.getUser().getId(), holding.getPlayer().getId())
+                    .orElseThrow(() -> new ValuationDomainException("Si existe la tenencia, entonces debe existir al menos una valuacion"));
+
+                valuacionActual.setIsCurrent(false);
+                valuationRepository.saveAndFlush(valuacionActual);
                 valuationRepository.save(new ValuationEntity(
                     holding.getUser(),
                     holding.getPlayer(),

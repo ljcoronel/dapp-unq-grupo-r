@@ -5,17 +5,7 @@ import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.model.valuation.ValuationDomainException;
-import com.dappunq.persistence.HoldingEntity;
-import com.dappunq.persistence.HoldingRepository;
-import com.dappunq.persistence.LeagueEntity;
-import com.dappunq.persistence.PlayerEntity;
-import com.dappunq.persistence.PlayerRepository;
-import com.dappunq.persistence.StrategyConfigEntity;
-import com.dappunq.persistence.StrategyConfigRepository;
-import com.dappunq.persistence.TeamEntity;
-import com.dappunq.persistence.UserEntity;
-import com.dappunq.persistence.ValuationRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
+import com.dappunq.persistence.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -64,7 +53,6 @@ class WeeklyValuationServiceTest {
     private WeeklyValuationService service;
 
     private UserEntity userWithStrategy;
-    private UserEntity userWithoutStrategy;
     private PlayerEntity player;
     private Map<String, BigDecimal> validWeightsA;
     private Map<String, BigDecimal> validWeightsB;
@@ -81,11 +69,11 @@ class WeeklyValuationServiceTest {
         );
 
         userWithStrategy = new UserEntity(1L, "user1", "hash1");
-        userWithoutStrategy = new UserEntity(2L, "user2", "hash2");
 
         TeamEntity team = new TeamEntity(1L, "Team A");
         LeagueEntity league = new LeagueEntity(1L, "League A", "Region A");
         player = new PlayerEntity(10L, "Player 1", team, league, 25, 180, 75, "Defender", 10, 900, 2, 1, 0, 0, 1.5f, 85f, 3f, 1);
+        player.setId(10L);
 
         validWeightsA = new HashMap<>();
         validWeightsA.put("goals", BigDecimal.valueOf(30));
@@ -110,6 +98,9 @@ class WeeklyValuationServiceTest {
 
         HoldingEntity holding = new HoldingEntity(userWithStrategy, player, 100);
         when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding));
+
+        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, ExecutionType.DOMINICAL);
+        when(valuationRepository.findCurrentByUserAndPlayer(1L, 10L)).thenReturn(Optional.of(valuation));
 
         RecalculationSummary result = service.execute(ExecutionType.DOMINICAL);
 
@@ -150,8 +141,11 @@ class WeeklyValuationServiceTest {
         StrategyConfigEntity active = new StrategyConfigEntity(userWithStrategy, StrategyType.ESTRATEGIA_A, mapper.write(validWeightsA), StrategyStatus.ACTUAL, Instant.now());
         when(strategyConfigRepository.findAllByEstado(StrategyStatus.ACTUAL)).thenReturn(List.of(active));
 
-        HoldingEntity holding1 = new HoldingEntity(userWithStrategy, player, 100);
-        when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding1));
+        HoldingEntity holding = new HoldingEntity(userWithStrategy, player, 100);
+        when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding));
+
+        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, ExecutionType.DOMINICAL);
+        when(valuationRepository.findCurrentByUserAndPlayer(1L, 10L)).thenReturn(Optional.of(valuation));
 
         RecalculationSummary result = service.execute(ExecutionType.DOMINICAL);
 
@@ -174,6 +168,9 @@ class WeeklyValuationServiceTest {
         HoldingEntity holding = new HoldingEntity(userWithStrategy, player, 100);
         when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding));
 
+        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, ExecutionType.DOMINICAL);
+        when(valuationRepository.findCurrentByUserAndPlayer(1L, 10L)).thenReturn(Optional.of(valuation));
+
         service.execute(ExecutionType.DOMINICAL);
 
         verify(strategyConfigRepository).delete(oldActual);
@@ -192,6 +189,9 @@ class WeeklyValuationServiceTest {
         when(strategyConfigRepository.findAllByEstado(StrategyStatus.ACTUAL)).thenReturn(List.of(active));
         HoldingEntity holding = new HoldingEntity(userWithStrategy, player, 100, BigDecimal.valueOf(3));
         when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding));
+
+        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, ExecutionType.DOMINICAL);
+        when(valuationRepository.findCurrentByUserAndPlayer(1L, 10L)).thenReturn(Optional.of(valuation));
 
         service.execute(ExecutionType.DOMINICAL);
         BigDecimal first = holding.getValorUnitario();

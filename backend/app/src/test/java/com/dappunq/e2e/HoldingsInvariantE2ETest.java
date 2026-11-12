@@ -1,22 +1,10 @@
 package com.dappunq.e2e;
 
 import com.dappunq.model.User;
+import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
-import com.dappunq.persistence.HoldingEntity;
-import com.dappunq.persistence.HoldingRepository;
-import com.dappunq.persistence.JpaUserEntityRepository;
-import com.dappunq.persistence.LeagueEntity;
-import com.dappunq.persistence.LeagueRepository;
-import com.dappunq.persistence.PlayerEntity;
-import com.dappunq.persistence.PlayerRepository;
-import com.dappunq.persistence.StrategyConfigEntity;
-import com.dappunq.persistence.StrategyConfigRepository;
-import com.dappunq.persistence.TeamEntity;
-import com.dappunq.persistence.TeamRepository;
-import com.dappunq.persistence.UserEntity;
-import com.dappunq.persistence.ValuationRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
+import com.dappunq.persistence.*;
 import com.dappunq.security.JwtService;
 import com.dappunq.security.UserPrincipal;
 import com.dappunq.service.WhoScoredScrapingService;
@@ -132,6 +120,7 @@ class HoldingsInvariantE2ETest {
 
         strategyConfigRepository.save(new StrategyConfigEntity(user, StrategyType.ESTRATEGIA_A, mapper.write(weightsA), StrategyStatus.ACTUAL, Instant.now()));
         holdingRepository.save(new HoldingEntity(user, player, 100));
+        valuationRepository.save(new ValuationEntity(user, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, ExecutionType.DOMINICAL));
     }
 
     @Test
