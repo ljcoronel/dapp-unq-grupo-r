@@ -6,6 +6,7 @@ import com.dappunq.persistence.ValuationRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class ValuationServiceImpl implements ValuationService {
@@ -29,11 +30,18 @@ public class ValuationServiceImpl implements ValuationService {
 
     @Override
     public Valuation getClosestValuation(Long userId, Long playerId, Instant date) {
-        return null;
+        return valuationRepository.findClosestByUserAndPlayerAndDate(userId, playerId, date)
+                .map(mapper::toModel)
+                .orElseThrow(() ->
+                    new RuntimeException("No closest valuation found for userId: " + userId +
+                        ", playerId: " + playerId + ", and date: " + date));
     }
 
     @Override
-    public Valuation getAllValuations(Long userId, Long playerId) {
-        return null;
+    public List<Valuation> getAllValuationsForPlayer(Long userId, Long playerId) {
+        return valuationRepository.findAllByUserAndPlayer(userId, playerId)
+                .stream()
+                .map(mapper::toModel)
+                .toList();
     }
 }

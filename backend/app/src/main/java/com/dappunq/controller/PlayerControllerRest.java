@@ -3,13 +3,12 @@ package com.dappunq.controller;
 import com.dappunq.controller.mapper.ValuationDtoMapper;
 import com.dappunq.dto.PlayerResponse;
 import com.dappunq.dto.valuation.ValuationResponse;
-import com.dappunq.service.HoldingsValuationService;
 import com.dappunq.service.PlayerService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.dappunq.service.ValuationService;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -17,12 +16,12 @@ import java.util.List;
 public class PlayerControllerRest {
 
     private final PlayerService playerService;
-    private final HoldingsValuationService holdings;
+    private final ValuationService valuationService;
     private final ValuationDtoMapper mapper;
 
-    public PlayerControllerRest(PlayerService playerService, HoldingsValuationService holdings, ValuationDtoMapper mapper) {
+    public PlayerControllerRest(PlayerService playerService, ValuationService valuationService, ValuationDtoMapper mapper) {
         this.playerService = playerService;
-        this.holdings = holdings;
+        this.valuationService = valuationService;
         this.mapper = mapper;
     }
 
@@ -37,9 +36,24 @@ public class PlayerControllerRest {
     }
 
     @GetMapping("/{playerId}/quotes/{userId}")
-    public List<ValuationResponse> getAllValuationsByUserAndPlayer(@PathVariable Long playerId, @PathVariable Long userId) {
-        return holdings.getAllValuationsByUserAndPlayer(userId, playerId).stream()
+    public List<ValuationResponse> getAllValuationsFromPlayer(@PathVariable Long playerId, @PathVariable Long userId) {
+        return valuationService.getAllValuationsForPlayer(userId, playerId).stream()
             .map(mapper::toResponse)
             .toList();
     }
+
+    @GetMapping("/{playerId}/quotes/{userId}/closest")
+    public ValuationResponse getClosestValuationFromPlayer(@PathVariable Long playerId,
+                                                           @PathVariable Long userId,
+                                                           @RequestParam
+                                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                               Instant date) {
+        return mapper.toResponse(valuationService.getClosestValuation(userId, playerId, date));
+    }
+
+    @GetMapping("/{playerId}/quotes/{userId}/current")
+    public ValuationResponse getCurrentValuationFromPlayer(@PathVariable Long playerId, @PathVariable Long userId) {
+        return mapper.toResponse(valuationService.getCurrentValuation(userId, playerId));
+    }
+
 }

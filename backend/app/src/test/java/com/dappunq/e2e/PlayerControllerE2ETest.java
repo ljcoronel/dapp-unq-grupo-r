@@ -10,6 +10,7 @@ import com.dappunq.exception.InvalidPlayerIdException;
 import com.dappunq.exception.PlayerNotFoundException;
 import com.dappunq.service.HoldingsValuationService;
 import com.dappunq.service.PlayerServiceImpl;
+import com.dappunq.service.ValuationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -26,9 +27,9 @@ class PlayerControllerE2ETest {
     @Test
     void returnsFlatPlayerListWithTeamAndLeagueData() throws Exception {
         var playerService = mock(PlayerServiceImpl.class);
-        var holdingService = mock(HoldingsValuationService.class);
+        var valuationService = mock(ValuationService.class);
         var mapper = mock(ValuationDtoMapper.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, valuationService, mapper))
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
 
@@ -93,9 +94,9 @@ class PlayerControllerE2ETest {
     @Test
     void returnsPlayersInOneFlatArrayWithoutLeagueGrouping() throws Exception {
         var playerService = mock(PlayerServiceImpl.class);
-        var holdingService = mock(HoldingsValuationService.class);
+        var valuationService = mock(ValuationService.class);
         var mapper = mock(ValuationDtoMapper.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, valuationService, mapper))
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
         var premierLeaguePlayer = new PlayerResponse(
@@ -154,9 +155,9 @@ class PlayerControllerE2ETest {
     @Test
     void serializesNullStatisticsWithoutReplacingZero() throws Exception {
         var playerService = mock(PlayerServiceImpl.class);
-        var holdingService = mock(HoldingsValuationService.class);
+        var valuationService = mock(ValuationService.class);
         var mapper = mock(ValuationDtoMapper.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, valuationService, mapper))
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
         when(playerService.getAll()).thenReturn(List.of(new PlayerResponse(
@@ -192,9 +193,9 @@ class PlayerControllerE2ETest {
     @Test
     void returnsUnavailableCatalogErrorWithoutPartialPayload() throws Exception {
         var playerService = mock(PlayerServiceImpl.class);
-        var holdingService = mock(HoldingsValuationService.class);
+        var valuationService = mock(ValuationService.class);
         var mapper = mock(ValuationDtoMapper.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, valuationService, mapper))
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
         when(playerService.getAll()).thenThrow(
@@ -208,11 +209,11 @@ class PlayerControllerE2ETest {
     @Test
     void returnsPersistedPlayerIdAndFieldsWithoutAuthorization() throws Exception {
         var playerService = mock(PlayerServiceImpl.class);
-        var holdingService = mock(HoldingsValuationService.class);
+        var valuationService = mock(ValuationService.class);
         var mapper = mock(ValuationDtoMapper.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
-                .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
-                .build();
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, valuationService, mapper))
+            .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
+            .build();
         when(playerService.findPlayer(42)).thenReturn(new PlayerResponse(
                 42L,
                 "Jugador",
@@ -244,12 +245,11 @@ class PlayerControllerE2ETest {
     @Test
     void returnsNotFoundForUnknownPlayer() throws Exception {
         var playerService = mock(PlayerServiceImpl.class);
-        var holdingService = mock(HoldingsValuationService.class);
+        var valuationService = mock(ValuationService.class);
         var mapper = mock(ValuationDtoMapper.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
-                .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
-                .build();
-        when(playerService.findPlayer(999)).thenThrow(new PlayerNotFoundException(999));
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, valuationService, mapper))
+            .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
+            .build();        when(playerService.findPlayer(999)).thenThrow(new PlayerNotFoundException(999));
 
         mockMvc.perform(get("/players/999"))
                 .andExpect(status().isNotFound())
@@ -259,11 +259,11 @@ class PlayerControllerE2ETest {
     @Test
     void rejectsNonPositiveAndNonNumericIds() throws Exception {
         var playerService = mock(PlayerServiceImpl.class);
-        var holdingService = mock(HoldingsValuationService.class);
+        var valuationService = mock(ValuationService.class);
         var mapper = mock(ValuationDtoMapper.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
-                .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
-                .build();
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, valuationService, mapper))
+            .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
+            .build();
         when(playerService.findPlayer(0)).thenThrow(
                 new InvalidPlayerIdException("El identificador del jugador debe ser positivo"));
 
