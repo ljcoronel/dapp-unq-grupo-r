@@ -1,6 +1,5 @@
 package com.dappunq.integration;
 
-import com.dappunq.dto.valuation.StrategyRequest;
 import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.StrategyStatus;
@@ -9,7 +8,7 @@ import com.dappunq.persistence.JpaUserEntityRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
 import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.UserEntity;
-import com.dappunq.service.StrategyConfigurationService;
+import com.dappunq.service.StrategyConfigurationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ class PendingStrategyIntegrationTest {
     }
 
     @Autowired
-    private StrategyConfigurationService strategyService;
+    private StrategyConfigurationServiceImpl strategyService;
 
     @Autowired
     private StrategyConfigRepository strategyConfigRepository;

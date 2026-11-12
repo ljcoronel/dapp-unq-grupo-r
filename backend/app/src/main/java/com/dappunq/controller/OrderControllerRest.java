@@ -27,16 +27,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-public class OrderController {
+public class OrderControllerRest {
     private final CrearOrdenCompraService buyOrders;
     private final CrearOrdenVentaService sellOrders;
     private final ConsultarOrdenesService queries;
     private final CancelarOrdenService cancellation;
 
-    public OrderController(CrearOrdenCompraService buyOrders,
-                           CrearOrdenVentaService sellOrders,
-                           ConsultarOrdenesService queries,
-                           CancelarOrdenService cancellation) {
+    public OrderControllerRest(CrearOrdenCompraService buyOrders,
+                               CrearOrdenVentaService sellOrders,
+                               ConsultarOrdenesService queries,
+                               CancelarOrdenService cancellation) {
         this.buyOrders = buyOrders;
         this.sellOrders = sellOrders;
         this.queries = queries;

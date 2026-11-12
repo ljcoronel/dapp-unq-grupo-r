@@ -133,9 +133,15 @@ class WeeklyValuationIntegrationTest {
         strategyConfigRepository.save(new StrategyConfigEntity(user2, StrategyType.ESTRATEGIA_B, mapper.write(weightsB), StrategyStatus.PENDIENTE, Instant.now()));
 
         // Holdings
+        // TODO: no debería permitirse que haya más de 100 tokens por jugador. Usar Service
         holdingRepository.save(new HoldingEntity(user1, player, 100));
         holdingRepository.save(new HoldingEntity(user2, player, 100));
+        // TODO: no debería permitirse que un usuario tenga un Holding sin Estrategia configurada. Usar Service
         holdingRepository.save(new HoldingEntity(userWithoutStrategy, player, 100));
+
+        // Valuation
+        valuationRepository.save(new ValuationEntity(user1, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, null));
+        valuationRepository.save(new ValuationEntity(user2, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_B, null, null));
     }
 
     @Test
@@ -152,18 +158,18 @@ class WeeklyValuationIntegrationTest {
         assertTrue(strategyConfigRepository.findFirstByUserIdAndEstado(user2.getId(), StrategyStatus.PENDIENTE).isEmpty());
 
         // Verificar historial
-        List<ValuationEntity> historyUser1 = valuationRepository.findByUserIdOrderByEjecutadoEnDesc(user1.getId());
+        List<ValuationEntity> historyUser1 = valuationRepository.findHistoricalByUser(user1.getId());
         assertEquals(1, historyUser1.size());
         assertEquals(StrategyType.ESTRATEGIA_A, historyUser1.get(0).getEstrategia());
         assertEquals(100, historyUser1.get(0).getTokens());
         assertNotNull(historyUser1.get(0).getValorUnitario());
 
-        List<ValuationEntity> historyUser2 = valuationRepository.findByUserIdOrderByEjecutadoEnDesc(user2.getId());
+        List<ValuationEntity> historyUser2 = valuationRepository.findHistoricalByUser(user2.getId());
         assertEquals(1, historyUser2.size());
         assertEquals(StrategyType.ESTRATEGIA_B, historyUser2.get(0).getEstrategia());
 
-        // User sin tipo no debe tener historial
-        List<ValuationEntity> historyNoStrat = valuationRepository.findByUserIdOrderByEjecutadoEnDesc(userWithoutStrategy.getId());
+        // User sin estrategia no debe tener historial
+        List<ValuationEntity> historyNoStrat = valuationRepository.findHistoricalByUser(userWithoutStrategy.getId());
         assertEquals(0, historyNoStrat.size());
 
         // Idempotencia: reejecutar en la misma ventana no debe duplicar historial ni valuaciones
@@ -172,10 +178,10 @@ class WeeklyValuationIntegrationTest {
         BigDecimal secondUserValue = holdingRepository.findByUserId(user1.getId()).get(0).getValorUnitario();
         assertTrue(secondUserValue.compareTo(firstUserValue) > 0);
 
-        List<ValuationEntity> totalHistory = valuationRepository.findAll();
-        assertEquals(2, totalHistory.size());
+        List<ValuationEntity> totalHistory = valuationRepository.findAllHistorical();
+        assertEquals(4, totalHistory.size());
 
-        List<ValuationEntity> totalValuations = valuationRepository.findAll();
+        List<ValuationEntity> totalValuations = valuationRepository.findAllCurrent();
         assertEquals(2, totalValuations.size());
     }
 }

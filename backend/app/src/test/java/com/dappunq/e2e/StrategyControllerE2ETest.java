@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-class PendingStrategyE2ETest {
+class StrategyControllerE2ETest {
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -82,7 +82,7 @@ class PendingStrategyE2ETest {
                 }
                 """;
 
-        mockMvc.perform(put("/users/" + user.getId() + "/strategy")
+        mockMvc.perform(put("/strategy/" + user.getId() + "/configure")
                         .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidJson))
@@ -104,7 +104,7 @@ class PendingStrategyE2ETest {
                 }
                 """;
 
-        mockMvc.perform(put("/users/" + user.getId() + "/strategy")
+        mockMvc.perform(put("/strategy/" + user.getId() + "/configure")
                         .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(firstStrategyJson))
@@ -124,7 +124,7 @@ class PendingStrategyE2ETest {
                 }
                 """;
 
-        mockMvc.perform(put("/users/" + user.getId() + "/strategy")
+        mockMvc.perform(put("/strategy/" + user.getId() + "/configure")
                         .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(secondStrategyJson))
@@ -132,7 +132,7 @@ class PendingStrategyE2ETest {
                 .andExpect(jsonPath("$.actual").exists())
                 .andExpect(jsonPath("$.pendiente").exists());
 
-        mockMvc.perform(get("/users/" + user.getId() + "/strategy")
+        mockMvc.perform(get("/strategy/" + user.getId())
                         .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.actual.estrategia").value("ESTRATEGIA_A"))

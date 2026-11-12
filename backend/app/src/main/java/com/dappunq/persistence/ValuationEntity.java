@@ -7,8 +7,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 
-@Entity @Table(name="valuaciones",
-    uniqueConstraints=@UniqueConstraint(columnNames={"usuario_id","jugador_id","ventana","tipo_ejecucion"}))
+@Entity @Table(name="valuaciones")
 public class ValuationEntity {
 
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -38,6 +37,9 @@ public class ValuationEntity {
     @Enumerated(EnumType.STRING)
     ExecutionType tipoEjecucion;
 
+    @Column(name = "is_current")
+    boolean isCurrent;
+
     protected ValuationEntity(){}
     public ValuationEntity(UserEntity user, PlayerEntity player, int tokens,
                            BigDecimal valorUnitario, StrategyType tipoEstrategia,
@@ -50,6 +52,7 @@ public class ValuationEntity {
         estrategia = tipoEstrategia;
         this.ventana = ventana;
         this.tipoEjecucion = tipoEjecucion;
+        this.isCurrent = true;
     }
 
     public Long getId() {
@@ -72,4 +75,8 @@ public class ValuationEntity {
     public BigDecimal getValorTotal(){return valorTotal;}
     public StrategyType getEstrategia(){return estrategia;}
     public Instant getEjecutadoEn(){return ejecutadoEn;}
-    public ExecutionType getTipoEjecucion(){return tipoEjecucion;} }
+    public ExecutionType getTipoEjecucion(){return tipoEjecucion;}
+    public void setIsCurrent(boolean current) {
+        isCurrent = current;
+    }
+}

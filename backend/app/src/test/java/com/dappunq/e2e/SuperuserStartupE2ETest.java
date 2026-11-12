@@ -1,13 +1,14 @@
 package com.dappunq.e2e;
 
-import com.dappunq.controller.ValuationControllerRest;
-import com.dappunq.controller.ValuationDtoMapper;
+import com.dappunq.controller.HoldingControllerRest;
+import com.dappunq.controller.StrategyControllerRest;
+import com.dappunq.controller.mapper.ValuationDtoMapper;
 import com.dappunq.model.valuation.Holding;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.service.HoldingsValuationService;
-import com.dappunq.service.StrategyConfigurationService;
+import com.dappunq.service.StrategyConfigurationServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,7 +28,7 @@ class SuperuserStartupE2ETest {
 
     @Test
     void startupExponeEstrategiaActualYTenenciasValuadas() throws Exception {
-        StrategyConfigurationService strategies = mock(StrategyConfigurationService.class);
+        StrategyConfigurationServiceImpl strategies = mock(StrategyConfigurationServiceImpl.class);
         HoldingsValuationService holdings = mock(HoldingsValuationService.class);
         Map<String, BigDecimal> weights = Map.of(
                 "goals", BigDecimal.valueOf(30),
@@ -47,15 +48,18 @@ class SuperuserStartupE2ETest {
         when(holdings.list(1L)).thenReturn(List.of(
                 new Holding(1L, 8L, 100, new BigDecimal("2.00"))));
 
-        MockMvc mockMvc = standaloneSetup(new ValuationControllerRest(
-                strategies, holdings, new ValuationDtoMapper())).build();
+        MockMvc mockMvc = standaloneSetup(new HoldingControllerRest(
+            holdings, new ValuationDtoMapper())).build();
 
-        mockMvc.perform(get("/users/1/strategy"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.estado").value("ACTUAL"));
         mockMvc.perform(get("/users/1/holdings"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].valorUnitario").value(2.0))
                 .andExpect(jsonPath("$[0].valorTotal").value(200.0));
+
+        MockMvc mockMvc2 = standaloneSetup(new StrategyControllerRest(
+            strategies, new ValuationDtoMapper())).build();
+        mockMvc2.perform(get("/strategy/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.estado").value("ACTUAL"));
     }
 }

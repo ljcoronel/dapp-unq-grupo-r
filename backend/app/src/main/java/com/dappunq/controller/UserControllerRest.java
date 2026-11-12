@@ -15,7 +15,7 @@ public class UserControllerRest {
         this.userService = userService;
     }
 
-    @GetMapping("/users/{id}/")
+    @GetMapping("/users/{id}")
     public ResponseEntity<UserResponseDTO> getUserProfile(@PathVariable Long id) {
         return ResponseEntity.ok(userService.findById(id));
     }

@@ -65,7 +65,7 @@ description: "Tareas de implementación para el refactor de valuación: fórmula
 - [X] T012 [US1] Implementar en el modelo de cálculo la suma `valorBase + (result * FACTOR_ESCALA)` garantizando que `valorBase` nulo sea tratado como 0 en `backend/app/src/main/java/com/dappunq/model/valuation/PlayerValuationCalculator.java`
 - [X] T013 [US1] Asegurar que `HoldingsValuationService.revalue()` extraiga `valorBase` de `h.getValorUnitario()` antes del cálculo y actualice `HoldingEntity` y `ValuationEntity` con el valor acumulado en `backend/app/src/main/java/com/dappunq/service/HoldingsValuationService.java`
 - [X] T014 [US1] Asegurar que `WeeklyValuationService.execute()` extraiga `valorBase` de `holding.getValorUnitario()` antes del cálculo y registre `ValuationEntityDeprecated` y `ValuationEntity` con el valor acumulado en `backend/app/src/main/java/com/dappunq/service/WeeklyValuationService.java`
-- [X] T015 [US1] Asegurar que al configurar la primera estrategia de un usuario en `StrategyConfigurationService`, las tenencias iniciales se valúen con `valorBase = 0` acumulando determinísticamente en `backend/app/src/main/java/com/dappunq/service/StrategyConfigurationService.java`
+- [X] T015 [US1] Asegurar que al configurar la primera estrategia de un usuario en `StrategyConfigurationServiceImpl`, las tenencias iniciales se valúen con `valorBase = 0` acumulando determinísticamente en `backend/app/src/main/java/com/dappunq/service/StrategyConfigurationService.java`
 
 **Checkpoint**: User Story 1 completa y verificable independientemente como MVP.
 

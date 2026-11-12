@@ -102,17 +102,21 @@ public class WeeklyValuationService {
                 holding.valuate(unitValue);
                 holdingRepository.save(holding);
 
-                if (!valuationRepository.existsByUserIdAndPlayerIdAndVentanaAndTipoEjecucion(userId, holding.getPlayer().getId(), window, executionType)) {
-                    valuationRepository.save(new ValuationEntity(
-                            holding.getUser(),
-                            holding.getPlayer(),
-                            holding.getTokens(),
-                            unitValue,
-                            domain.tipo(),
-                            window,
-                            executionType
-                    ));
-                }
+                valuationRepository.findCurrentByUserAndPlayer(holding.getUser().getId(), holding.getPlayer().getId())
+                    // TODO: Tirar error si no está presente
+                    .ifPresent(valuacionActual -> {
+                        valuacionActual.setIsCurrent(false);
+                        valuationRepository.saveAndFlush(valuacionActual);
+                    });
+                valuationRepository.save(new ValuationEntity(
+                    holding.getUser(),
+                    holding.getPlayer(),
+                    holding.getTokens(),
+                    unitValue,
+                    domain.tipo(),
+                    window,
+                    executionType
+                ));
                 recalculatedHoldings++;
             }
         }
