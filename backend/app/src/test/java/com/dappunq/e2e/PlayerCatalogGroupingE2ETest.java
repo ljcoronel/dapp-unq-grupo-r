@@ -1,9 +1,11 @@
 package com.dappunq.e2e;
 
 import com.dappunq.controller.PlayerControllerRest;
+import com.dappunq.controller.mapper.ValuationDtoMapper;
 import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.PlayerResponse;
 import com.dappunq.dto.TeamResponse;
+import com.dappunq.service.HoldingsValuationService;
 import com.dappunq.service.PlayerServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,8 +22,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PlayerCatalogGroupingE2ETest {
     @Test
     void returnsPlayersInOneFlatArrayWithoutLeagueGrouping() throws Exception {
-        var readService = mock(PlayerServiceImpl.class);
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(readService))
+        var playerService = mock(PlayerServiceImpl.class);
+        var holdingService = mock(HoldingsValuationService.class);
+        var mapper = mock(ValuationDtoMapper.class);
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
                 .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
                 .build();
         var premierLeaguePlayer = new PlayerResponse(
@@ -65,7 +69,7 @@ class PlayerCatalogGroupingE2ETest {
                 null
         );
 
-        when(readService.findCatalog()).thenReturn(List.of(premierLeaguePlayer, serieAPlayer));
+        when(playerService.findCatalog()).thenReturn(List.of(premierLeaguePlayer, serieAPlayer));
 
         mockMvc.perform(get("/players"))
                 .andExpect(status().isOk())

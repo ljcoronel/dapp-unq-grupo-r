@@ -1,9 +1,11 @@
 package com.dappunq.e2e;
 
 import com.dappunq.controller.PlayerControllerRest;
+import com.dappunq.controller.mapper.ValuationDtoMapper;
 import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.PlayerResponse;
 import com.dappunq.dto.TeamResponse;
+import com.dappunq.service.HoldingsValuationService;
 import com.dappunq.service.PlayerServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -19,8 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PlayerCatalogE2ETest {
     @Test
     void returnsFlatPlayerListWithTeamAndLeagueData() throws Exception {
-        var readService = mock(PlayerServiceImpl.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(readService))
+        var playerService = mock(PlayerServiceImpl.class);
+        var holdingService = mock(HoldingsValuationService.class);
+        var mapper = mock(ValuationDtoMapper.class);
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
                 .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
                 .build();
 
@@ -65,7 +69,7 @@ class PlayerCatalogE2ETest {
                 0
         );
 
-        when(readService.findCatalog()).thenReturn(List.of(first, second));
+        when(playerService.findCatalog()).thenReturn(List.of(first, second));
 
         mockMvc.perform(get("/players"))
                 .andExpect(status().isOk())

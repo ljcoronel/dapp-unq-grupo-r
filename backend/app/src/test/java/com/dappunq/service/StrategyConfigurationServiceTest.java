@@ -21,7 +21,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +37,7 @@ class StrategyConfigurationServiceTest {
     private HoldingsValuationService holdingsValuationService;
 
     private final ValuationPersistenceMapper mapper = new ValuationPersistenceMapper();
-    private StrategyConfigurationService service;
+    private StrategyConfigurationServiceImpl service;
 
     private UserEntity user;
     private Map<String, BigDecimal> validWeightsA;
@@ -46,7 +45,7 @@ class StrategyConfigurationServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new StrategyConfigurationService(userRepository, strategyConfigRepository, mapper);
+        service = new StrategyConfigurationServiceImpl(userRepository, strategyConfigRepository, mapper);
         user = new UserEntity(1L, "testuser", "hash");
 
         validWeightsA = new HashMap<>();

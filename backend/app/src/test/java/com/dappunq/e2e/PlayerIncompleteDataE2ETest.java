@@ -1,10 +1,12 @@
 package com.dappunq.e2e;
 
 import com.dappunq.controller.PlayerControllerRest;
+import com.dappunq.controller.mapper.ValuationDtoMapper;
 import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.PlayerResponse;
 import com.dappunq.dto.TeamResponse;
 import com.dappunq.exception.CatalogUnavailableException;
+import com.dappunq.service.HoldingsValuationService;
 import com.dappunq.service.PlayerServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -20,11 +22,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PlayerIncompleteDataE2ETest {
     @Test
     void serializesNullStatisticsWithoutReplacingZero() throws Exception {
-        var readService = mock(PlayerServiceImpl.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(readService))
+        var playerService = mock(PlayerServiceImpl.class);
+        var holdingService = mock(HoldingsValuationService.class);
+        var mapper = mock(ValuationDtoMapper.class);
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
                 .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
                 .build();
-        when(readService.findCatalog()).thenReturn(List.of(new PlayerResponse(
+        when(playerService.findCatalog()).thenReturn(List.of(new PlayerResponse(
                 42L,
                 "Jugador",
                 new TeamResponse(99L, "Equipo"),
@@ -56,11 +60,13 @@ class PlayerIncompleteDataE2ETest {
 
     @Test
     void returnsUnavailableCatalogErrorWithoutPartialPayload() throws Exception {
-        var readService = mock(PlayerServiceImpl.class);
-        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(readService))
+        var playerService = mock(PlayerServiceImpl.class);
+        var holdingService = mock(HoldingsValuationService.class);
+        var mapper = mock(ValuationDtoMapper.class);
+        var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, holdingService, mapper))
                 .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
                 .build();
-        when(readService.findCatalog()).thenThrow(
+        when(playerService.findCatalog()).thenThrow(
                 new CatalogUnavailableException("fallo interno", new RuntimeException()));
 
         mockMvc.perform(get("/players"))

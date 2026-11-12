@@ -1,6 +1,6 @@
 package com.dappunq.unit;
 
-import com.dappunq.controller.ValuationDtoMapper;
+import com.dappunq.controller.mapper.ValuationDtoMapper;
 import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.model.valuation.RecalculationSummary;
 import org.junit.jupiter.api.Test;

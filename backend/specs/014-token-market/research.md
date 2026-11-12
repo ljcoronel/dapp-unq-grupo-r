@@ -8,8 +8,8 @@ en sus paquetes existentes.
 
 **Rationale:** la Constitución exige que el modelo contenga invariantes y que el
 Repository haga el mapeo entre modelo y persistencia. El backend ya utiliza
-`Holding`/`HoldingEntity`, `StrategyConfigurationService`,
-`ValuationControllerRest` y servicios Spring con `@Transactional`, por lo que
+`Holding`/`HoldingEntity`, `StrategyConfigurationServiceImpl`,
+`HoldingControllerRest` y servicios Spring con `@Transactional`, por lo que
 este diseño extiende el patrón sin mezclar capas. Strategy y Holding son
 dependencias existentes y quedan fuera de la creación de entidades y modelos
 de esta feature.

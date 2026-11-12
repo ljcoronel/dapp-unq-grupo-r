@@ -72,7 +72,7 @@ description: "Tareas de implementacion para la valuacion de tokens de jugadores"
 
 ### Implementation for User Story 2
 
-- [X] T027 [US2] Extender `StrategyConfigurationService` para distinguir primera configuracion de cambios posteriores y exigir estrategia actual antes de crear pendiente en `backend/app/src/main/java/com/dappunq/service/StrategyConfigurationService.java`
+- [X] T027 [US2] Extender `StrategyConfigurationServiceImpl` para distinguir primera configuracion de cambios posteriores y exigir estrategia actual antes de crear pendiente en `backend/app/src/main/java/com/dappunq/service/StrategyConfigurationService.java`
 - [X] T028 [US2] Implementar reemplazo transaccional y consultas de configuracion actual/pendiente en `backend/app/src/main/java/com/dappunq/persistence/StrategyConfigRepository.java`
 - [X] T029 [US2] Exponer `ACTUAL`, `PENDIENTE`, `SIN_ESTRATEGIA` y `vigenteDesde` en `backend/app/src/main/java/com/dappunq/dto/valuation/StrategyStateResponse.java`
 - [X] T030 [US2] Asegurar que las modificaciones posteriores no invoquen valuacion inmediata en `backend/app/src/main/java/com/dappunq/controller/ValuationControllerRest.java`
@@ -199,7 +199,7 @@ Task: "T034 [US3] Probar scheduler"
 ## Phase 8: Convergence
 
 - [X] T052 Desacoplar `PlayerValuationCalculator` de `PlayerEntity` utilizando el modelo de dominio `PlayerSnapshot` per Constitution II (contradicts)
-- [X] T053 Refactorizar `StrategyConfigurationService` y `HoldingsValuationService` para retornar modelos de dominio (`StrategyState`, `Holding`, `Valuation`) y utilizar `ValuationDtoMapper` en `ValuationControllerRest` per Constitution II (contradicts)
+- [X] T053 Refactorizar `StrategyConfigurationServiceImpl` y `HoldingsValuationService` para retornar modelos de dominio (`StrategyState`, `Holding`, `Valuation`) y utilizar `ValuationDtoMapper` en `HoldingControllerRest` per Constitution II (contradicts)
 - [X] T054 Implementar pruebas unitarias completas de calculo, normalizacion [0,1], metricas faltantes en cero, regla Defender y redondeo a dos decimales en `PlayerValuationCalculatorTest` per T015 / US1 (partial)
 
 ## Phase 9: Convergence

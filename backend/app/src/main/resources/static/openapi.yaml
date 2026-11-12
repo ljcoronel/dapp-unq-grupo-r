@@ -267,13 +267,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageError'
-  /users/{usuarioId}/transactions:
+  /users/{usuarioId}/holdings:
     get:
-      tags: [Ordenes]
+      tags: [ Ordenes ]
       summary: Consultar transacciones ejecutadas
       description: Devuelve las transacciones ejecutadas del usuario indicado.
       operationId: getExecutedTransactions
-      security: []
+      security: [ ]
       parameters:
         - $ref: '#/components/parameters/UserId'
       responses:
@@ -411,11 +411,11 @@ paths:
                 $ref: '#/components/schemas/MessageError'
   /users/{usuarioId}/holdings:
     get:
-      tags: [Valuacion]
+      tags: [ Valuacion ]
       summary: Consultar tenencias
       description: Devuelve las tenencias actuales del usuario.
       operationId: getHoldings
-      security: []
+      security: [ ]
       parameters:
         - $ref: '#/components/parameters/UserId'
       responses:
@@ -429,11 +429,11 @@ paths:
                   $ref: '#/components/schemas/HoldingResponse'
   /users/{usuarioId}/holdings/history:
     get:
-      tags: [Valuacion]
+      tags: [ Valuacion ]
       summary: Consultar historial de tenencias
       description: Devuelve el historial de valuaciones de las tenencias del usuario.
       operationId: getHoldingsHistory
-      security: []
+      security: [ ]
       parameters:
         - $ref: '#/components/parameters/UserId'
       responses:
