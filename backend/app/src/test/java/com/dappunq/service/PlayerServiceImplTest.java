@@ -136,13 +136,13 @@ class PlayerServiceImplTest {
         );
         when(repository.findByExternalId(42L)).thenReturn(java.util.Optional.of(entity));
 
-        PlayerResponse response = service.findPlayer(42);
+        PlayerResponse response = service.findPlayer(42L);
 
         assertEquals(42L, response.externalId());
         assertEquals("Jugador 42", response.name());
         assertEquals("Pivote", response.position());
 
-        assertThrows(InvalidPlayerIdException.class, () -> service.findPlayer(0));
+        assertThrows(InvalidPlayerIdException.class, () -> service.findPlayer(0L));
         assertThrows(InvalidPlayerIdException.class, () -> service.findPlayer(null));
     }
 }

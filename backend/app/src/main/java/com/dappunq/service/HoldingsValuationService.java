@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -44,6 +43,7 @@ public class HoldingsValuationService {
         this.mapper = mapper;
     }
 
+    // TODO: quizá esto deba ser parte de la inicialización del superusuario
     @Transactional
     public int revalue(Long userId, StrategyConfigEntity ce, ExecutionType type) {
         List<PlayerEntity> playerEntities = players.findAll();
@@ -54,6 +54,7 @@ public class HoldingsValuationService {
 
         for (HoldingEntity h : holdings.findByUserId(userId)) {
             PlayerSnapshot playerSnapshot = mapper.toSnapshot(h.getPlayer());
+            // TODO: se debe poder calcular el valor sin tener un Holding
             BigDecimal v = calculator.calculate(playerSnapshot, c, snapshot, h.getValorUnitario());
             h.valuate(v);
             holdings.save(h);
@@ -68,15 +69,5 @@ public class HoldingsValuationService {
         return holdings.findByUserId(id).stream()
                 .map(mapper::toModel)
                 .toList();
-    }
-
-    public List<Valuation> getAllValuationsByUserAndPlayer(Long userId, Long playerId) {
-        return valuationRepository.findAllByUserAndPlayer(userId, playerId).stream()
-                .map(mapper::toModel)
-                .toList();
-    }
-
-    public Valuation getClosestValue(Long userId, Long playerId, Instant timestamp) {
-        return null;
     }
 }

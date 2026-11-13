@@ -25,6 +25,7 @@ public class PlayerValuationCalculator {
             return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
         }
 
+        // TODO: la normalización debe hacerse una única vez cuando se haga el cálculo dominical o manual y no en cada cálculo de valuación
         Map<String, double[]> ranges = new HashMap<>();
         for (String m : c.weights().keySet()) {
             double min = Double.MAX_VALUE;

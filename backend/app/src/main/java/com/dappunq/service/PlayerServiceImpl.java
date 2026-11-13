@@ -32,7 +32,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Transactional
-    public PlayerResponse findPlayer(Integer id) {
+    public PlayerResponse findPlayer(Long id) {
         if (id == null || id <= 0) {
             throw new InvalidPlayerIdException("El identificador del jugador debe ser positivo");
         }

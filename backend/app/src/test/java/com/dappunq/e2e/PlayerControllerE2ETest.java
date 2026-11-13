@@ -214,7 +214,7 @@ class PlayerControllerE2ETest {
         var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, valuationService, mapper))
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
-        when(playerService.findPlayer(42)).thenReturn(new PlayerResponse(
+        when(playerService.findPlayer(42L)).thenReturn(new PlayerResponse(
                 42L,
                 "Jugador",
                 new TeamResponse(7L, "Equipo"),
@@ -249,7 +249,7 @@ class PlayerControllerE2ETest {
         var mapper = mock(ValuationDtoMapper.class);
         var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, valuationService, mapper))
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
-            .build();        when(playerService.findPlayer(999)).thenThrow(new PlayerNotFoundException(999));
+            .build();        when(playerService.findPlayer(999L)).thenThrow(new PlayerNotFoundException(999L));
 
         mockMvc.perform(get("/players/999"))
                 .andExpect(status().isNotFound())
@@ -264,7 +264,7 @@ class PlayerControllerE2ETest {
         var mockMvc = MockMvcBuilders.standaloneSetup(new PlayerControllerRest(playerService, valuationService, mapper))
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
-        when(playerService.findPlayer(0)).thenThrow(
+        when(playerService.findPlayer(0L)).thenThrow(
                 new InvalidPlayerIdException("El identificador del jugador debe ser positivo"));
 
         mockMvc.perform(get("/players/0"))

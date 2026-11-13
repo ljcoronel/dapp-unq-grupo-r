@@ -1,8 +1,7 @@
 package com.dappunq.service;
 
 import com.dappunq.model.valuation.Valuation;
-import com.dappunq.persistence.ValuationPersistenceMapper;
-import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -21,6 +20,7 @@ public class ValuationServiceImpl implements ValuationService {
 
     @Override
     public Valuation getCurrentValuation(Long userId, Long playerId) {
+        // TODO: si no existe, crearla
         return valuationRepository.findCurrentByUserAndPlayer(userId, playerId)
                 .map(mapper::toModel)
                 .orElseThrow(() ->

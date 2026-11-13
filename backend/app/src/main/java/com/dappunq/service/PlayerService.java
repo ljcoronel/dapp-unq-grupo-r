@@ -8,5 +8,5 @@ public interface PlayerService {
 
     List<PlayerResponse> getAll();
 
-    PlayerResponse findPlayer(Integer id);
+    PlayerResponse findPlayer(Long id);
 }

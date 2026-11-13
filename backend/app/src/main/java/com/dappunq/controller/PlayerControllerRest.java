@@ -31,7 +31,7 @@ public class PlayerControllerRest {
     }
 
     @GetMapping("/{id}")
-    public PlayerResponse getPlayer(@PathVariable Integer id) {
+    public PlayerResponse getPlayer(@PathVariable Long id) {
         return playerService.findPlayer(id);
     }
 
