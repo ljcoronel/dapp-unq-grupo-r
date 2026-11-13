@@ -39,7 +39,6 @@ public class ValuationServiceImpl implements ValuationService {
 
     @Override
     public Valuation getCurrentValuation(Long userId, Long playerId) {
-        // TODO: si no existe, crearla
         Optional<ValuationEntity> optionalValuation = valuationRepository.findCurrentByUserAndPlayer(userId, playerId);
         if (optionalValuation.isEmpty()) {
             NormalizationContext context = currentNormalizationContext();
@@ -65,7 +64,7 @@ public class ValuationServiceImpl implements ValuationService {
                 strategyConfig.getTipoEstrategia(), Instant.now().toString(), ExecutionType.MANUAL));
             return mapper.toModel(result);
         }
-        return valuationRepository.findCurrentByUserAndPlayer(userId, playerId)
+        return optionalValuation
                 .map(mapper::toModel)
                 .orElseThrow(() ->
                     new RuntimeException("No current valuation found for userId: " + userId +
