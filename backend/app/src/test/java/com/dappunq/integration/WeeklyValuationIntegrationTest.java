@@ -1,5 +1,6 @@
 package com.dappunq.integration;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyStatus;
@@ -112,18 +113,18 @@ class WeeklyValuationIntegrationTest {
         player = playerRepository.save(new PlayerEntity(10L, "Player 1", team, league, 25, 180, 75, "Defender", 10, 900, 2, 1, 0, 0, 1.5f, 85f, 3f, 1));
         playerRepository.save(new PlayerEntity(11L, "Player 2", team, league, 0, 180, 75, "Forward", 0, 100, 0, 0, 0, 0, 0f, 50f, 1f, 0));
 
-        Map<String, BigDecimal> weightsA = new HashMap<>();
-        weightsA.put("goals", BigDecimal.valueOf(30));
-        weightsA.put("assists", BigDecimal.valueOf(25));
-        weightsA.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weightsA.put("aerialsWon", BigDecimal.valueOf(15));
-        weightsA.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weightsA = new HashMap<>();
+        weightsA.put(Metric.goals, BigDecimal.valueOf(30));
+        weightsA.put(Metric.assists, BigDecimal.valueOf(25));
+        weightsA.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weightsA.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weightsA.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
 
-        Map<String, BigDecimal> weightsB = new HashMap<>();
-        weightsB.put("passSuccessPercentage", BigDecimal.valueOf(35));
-        weightsB.put("aerialsWon", BigDecimal.valueOf(20));
-        weightsB.put("minutesPlayed", BigDecimal.valueOf(20));
-        weightsB.put("appearances", BigDecimal.valueOf(20));
+        Map<Metric, BigDecimal> weightsB = new HashMap<>();
+        weightsB.put(Metric.passSuccessPercentage, BigDecimal.valueOf(35));
+        weightsB.put(Metric.aerialsWon, BigDecimal.valueOf(20));
+        weightsB.put(Metric.minutesPlayed, BigDecimal.valueOf(20));
+        weightsB.put(Metric.appearances, BigDecimal.valueOf(20));
 
         // User 1 tiene Estrategia A ACTUAL
         strategyConfigRepository.save(new StrategyConfigEntity(user1, StrategyType.ESTRATEGIA_A, mapper.write(weightsA), StrategyStatus.ACTUAL, Instant.now()));

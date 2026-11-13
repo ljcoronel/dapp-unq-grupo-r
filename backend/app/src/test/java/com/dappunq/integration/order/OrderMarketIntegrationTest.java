@@ -1,5 +1,6 @@
 package com.dappunq.integration.order;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.dto.order.CrearOrdenRequest;
 import com.dappunq.model.order.EstadoOrden;
 import com.dappunq.model.order.exception.OrdenException;
@@ -260,12 +261,12 @@ class OrderMarketIntegrationTest {
 
     private UserEntity userWithStrategy(String name) {
         UserEntity user = users.save(new UserEntity(name, "password"));
-        Map<String, BigDecimal> weights = new HashMap<>();
-        weights.put("goals", BigDecimal.valueOf(30));
-        weights.put("assists", BigDecimal.valueOf(25));
-        weights.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weights.put("aerialsWon", BigDecimal.valueOf(15));
-        weights.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weights = new HashMap<>();
+        weights.put(Metric.goals, BigDecimal.valueOf(30));
+        weights.put(Metric.assists, BigDecimal.valueOf(25));
+        weights.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weights.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weights.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
         strategies.save(new StrategyConfigEntity(user, StrategyType.ESTRATEGIA_A,
                 valuationMapper.write(weights), StrategyStatus.ACTUAL, Instant.now()));
         return user;

@@ -1,0 +1,268 @@
+{
+  "info": {
+    "name": "Dapp UNQ API",
+    "description": "Coleccion unificada de endpoints REST, agrupados por Controller.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "apiKey",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "playerId",
+      "value": "1"
+    },
+    {
+      "key": "orderId",
+      "value": "1"
+    },
+    {
+      "key": "date",
+      "value": "2025-01-01T00:00:00Z"
+    },
+    {
+      "key": "numberOfPlayers",
+      "value": "50"
+    }
+  ],
+  "item": [
+    {
+      "name": "AuthControllerRest",
+      "item": [
+        {
+          "name": "POST /login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nombre\":\"usuario1\",\"password\":\"secreto123\"}"
+            },
+            "url": "{{baseUrl}}/login"
+          }
+        },
+        {
+          "name": "POST /register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nombre\":\"nuevoUsuario\",\"password\":\"secreto123\"}"
+            },
+            "url": "{{baseUrl}}/register"
+          }
+        }
+      ]
+    },
+    {
+      "name": "UserControllerRest",
+      "item": [
+        {
+          "name": "GET /users/{id}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/{{userId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "PlayerControllerRest",
+      "item": [
+        {
+          "name": "GET /players",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/players"
+          }
+        },
+        {
+          "name": "GET /players/{id}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/players/{{playerId}}"
+          }
+        },
+        {
+          "name": "GET /players/{playerId}/quotes/{userId}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/players/{{playerId}}/quotes/{{userId}}"
+          }
+        },
+        {
+          "name": "GET /players/{playerId}/quotes/{userId}/closest",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/players/{{playerId}}/quotes/{{userId}}/closest?date={{date}}"
+          }
+        },
+        {
+          "name": "GET /players/{playerId}/quotes/{userId}/current",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/players/{{playerId}}/quotes/{{userId}}/current"
+          }
+        }
+      ]
+    },
+    {
+      "name": "OrderControllerRest",
+      "item": [
+        {
+          "name": "POST /orders/buy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"usuarioId\":1,\"playerId\":1,\"quantity\":10,\"price\":100.00,\"tolerance\":5.00}"
+            },
+            "url": "{{baseUrl}}/orders/buy"
+          }
+        },
+        {
+          "name": "POST /orders/sell",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"usuarioId\":1,\"playerId\":1,\"quantity\":10,\"price\":100.00,\"tolerance\":5.00}"
+            },
+            "url": "{{baseUrl}}/orders/sell"
+          }
+        },
+        {
+          "name": "GET /users/{usuarioId}/orders",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/{{userId}}/orders"
+          }
+        },
+        {
+          "name": "GET /users/{usuarioId}/transactions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/{{userId}}/transactions"
+          }
+        },
+        {
+          "name": "DELETE /orders/{orderId}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/orders/{{orderId}}?usuarioId={{userId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "StrategyControllerRest",
+      "item": [
+        {
+          "name": "PUT /strategy/{usuarioId}/configure",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"tipo\":\"ESTRATEGIA_A\",\"pesos\":{\"goals\":0.4,\"assists\":0.3,\"passSuccessPercentage\":0.3}}"
+            },
+            "url": "{{baseUrl}}/strategy/{{userId}}/configure"
+          }
+        },
+        {
+          "name": "GET /strategy/{usuarioId}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/strategy/{{userId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "HoldingControllerRest",
+      "item": [
+        {
+          "name": "GET /users/{usuarioId}/holdings",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/{{userId}}/holdings"
+          }
+        }
+      ]
+    },
+    {
+      "name": "QuoteControllerRest",
+      "item": [
+        {
+          "name": "POST /quotes/recalculate",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/quotes/recalculate"
+          }
+        },
+        {
+          "name": "POST /quotes/scrape",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "url": "{{baseUrl}}/quotes/scrape?numberOfPlayers={{numberOfPlayers}}"
+          }
+        }
+      ]
+    }
+  ]
+}

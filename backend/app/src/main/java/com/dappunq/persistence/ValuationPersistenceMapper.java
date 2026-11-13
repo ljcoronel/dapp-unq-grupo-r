@@ -1,6 +1,8 @@
 package com.dappunq.persistence;
 
 import com.dappunq.model.valuation.Holding;
+import com.dappunq.model.valuation.Metric;
+import com.dappunq.model.valuation.NormalizationRange;
 import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.ValuationDomainException;
 import com.dappunq.model.valuation.Valuation;
@@ -16,7 +18,7 @@ public class ValuationPersistenceMapper {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public String write(Map<String, BigDecimal> m) {
+    public String write(Map<Metric, BigDecimal> m) {
         try {
             return mapper.writeValueAsString(m);
         } catch (Exception e) {
@@ -24,9 +26,9 @@ public class ValuationPersistenceMapper {
         }
     }
 
-    public Map<String, BigDecimal> read(String s) {
+    public Map<Metric, BigDecimal> read(String s) {
         try {
-            return mapper.readValue(s, new TypeReference<>() {});
+            return mapper.readValue(s, new TypeReference<Map<Metric, BigDecimal>>() {});
         } catch (Exception e) {
             throw new ValuationDomainException("Pesos invalidos");
         }
@@ -36,6 +38,7 @@ public class ValuationPersistenceMapper {
         if (entity == null) {
             return null;
         }
+
         return new PlayerSnapshot(
                 entity.getId(),
                 entity.getPosition(),
@@ -47,6 +50,10 @@ public class ValuationPersistenceMapper {
                 entity.getMinutesPlayed(),
                 entity.getAppearances()
         );
+    }
+
+    public NormalizationRange toNormalizationRange(MetricNormalizationEntity entity) {
+        return new NormalizationRange(entity.getMetric(), entity.getMinimumValue(), entity.getMaximumValue());
     }
 
     public Holding toModel(HoldingEntity entity) {

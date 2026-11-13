@@ -1,5 +1,6 @@
 package com.dappunq.service;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyStatus;
@@ -24,12 +25,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class WeeklyValuationServiceTest {
@@ -49,13 +51,16 @@ class WeeklyValuationServiceTest {
     @Mock
     private ValuationRepository valuationRepository;
 
+    @Mock
+    private NormalizationRangeRepository normalizationRangeRepository;
+
     private final ValuationPersistenceMapper mapper = new ValuationPersistenceMapper();
     private WeeklyValuationService service;
 
     private UserEntity userWithStrategy;
     private PlayerEntity player;
-    private Map<String, BigDecimal> validWeightsA;
-    private Map<String, BigDecimal> validWeightsB;
+    private Map<Metric, BigDecimal> validWeightsA;
+    private Map<Metric, BigDecimal> validWeightsB;
 
     @BeforeEach
     void setUp() {
@@ -65,7 +70,8 @@ class WeeklyValuationServiceTest {
                 strategyConfigRepository,
                 holdingRepository,
                 valuationRepository,
-                mapper
+                mapper,
+                normalizationRangeRepository
         );
 
         userWithStrategy = new UserEntity(1L, "user1", "hash1");
@@ -76,17 +82,17 @@ class WeeklyValuationServiceTest {
         player.setId(10L);
 
         validWeightsA = new HashMap<>();
-        validWeightsA.put("goals", BigDecimal.valueOf(30));
-        validWeightsA.put("assists", BigDecimal.valueOf(25));
-        validWeightsA.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        validWeightsA.put("aerialsWon", BigDecimal.valueOf(15));
-        validWeightsA.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        validWeightsA.put(Metric.goals, BigDecimal.valueOf(30));
+        validWeightsA.put(Metric.assists, BigDecimal.valueOf(25));
+        validWeightsA.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        validWeightsA.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        validWeightsA.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
 
         validWeightsB = new HashMap<>();
-        validWeightsB.put("passSuccessPercentage", BigDecimal.valueOf(35));
-        validWeightsB.put("aerialsWon", BigDecimal.valueOf(20));
-        validWeightsB.put("minutesPlayed", BigDecimal.valueOf(20));
-        validWeightsB.put("appearances", BigDecimal.valueOf(20));
+        validWeightsB.put(Metric.passSuccessPercentage, BigDecimal.valueOf(35));
+        validWeightsB.put(Metric.aerialsWon, BigDecimal.valueOf(20));
+        validWeightsB.put(Metric.minutesPlayed, BigDecimal.valueOf(20));
+        validWeightsB.put(Metric.appearances, BigDecimal.valueOf(20));
     }
 
     @Test
@@ -112,6 +118,7 @@ class WeeklyValuationServiceTest {
         assertEquals("COMPLETED", result.status());
         assertEquals(1, result.playersScraped());
         assertEquals(1, result.recalculatedHoldings());
+        verify(normalizationRangeRepository).replaceCurrentRanges(argThat(ranges -> ranges.size() == 8));
     }
 
     @Test
@@ -132,6 +139,7 @@ class WeeklyValuationServiceTest {
         assertThrows(ValuationDomainException.class, () -> service.execute(ExecutionType.DOMINICAL));
 
         verify(holdingRepository, never()).save(any());
+        verify(normalizationRangeRepository, never()).replaceCurrentRanges(any());
     }
 
     @Test

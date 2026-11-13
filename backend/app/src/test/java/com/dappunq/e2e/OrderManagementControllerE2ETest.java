@@ -1,5 +1,6 @@
 package com.dappunq.e2e;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.model.User;
@@ -96,12 +97,12 @@ class OrderManagementControllerE2ETest {
         users.deleteAll();
 
         user = users.save(new UserEntity("market_e2e", "password"));
-        Map<String, BigDecimal> weights = new HashMap<>();
-        weights.put("goals", BigDecimal.valueOf(30));
-        weights.put("assists", BigDecimal.valueOf(25));
-        weights.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weights.put("aerialsWon", BigDecimal.valueOf(15));
-        weights.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weights = new HashMap<>();
+        weights.put(Metric.goals, BigDecimal.valueOf(30));
+        weights.put(Metric.assists, BigDecimal.valueOf(25));
+        weights.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weights.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weights.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
         strategies.save(new StrategyConfigEntity(user, StrategyType.ESTRATEGIA_A,
                 mapper.write(weights), StrategyStatus.ACTUAL, Instant.now()));
         TeamEntity team = teams.save(new TeamEntity(1L, "Market Team"));
@@ -167,12 +168,12 @@ class OrderManagementControllerE2ETest {
     @Test
     void endpointsDeVentaEHistorialSonPublicosYRechazanDatosInvalidos() throws Exception {
         UserEntity seller = users.save(new UserEntity("market_seller", "password"));
-        Map<String, BigDecimal> weights = new HashMap<>();
-        weights.put("goals", BigDecimal.valueOf(30));
-        weights.put("assists", BigDecimal.valueOf(25));
-        weights.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weights.put("aerialsWon", BigDecimal.valueOf(15));
-        weights.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weights = new HashMap<>();
+        weights.put(Metric.goals, BigDecimal.valueOf(30));
+        weights.put(Metric.assists, BigDecimal.valueOf(25));
+        weights.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weights.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weights.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
         strategies.save(new StrategyConfigEntity(seller, StrategyType.ESTRATEGIA_A,
                 mapper.write(weights), StrategyStatus.ACTUAL, Instant.now()));
         holdings.save(new com.dappunq.persistence.HoldingEntity(seller, player, 5));
@@ -220,12 +221,12 @@ class OrderManagementControllerE2ETest {
     @Test
     void compraE2EConsumeLiquidezPrioritariaYQuedaPendienteAlAgotarse() throws Exception {
         UserEntity superuser = users.save(new UserEntity("superuser", "password"));
-        Map<String, BigDecimal> weights = new HashMap<>();
-        weights.put("goals", BigDecimal.valueOf(30));
-        weights.put("assists", BigDecimal.valueOf(25));
-        weights.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weights.put("aerialsWon", BigDecimal.valueOf(15));
-        weights.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weights = new HashMap<>();
+        weights.put(Metric.goals, BigDecimal.valueOf(30));
+        weights.put(Metric.assists, BigDecimal.valueOf(25));
+        weights.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weights.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weights.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
         strategies.save(new StrategyConfigEntity(superuser, StrategyType.ESTRATEGIA_A,
                 mapper.write(weights), StrategyStatus.ACTUAL, Instant.now()));
         holdings.save(new com.dappunq.persistence.HoldingEntity(superuser, player, 2));
