@@ -105,7 +105,7 @@ class WeeklyValuationServiceTest {
         HoldingEntity holding = new HoldingEntity(userWithStrategy, player, 100);
         when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding));
 
-        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, ExecutionType.DOMINICAL);
+        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, ExecutionType.DOMINICAL);
         when(valuationRepository.findCurrentByUserAndPlayer(1L, 10L)).thenReturn(Optional.of(valuation));
 
         RecalculationSummary result = service.execute(ExecutionType.DOMINICAL);
@@ -152,7 +152,7 @@ class WeeklyValuationServiceTest {
         HoldingEntity holding = new HoldingEntity(userWithStrategy, player, 100);
         when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding));
 
-        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, ExecutionType.DOMINICAL);
+        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, ExecutionType.DOMINICAL);
         when(valuationRepository.findCurrentByUserAndPlayer(1L, 10L)).thenReturn(Optional.of(valuation));
 
         RecalculationSummary result = service.execute(ExecutionType.DOMINICAL);
@@ -176,7 +176,7 @@ class WeeklyValuationServiceTest {
         HoldingEntity holding = new HoldingEntity(userWithStrategy, player, 100);
         when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding));
 
-        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, ExecutionType.DOMINICAL);
+        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, ExecutionType.DOMINICAL);
         when(valuationRepository.findCurrentByUserAndPlayer(1L, 10L)).thenReturn(Optional.of(valuation));
 
         service.execute(ExecutionType.DOMINICAL);
@@ -198,7 +198,7 @@ class WeeklyValuationServiceTest {
         HoldingEntity holding = new HoldingEntity(userWithStrategy, player, 100, BigDecimal.valueOf(3));
         when(holdingRepository.findByUserId(1L)).thenReturn(List.of(holding));
 
-        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, ExecutionType.DOMINICAL);
+        ValuationEntity valuation = new ValuationEntity(userWithStrategy, player, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, ExecutionType.DOMINICAL);
         when(valuationRepository.findCurrentByUserAndPlayer(1L, 10L)).thenReturn(Optional.of(valuation));
 
         service.execute(ExecutionType.DOMINICAL);

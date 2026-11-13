@@ -5,7 +5,6 @@ import com.dappunq.persistence.HoldingEntity;
 import com.dappunq.persistence.HoldingRepository;
 import com.dappunq.persistence.MetricNormalizationEntity;
 import com.dappunq.persistence.NormalizationRangeRepository;
-import com.dappunq.persistence.PlayerEntity;
 import com.dappunq.persistence.PlayerRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
 import com.dappunq.persistence.StrategyConfigRepository;
@@ -63,14 +62,13 @@ public class HoldingsValuationService {
         }
         StrategyConfig c = new StrategyConfig(ce.getTipoEstrategia(), mapper.read(ce.getPesos()));
         int n = 0;
-        String window = LocalDate.now().toString() + "-" + type;
 
         for (HoldingEntity h : holdings.findByUserId(userId)) {
             PlayerSnapshot playerSnapshot = mapper.toSnapshot(h.getPlayer());
             BigDecimal v = calculator.calculate(playerSnapshot, c, context, h.getValorUnitario());
             h.valuate(v);
             holdings.save(h);
-            valuationRepository.save(new ValuationEntity(h.getUser(), h.getPlayer(), h.getTokens(), v, c.tipo(), window, type));
+            valuationRepository.save(new ValuationEntity(h.getUser(), h.getPlayer(), v, c.tipo(), type));
             n++;
         }
         log.info("Revaluadas {} tenencias para el usuario {} con tipo {}", n, userId, type);

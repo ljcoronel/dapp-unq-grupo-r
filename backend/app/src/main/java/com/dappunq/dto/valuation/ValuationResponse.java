@@ -4,9 +4,9 @@ import com.dappunq.model.valuation.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record ValuationResponse(Long usuarioId, Long jugadorId, int tokens,
-                                BigDecimal valorUnitario, BigDecimal valorTotal,
-                                StrategyType estrategia, Instant ejecutadoEn,
+public record ValuationResponse(Long usuarioId, Long jugadorId,
+                                BigDecimal valorUnitario,
+                                StrategyType tipoEstrategia, Instant ejecutadoEn,
                                 ExecutionType tipoEjecucion) {
 
 }

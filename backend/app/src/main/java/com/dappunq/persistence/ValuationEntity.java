@@ -20,19 +20,14 @@ public class ValuationEntity {
     @ManyToOne(optional=false)
     @JoinColumn(name="jugador_id")
     PlayerEntity player;
-    int tokens;
 
     @Column(name="valor_unitario")
     BigDecimal valorUnitario;
-
-    @Column(name="valor_total")
-    BigDecimal valorTotal;
 
     @Enumerated(EnumType.STRING)
     StrategyType estrategia;
 
     Instant ejecutadoEn = Instant.now();
-    String ventana;
 
     @Enumerated(EnumType.STRING)
     ExecutionType tipoEjecucion;
@@ -41,16 +36,13 @@ public class ValuationEntity {
     boolean isCurrent;
 
     protected ValuationEntity(){}
-    public ValuationEntity(UserEntity user, PlayerEntity player, int tokens,
+    public ValuationEntity(UserEntity user, PlayerEntity player,
                            BigDecimal valorUnitario, StrategyType tipoEstrategia,
-                           String ventana, ExecutionType tipoEjecucion) {
+                           ExecutionType tipoEjecucion) {
         this.user = user;
         this.player = player;
-        this.tokens = tokens;
         this.valorUnitario = valorUnitario;
-        valorTotal = valorUnitario.multiply(BigDecimal.valueOf(tokens));
         estrategia = tipoEstrategia;
-        this.ventana = ventana;
         this.tipoEjecucion = tipoEjecucion;
         this.isCurrent = true;
     }
@@ -67,12 +59,7 @@ public class ValuationEntity {
         return player;
     }
 
-    public int getTokens(){
-        return tokens;
-    }
-
     public BigDecimal getValorUnitario(){return valorUnitario;}
-    public BigDecimal getValorTotal(){return valorTotal;}
     public StrategyType getEstrategia(){return estrategia;}
     public Instant getEjecutadoEn(){return ejecutadoEn;}
     public ExecutionType getTipoEjecucion(){return tipoEjecucion;}

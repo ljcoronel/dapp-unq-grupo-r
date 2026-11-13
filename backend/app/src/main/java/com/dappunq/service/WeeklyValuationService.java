@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
@@ -73,7 +72,7 @@ public class WeeklyValuationService {
         scrapingService.scrape(playersLimit != null ? playersLimit : "50");
 
         List<PlayerEntity> snapshot = playerRepository.findAll();
-        if (snapshot == null || snapshot.isEmpty()) {
+        if (snapshot.isEmpty()) {
             log.error("Fallo de snapshot: la lista de jugadores obtenida tras el scrape esta vacia o incompleta");
             throw ValuationDomainException.snapshotFailure("Snapshot de jugadores vacio o incompleto");
         }
@@ -99,7 +98,6 @@ public class WeeklyValuationService {
         }
 
         // 2. Recalcular tenencias de usuarios con tipo actual (omitir usuarios sin tipo)
-        String window = LocalDate.now(clock).toString() + "-" + executionType.name();
         List<StrategyConfigEntity> activeConfigs = strategyConfigRepository.findAllByEstado(StrategyStatus.ACTUAL);
         int recalculatedHoldings = 0;
 
@@ -123,10 +121,8 @@ public class WeeklyValuationService {
                 valuationRepository.save(new ValuationEntity(
                     holding.getUser(),
                     holding.getPlayer(),
-                    holding.getTokens(),
                     unitValue,
                     domain.tipo(),
-                    window,
                     executionType
                 ));
                 recalculatedHoldings++;

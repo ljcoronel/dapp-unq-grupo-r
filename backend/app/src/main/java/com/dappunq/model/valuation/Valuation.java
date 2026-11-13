@@ -11,33 +11,27 @@ public class Valuation {
 
     private final Long usuarioId;
     private final Long jugadorId;
-    private final int tokens;
     private final BigDecimal valorUnitario;
-    private final BigDecimal valorTotal;
-    private final StrategyType estrategia;
+    private final StrategyType tipoEstrategia;
     private final Instant ejecutadoEn;
     private final ExecutionType tipoEjecucion;
 
-    public Valuation(Long usuarioId, Long jugadorId, int tokens,
-                     BigDecimal valorUnitario, BigDecimal valorTotal,
-                     StrategyType estrategia, Instant ejecutadoEn,
+    public Valuation(Long usuarioId, Long jugadorId,
+                     BigDecimal valorUnitario,
+                     StrategyType tipoEstrategia, Instant ejecutadoEn,
                      ExecutionType tipoEjecucion) {
         this.usuarioId = usuarioId;
         this.jugadorId = jugadorId;
-        this.tokens = tokens;
         this.valorUnitario = valorUnitario;
-        this.valorTotal = valorTotal;
-        this.estrategia = estrategia;
+        this.tipoEstrategia = tipoEstrategia;
         this.ejecutadoEn = ejecutadoEn;
         this.tipoEjecucion = tipoEjecucion;
     }
 
     public Long getUsuarioId() { return usuarioId; }
     public Long getJugadorId() { return jugadorId; }
-    public int getTokens() { return tokens; }
     public BigDecimal getValorUnitario() { return valorUnitario; }
-    public BigDecimal getValorTotal() { return valorTotal; }
-    public StrategyType getEstrategia() { return estrategia; }
+    public StrategyType getTipoEstrategia() { return tipoEstrategia; }
     public Instant getEjecutadoEn() { return ejecutadoEn; }
     public ExecutionType getTipoEjecucion() { return tipoEjecucion; }
 }

@@ -74,14 +74,12 @@ public class ValuationPersistenceMapper {
             return null;
         }
         return new Valuation(
-                entity.getUser().getId(),
-                entity.getPlayer().getId(),
-                entity.getTokens(),
-                entity.getValorUnitario(),
-                entity.getValorTotal(),
-                entity.getEstrategia(),
-                entity.getEjecutadoEn(),
-                entity.getTipoEjecucion()
+            entity.getUser().getId(),
+            entity.getPlayer().getId(),
+            entity.getValorUnitario(),
+            entity.getEstrategia(),
+            entity.getEjecutadoEn(),
+            entity.getTipoEjecucion()
         );
     }
 }

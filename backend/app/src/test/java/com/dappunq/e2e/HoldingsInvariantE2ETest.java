@@ -121,7 +121,7 @@ class HoldingsInvariantE2ETest {
 
         strategyConfigRepository.save(new StrategyConfigEntity(user, StrategyType.ESTRATEGIA_A, mapper.write(weightsA), StrategyStatus.ACTUAL, Instant.now()));
         holdingRepository.save(new HoldingEntity(user, player, 100));
-        valuationRepository.save(new ValuationEntity(user, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, ExecutionType.DOMINICAL));
+        valuationRepository.save(new ValuationEntity(user, player, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, ExecutionType.DOMINICAL));
     }
 
     @Test

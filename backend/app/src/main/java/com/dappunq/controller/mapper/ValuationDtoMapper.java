@@ -59,14 +59,12 @@ public class ValuationDtoMapper {
             return null;
         }
         return new ValuationResponse(
-                r.getUsuarioId(),
-                r.getJugadorId(),
-                r.getTokens(),
-                r.getValorUnitario(),
-                r.getValorTotal(),
-                r.getEstrategia(),
-                r.getEjecutadoEn(),
-                r.getTipoEjecucion()
+            r.getUsuarioId(),
+            r.getJugadorId(),
+            r.getValorUnitario(),
+            r.getTipoEstrategia(),
+            r.getEjecutadoEn(),
+            r.getTipoEjecucion()
         );
     }
 

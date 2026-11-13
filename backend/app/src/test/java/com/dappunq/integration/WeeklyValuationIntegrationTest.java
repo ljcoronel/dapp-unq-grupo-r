@@ -134,15 +134,15 @@ class WeeklyValuationIntegrationTest {
         strategyConfigRepository.save(new StrategyConfigEntity(user2, StrategyType.ESTRATEGIA_B, mapper.write(weightsB), StrategyStatus.PENDIENTE, Instant.now()));
 
         // Holdings
-        // TODO: no debería permitirse que haya más de 100 tokens por jugador. Usar Service
+        // TODO: no debería permitirse que haya más de 100 tokens por jugador. ¿Usar Service?
         holdingRepository.save(new HoldingEntity(user1, player, 100));
         holdingRepository.save(new HoldingEntity(user2, player, 100));
-        // TODO: no debería permitirse que un usuario tenga un Holding sin Estrategia configurada. Usar Service
+        // TODO: no debería permitirse que un usuario común tenga un Holding sin Estrategia configurada. ¿Usar Service?
         holdingRepository.save(new HoldingEntity(userWithoutStrategy, player, 100));
 
         // Valuation
-        valuationRepository.save(new ValuationEntity(user1, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null, null));
-        valuationRepository.save(new ValuationEntity(user2, player, 100, BigDecimal.ONE, StrategyType.ESTRATEGIA_B, null, null));
+        valuationRepository.save(new ValuationEntity(user1, player, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null));
+        valuationRepository.save(new ValuationEntity(user2, player, BigDecimal.ONE, StrategyType.ESTRATEGIA_B, null));
     }
 
     @Test
@@ -162,7 +162,6 @@ class WeeklyValuationIntegrationTest {
         List<ValuationEntity> historyUser1 = valuationRepository.findHistoricalByUser(user1.getId());
         assertEquals(1, historyUser1.size());
         assertEquals(StrategyType.ESTRATEGIA_A, historyUser1.get(0).getEstrategia());
-        assertEquals(100, historyUser1.get(0).getTokens());
         assertNotNull(historyUser1.get(0).getValorUnitario());
 
         List<ValuationEntity> historyUser2 = valuationRepository.findHistoricalByUser(user2.getId());
