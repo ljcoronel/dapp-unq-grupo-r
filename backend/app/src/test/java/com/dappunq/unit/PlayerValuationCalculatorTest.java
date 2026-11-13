@@ -20,25 +20,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PlayerValuationCalculatorTest {
 
     private PlayerValuationCalculator calculator;
-    private Map<String, BigDecimal> weightsA;
-    private Map<String, BigDecimal> weightsB;
+    private Map<Metric, BigDecimal> weightsA;
+    private Map<Metric, BigDecimal> weightsB;
 
     @BeforeEach
     void setUp() {
         calculator = new PlayerValuationCalculator();
 
         weightsA = new HashMap<>();
-        weightsA.put("goals", BigDecimal.valueOf(30));
-        weightsA.put("assists", BigDecimal.valueOf(25));
-        weightsA.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weightsA.put("aerialsWon", BigDecimal.valueOf(15));
-        weightsA.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        weightsA.put(Metric.goals, BigDecimal.valueOf(30));
+        weightsA.put(Metric.assists, BigDecimal.valueOf(25));
+        weightsA.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weightsA.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weightsA.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
 
         weightsB = new HashMap<>();
-        weightsB.put("passSuccessPercentage", BigDecimal.valueOf(35));
-        weightsB.put("aerialsWon", BigDecimal.valueOf(20));
-        weightsB.put("minutesPlayed", BigDecimal.valueOf(20));
-        weightsB.put("appearances", BigDecimal.valueOf(20));
+        weightsB.put(Metric.passSuccessPercentage, BigDecimal.valueOf(35));
+        weightsB.put(Metric.aerialsWon, BigDecimal.valueOf(20));
+        weightsB.put(Metric.minutesPlayed, BigDecimal.valueOf(20));
+        weightsB.put(Metric.appearances, BigDecimal.valueOf(20));
     }
 
     @Test

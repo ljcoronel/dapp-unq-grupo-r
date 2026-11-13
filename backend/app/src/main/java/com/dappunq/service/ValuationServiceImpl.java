@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-
+// TODO: testear este Service
 @Service
 public class ValuationServiceImpl implements ValuationService {
 

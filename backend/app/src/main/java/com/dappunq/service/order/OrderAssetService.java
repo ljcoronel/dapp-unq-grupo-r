@@ -8,6 +8,7 @@ import com.dappunq.model.order.exception.CodigoErrorOrden;
 import com.dappunq.model.order.exception.OrdenException;
 import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.PlayerValuationCalculator;
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.persistence.HoldingEntity;
@@ -180,7 +181,7 @@ public class OrderAssetService {
         List<PlayerSnapshot> snapshots = players.findAll().stream()
                 .map(valuationMapper::toSnapshot).toList();
         PlayerSnapshot target = valuationMapper.toSnapshot(player);
-        Map<String, BigDecimal> weights = valuationMapper.read(active.getPesos());
+        Map<Metric, BigDecimal> weights = valuationMapper.read(active.getPesos());
         StrategyConfig config = new StrategyConfig(active.getTipoEstrategia(), weights);
         BigDecimal unitValue = calculator.calculate(target, config, snapshots, BigDecimal.ZERO);
         return new HoldingEntity(comprador, player, cantidad, unitValue);

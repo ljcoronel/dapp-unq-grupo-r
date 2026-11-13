@@ -9,10 +9,10 @@ class StrategyConfigTest {
 
     @Test
     void validaEstrategias() {
-        var m = new HashMap<String,BigDecimal>();
-        Map<String, BigDecimal> pesoInvalido = Map.of("goals", BigDecimal.ONE);
-        for(String x : List.of("goals", "assists", "passSuccessPercentage", "aerialsWon", "timesManOfTheMatch"))
-            m.put(x,BigDecimal.valueOf(20));
+        var m = new HashMap<Metric,BigDecimal>();
+        Map<Metric, BigDecimal> pesoInvalido = Map.of(Metric.goals, BigDecimal.ONE);
+        for (Metric x : Metric.metricsForStrategyA())
+            m.put(x, BigDecimal.valueOf(20));
         assertDoesNotThrow(() -> new StrategyConfig(StrategyType.ESTRATEGIA_A, m));
         assertThrows(ValuationDomainException.class,() -> new StrategyConfig(StrategyType.ESTRATEGIA_A, pesoInvalido));
     }

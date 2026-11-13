@@ -6,6 +6,7 @@ import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.dto.valuation.StrategyConfigDto;
 import com.dappunq.dto.valuation.StrategyStateResponse;
 import com.dappunq.model.valuation.Holding;
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.Valuation;
@@ -81,7 +82,7 @@ public class ValuationDtoMapper {
         );
     }
 
-    public StrategyStateResponse strategy(StrategyConfigEntity e, Map<String, BigDecimal> weights) {
+    public StrategyStateResponse strategy(StrategyConfigEntity e, Map<Metric, BigDecimal> weights) {
         return new StrategyStateResponse(e.getTipoEstrategia(), weights, e.getEstado(), e.getVigenteDesde());
     }
 

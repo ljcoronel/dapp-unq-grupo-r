@@ -1,5 +1,6 @@
 package com.dappunq.e2e;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.User;
 import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.StrategyStatus;
@@ -111,12 +112,12 @@ class HoldingsInvariantE2ETest {
         LeagueEntity league = leagueRepository.save(new LeagueEntity(1L, "League Test", "Region Test"));
         PlayerEntity player = playerRepository.save(new PlayerEntity(1L, "Player Test", team, league, 24, 180, 75, "Defender", 10, 900, 2, 1, 0, 0, 1.5f, 85f, 3f, 1));
 
-        Map<String, BigDecimal> weightsA = new HashMap<>();
-        weightsA.put("goals", BigDecimal.valueOf(30));
-        weightsA.put("assists", BigDecimal.valueOf(25));
-        weightsA.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weightsA.put("aerialsWon", BigDecimal.valueOf(15));
-        weightsA.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weightsA = new HashMap<>();
+        weightsA.put(Metric.goals, BigDecimal.valueOf(30));
+        weightsA.put(Metric.assists, BigDecimal.valueOf(25));
+        weightsA.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weightsA.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weightsA.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
 
         strategyConfigRepository.save(new StrategyConfigEntity(user, StrategyType.ESTRATEGIA_A, mapper.write(weightsA), StrategyStatus.ACTUAL, Instant.now()));
         holdingRepository.save(new HoldingEntity(user, player, 100));

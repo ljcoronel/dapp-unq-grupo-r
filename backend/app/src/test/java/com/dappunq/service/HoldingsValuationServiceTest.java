@@ -1,5 +1,6 @@
 package com.dappunq.service;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
@@ -45,9 +46,9 @@ class HoldingsValuationServiceTest {
         HoldingEntity holding = new HoldingEntity(user, player, 100, BigDecimal.valueOf(3));
         StrategyConfigEntity config = new StrategyConfigEntity(user,
                 StrategyType.ESTRATEGIA_A,
-                mapper.write(Map.of("goals", BigDecimal.valueOf(30), "assists", BigDecimal.valueOf(25),
-                        "passSuccessPercentage", BigDecimal.valueOf(15), "aerialsWon", BigDecimal.valueOf(15),
-                        "timesManOfTheMatch", BigDecimal.valueOf(15))),
+                mapper.write(Map.of(Metric.goals, BigDecimal.valueOf(30), Metric.assists, BigDecimal.valueOf(25),
+                        Metric.passSuccessPercentage, BigDecimal.valueOf(15), Metric.aerialsWon, BigDecimal.valueOf(15),
+                        Metric.timesManOfTheMatch, BigDecimal.valueOf(15))),
                 StrategyStatus.ACTUAL, Instant.now());
         when(players.findAll()).thenReturn(List.of(player));
         when(holdings.findByUserId(1L)).thenReturn(List.of(holding));

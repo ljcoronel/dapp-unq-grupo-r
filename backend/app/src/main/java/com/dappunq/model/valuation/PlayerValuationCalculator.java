@@ -26,8 +26,9 @@ public class PlayerValuationCalculator {
         }
 
         // TODO: la normalización debe hacerse una única vez cuando se haga el cálculo dominical o manual y no en cada cálculo de valuación
-        Map<String, double[]> ranges = new HashMap<>();
-        for (String m : c.weights().keySet()) {
+        // TODO 2: las métricas se deberían conocer de antemano, sin depender de StrategyConfig
+        Map<Metric, double[]> ranges = new HashMap<>();
+        for (Metric m : c.weights().keySet()) {
             double min = Double.MAX_VALUE;
             double max = -Double.MAX_VALUE;
             for (PlayerSnapshot x : snapshot) {
@@ -40,7 +41,7 @@ public class PlayerValuationCalculator {
 
         BigDecimal result = BigDecimal.ZERO;
         for (var e : c.weights().entrySet()) {
-            String m = e.getKey();
+            Metric m = e.getKey();
             double[] r = ranges.get(m);
             double n;
             if (isMissing(p, m) || r == null || r[1] <= r[0]) {
@@ -60,33 +61,31 @@ public class PlayerValuationCalculator {
         return result;
     }
 
-    private boolean isMissing(PlayerSnapshot p, String m) {
+    private boolean isMissing(PlayerSnapshot p, Metric m) {
         if (p == null) return true;
         return switch (m) {
-            case "goals" -> p.getGoals() == null;
-            case "assists" -> p.getAssists() == null;
-            case "passSuccessPercentage" -> p.getPassSuccessPercentage() == null;
-            case "aerialsWon" -> p.getAerialsWon() == null;
-            case "timesManOfTheMatch" -> p.getTimesManOfTheMatch() == null;
-            case "minutesPlayed" -> p.getMinutesPlayed() == null;
-            case "appearances" -> p.getAppearances() == null;
-            case "position" -> p.getPosition() == null;
-            default -> true;
+            case goals -> p.getGoals() == null;
+            case assists -> p.getAssists() == null;
+            case passSuccessPercentage -> p.getPassSuccessPercentage() == null;
+            case aerialsWon -> p.getAerialsWon() == null;
+            case timesManOfTheMatch -> p.getTimesManOfTheMatch() == null;
+            case minutesPlayed -> p.getMinutesPlayed() == null;
+            case appearances -> p.getAppearances() == null;
+            case position -> p.getPosition() == null;
         };
     }
 
-    private double value(PlayerSnapshot p, String m) {
+    private double value(PlayerSnapshot p, Metric m) {
         if (p == null) return 0.0;
         return switch (m) {
-            case "goals" -> nz(p.getGoals());
-            case "assists" -> nz(p.getAssists());
-            case "passSuccessPercentage" -> nz(p.getPassSuccessPercentage());
-            case "aerialsWon" -> nz(p.getAerialsWon());
-            case "timesManOfTheMatch" -> nz(p.getTimesManOfTheMatch());
-            case "minutesPlayed" -> nz(p.getMinutesPlayed());
-            case "appearances" -> nz(p.getAppearances());
-            case "position" -> "Defender".equals(p.getPosition()) ? 1.0 : 0.0;
-            default -> 0.0;
+            case goals -> nz(p.getGoals());
+            case assists -> nz(p.getAssists());
+            case passSuccessPercentage -> nz(p.getPassSuccessPercentage());
+            case aerialsWon -> nz(p.getAerialsWon());
+            case timesManOfTheMatch -> nz(p.getTimesManOfTheMatch());
+            case minutesPlayed -> nz(p.getMinutesPlayed());
+            case appearances -> nz(p.getAppearances());
+            case position -> "Defender".equals(p.getPosition()) ? 1.0 : 0.0;
         };
     }
 

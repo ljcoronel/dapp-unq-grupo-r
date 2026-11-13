@@ -12,17 +12,17 @@ public class StrategyState {
 
     private final StrategyStatus estadoActual;
     private final StrategyType tipoEstrategiaActual;
-    private final Map<String, BigDecimal> pesosActual;
+    private final Map<Metric, BigDecimal> pesosActual;
     private final Instant vigenteDesdeActual;
     private final StrategyStatus estadoPendiente;
     private final StrategyType tipoEstrategiaPendiente;
-    private final Map<String, BigDecimal> pesosPendiente;
+    private final Map<Metric, BigDecimal> pesosPendiente;
     private final Instant vigenteDesdePendiente;
 
     public StrategyState(StrategyStatus estadoActual,
-                         StrategyType tipoEstrategiaActual, Map<String, BigDecimal> pesosActual, Instant vigenteDesdeActual,
+                         StrategyType tipoEstrategiaActual, Map<Metric, BigDecimal> pesosActual, Instant vigenteDesdeActual,
                          StrategyStatus estadoPendiente,
-                         StrategyType tipoEstrategiaPendiente, Map<String, BigDecimal> pesosPendiente, Instant vigenteDesdePendiente) {
+                         StrategyType tipoEstrategiaPendiente, Map<Metric, BigDecimal> pesosPendiente, Instant vigenteDesdePendiente) {
         this.estadoActual = estadoActual;
         this.tipoEstrategiaActual = tipoEstrategiaActual;
         this.pesosActual = pesosActual;
@@ -35,11 +35,11 @@ public class StrategyState {
 
     public StrategyStatus getEstadoActual() { return estadoActual; }
     public StrategyType getTipoEstrategiaActual() { return tipoEstrategiaActual; }
-    public Map<String, BigDecimal> getPesosActual() { return pesosActual; }
+    public Map<Metric, BigDecimal> getPesosActual() { return pesosActual; }
     public Instant getVigenteDesdeActual() { return vigenteDesdeActual; }
     public StrategyStatus getEstadoPendiente() { return estadoPendiente; }
     public StrategyType getTipoEstrategiaPendiente() { return tipoEstrategiaPendiente; }
-    public Map<String, BigDecimal> getPesosPendiente() { return pesosPendiente; }
+    public Map<Metric, BigDecimal> getPesosPendiente() { return pesosPendiente; }
     public Instant getVigenteDesdePendiente() { return vigenteDesdePendiente; }
 
     public StrategyStatus estado() { return estadoActual; }

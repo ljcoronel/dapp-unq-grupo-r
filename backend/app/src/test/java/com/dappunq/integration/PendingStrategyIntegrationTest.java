@@ -1,5 +1,6 @@
 package com.dappunq.integration;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyState;
 import com.dappunq.model.valuation.StrategyStatus;
@@ -60,23 +61,23 @@ class PendingStrategyIntegrationTest {
 
     @Test
     void unicidadDePendienteYFechasDeVigencia() {
-        Map<String, BigDecimal> weightsA = new HashMap<>();
-        weightsA.put("goals", BigDecimal.valueOf(30));
-        weightsA.put("assists", BigDecimal.valueOf(25));
-        weightsA.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weightsA.put("aerialsWon", BigDecimal.valueOf(15));
-        weightsA.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weightsA = new HashMap<>();
+        weightsA.put(Metric.goals, BigDecimal.valueOf(30));
+        weightsA.put(Metric.assists, BigDecimal.valueOf(25));
+        weightsA.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weightsA.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weightsA.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
 
         // 1. Primera configuración -> ACTUAL
         StrategyState first = strategyService.configure(user.getId(), new StrategyConfig(StrategyType.ESTRATEGIA_A, weightsA));
         assertEquals(StrategyStatus.ACTUAL, first.getEstadoActual());
         assertNotNull(first.getVigenteDesdeActual());
 
-        Map<String, BigDecimal> weightsB = new HashMap<>();
-        weightsB.put("passSuccessPercentage", BigDecimal.valueOf(35));
-        weightsB.put("aerialsWon", BigDecimal.valueOf(20));
-        weightsB.put("minutesPlayed", BigDecimal.valueOf(20));
-        weightsB.put("appearances", BigDecimal.valueOf(20));
+        Map<Metric, BigDecimal> weightsB = new HashMap<>();
+        weightsB.put(Metric.passSuccessPercentage, BigDecimal.valueOf(35));
+        weightsB.put(Metric.aerialsWon, BigDecimal.valueOf(20));
+        weightsB.put(Metric.minutesPlayed, BigDecimal.valueOf(20));
+        weightsB.put(Metric.appearances, BigDecimal.valueOf(20));
 
         // 2. Segunda configuración -> PENDIENTE
         StrategyState second = strategyService.configure(user.getId(), new StrategyConfig(StrategyType.ESTRATEGIA_B, weightsB));
@@ -84,8 +85,8 @@ class PendingStrategyIntegrationTest {
         assertNotNull(second.getVigenteDesdePendiente());
 
         // 3. Tercera configuración -> Reemplaza PENDIENTE
-        weightsA.put("goals", BigDecimal.valueOf(40));
-        weightsA.put("assists", BigDecimal.valueOf(15));
+        weightsA.put(Metric.goals, BigDecimal.valueOf(40));
+        weightsA.put(Metric.assists, BigDecimal.valueOf(15));
         StrategyState third = strategyService.configure(user.getId(), new StrategyConfig(StrategyType.ESTRATEGIA_A, weightsA));
         assertEquals(StrategyStatus.PENDIENTE, third.getEstadoPendiente());
 
