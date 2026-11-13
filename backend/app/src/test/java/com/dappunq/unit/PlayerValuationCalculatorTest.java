@@ -1,6 +1,7 @@
 package com.dappunq.unit;
 
 import com.dappunq.model.valuation.Metric;
+import com.dappunq.model.valuation.NormalizationContext;
 import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.PlayerValuationCalculator;
 import com.dappunq.model.valuation.StrategyConfig;
@@ -16,12 +17,19 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PlayerValuationCalculatorTest {
 
     private PlayerValuationCalculator calculator;
     private Map<Metric, BigDecimal> weightsA;
     private Map<Metric, BigDecimal> weightsB;
+
+    private BigDecimal calculate(PlayerSnapshot player, StrategyConfig config,
+                                 List<PlayerSnapshot> snapshot, BigDecimal base) {
+        return calculator.calculate(player, config,
+                calculator.buildNormalizationContext(snapshot), base);
+    }
 
     @BeforeEach
     void setUp() {
@@ -56,8 +64,8 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot maxPlayer = new PlayerSnapshot(2L, "Forward", 20, 10, 100.0f, 10.0f, 5, 1000, 20);
         List<PlayerSnapshot> snapshot = List.of(minPlayer, maxPlayer);
 
-        BigDecimal minValuation = calculator.calculate(minPlayer, configA, snapshot, BigDecimal.ZERO);
-        BigDecimal maxValuation = calculator.calculate(maxPlayer, configA, snapshot, BigDecimal.ZERO);
+        BigDecimal minValuation = calculate(minPlayer, configA, snapshot, BigDecimal.ZERO);
+        BigDecimal maxValuation = calculate(maxPlayer, configA, snapshot, BigDecimal.ZERO);
 
         assertEquals(new BigDecimal("0.00"), minValuation);
         assertEquals(new BigDecimal("2.00"), maxValuation);
@@ -74,7 +82,7 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot pMid = new PlayerSnapshot(3L, "Midfielder", 5, 5, 50.0f, 5.0f, 5, 500, 10);
         List<PlayerSnapshot> snapshot = List.of(p1, p2, pMid);
 
-        BigDecimal valuation = calculator.calculate(pMid, configA, snapshot, BigDecimal.ZERO);
+        BigDecimal valuation = calculate(pMid, configA, snapshot, BigDecimal.ZERO);
         // 0.5 * 30% + 0.5 * 25% + 0.5 * 15% + 0.5 * 15% + 0.5 * 15% = 0.50
         assertEquals(new BigDecimal("1.00"), valuation);
     }
@@ -90,7 +98,7 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot pPartial = new PlayerSnapshot(3L, "Forward", 10, null, 100.0f, 10.0f, null, 200, 10);
         List<PlayerSnapshot> snapshot = List.of(p1, p2, pPartial);
 
-        BigDecimal valuation = calculator.calculate(pPartial, configA, snapshot, BigDecimal.ZERO);
+        BigDecimal valuation = calculate(pPartial, configA, snapshot, BigDecimal.ZERO);
         // goals=1.0 (30%) + assists=0.0 (0%) + pass=1.0 (15%) + aerials=1.0 (15%) + motm=0.0 (0%) = 0.60
         assertEquals(new BigDecimal("1.20"), valuation);
     }
@@ -105,7 +113,7 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot p2 = new PlayerSnapshot(2L, "Forward", 5, 10, 100.0f, 10.0f, 10, 1000, 20);
         List<PlayerSnapshot> snapshot = List.of(p1, p2);
 
-        BigDecimal valP2 = calculator.calculate(p2, configA, snapshot, BigDecimal.ZERO);
+        BigDecimal valP2 = calculate(p2, configA, snapshot, BigDecimal.ZERO);
         // goals is 0 because min == max, assists=1.0 (25%) + pass=1.0 (15%) + aerials=1.0 (15%) + motm=1.0 (15%) = 0.70
         assertEquals(new BigDecimal("1.40"), valP2);
     }
@@ -122,14 +130,14 @@ class PlayerValuationCalculatorTest {
         List<PlayerSnapshot> snapshot = List.of(defenderMin, forwardMin, defenderMax, forwardMax);
 
         // Min stats: 0 from metrics. Defender gets +0.05, Forward gets 0.00
-        BigDecimal valDefMin = calculator.calculate(defenderMin, configB, snapshot, BigDecimal.ZERO);
-        BigDecimal valFwdMin = calculator.calculate(forwardMin, configB, snapshot, BigDecimal.ZERO);
+        BigDecimal valDefMin = calculate(defenderMin, configB, snapshot, BigDecimal.ZERO);
+        BigDecimal valFwdMin = calculate(forwardMin, configB, snapshot, BigDecimal.ZERO);
         assertEquals(new BigDecimal("0.10"), valDefMin);
         assertEquals(new BigDecimal("0.00"), valFwdMin);
 
         // Max stats: 95% (0.95) from metrics. Defender gets 0.95 + 0.05 = 1.00, Forward gets 0.95
-        BigDecimal valDefMax = calculator.calculate(defenderMax, configB, snapshot, BigDecimal.ZERO);
-        BigDecimal valFwdMax = calculator.calculate(forwardMax, configB, snapshot, BigDecimal.ZERO);
+        BigDecimal valDefMax = calculate(defenderMax, configB, snapshot, BigDecimal.ZERO);
+        BigDecimal valFwdMax = calculate(forwardMax, configB, snapshot, BigDecimal.ZERO);
         assertEquals(new BigDecimal("2.00"), valDefMax);
         assertEquals(new BigDecimal("1.90"), valFwdMax);
     }
@@ -143,7 +151,7 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot other = new PlayerSnapshot(2L, "Forward", 10, 10, 100.0f, 10.0f, 10, 0, 0);
         List<PlayerSnapshot> snapshot = List.of(defender, other);
 
-        BigDecimal valDef = calculator.calculate(defender, configA, snapshot, BigDecimal.ZERO);
+        BigDecimal valDef = calculate(defender, configA, snapshot, BigDecimal.ZERO);
         // Defender has min stats in A -> 0.00 (no 5% bonus)
         assertEquals(new BigDecimal("0.00"), valDef);
     }
@@ -175,11 +183,11 @@ class PlayerValuationCalculatorTest {
 
         List<PlayerSnapshot> snapshot = List.of(pMin, pMax, p1, p2);
 
-        BigDecimal val1 = calculator.calculate(p1, configA, snapshot, BigDecimal.ZERO);
+        BigDecimal val1 = calculate(p1, configA, snapshot, BigDecimal.ZERO);
         assertEquals(new BigDecimal("0.75"), val1);
 
         // For p2: 0.15 + 0.075 + 0.075 + (4/10 * 0.15 = 0.06) = 0.36
-        BigDecimal val2 = calculator.calculate(p2, configA, snapshot, BigDecimal.ZERO);
+        BigDecimal val2 = calculate(p2, configA, snapshot, BigDecimal.ZERO);
         assertEquals(new BigDecimal("0.72"), val2);
     }
 
@@ -189,10 +197,10 @@ class PlayerValuationCalculatorTest {
         StrategyConfig configA = new StrategyConfig(StrategyType.ESTRATEGIA_A, weightsA);
         PlayerSnapshot p = new PlayerSnapshot(1L, "Forward", 10, 5, 80f, 3f, 2, 500, 10);
 
-        assertEquals(new BigDecimal("0.00"), calculator.calculate(null, configA, List.of(p), BigDecimal.ZERO));
-        assertEquals(new BigDecimal("0.00"), calculator.calculate(p, null, List.of(p), BigDecimal.ZERO));
-        assertEquals(new BigDecimal("0.00"), calculator.calculate(p, configA, null, BigDecimal.ZERO));
-        assertEquals(new BigDecimal("0.00"), calculator.calculate(p, configA, List.of(), BigDecimal.ZERO));
+        assertEquals(new BigDecimal("0.00"), calculate(null, configA, List.of(p), BigDecimal.ZERO));
+        assertEquals(new BigDecimal("0.00"), calculate(p, null, List.of(p), BigDecimal.ZERO));
+        assertEquals(new BigDecimal("0.00"), calculate(p, configA, null, BigDecimal.ZERO));
+        assertEquals(new BigDecimal("0.00"), calculate(p, configA, List.of(), BigDecimal.ZERO));
     }
 
     @Test
@@ -203,9 +211,9 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot max = new PlayerSnapshot(2L, "Forward", 10, 10, 10f, 10f, 10, 0, 0);
         PlayerSnapshot middle = new PlayerSnapshot(3L, "Forward", 5, 5, 5f, 5f, 5, 0, 0);
 
-        assertEquals(new BigDecimal("1.00"), calculator.calculate(middle, configA,
+        assertEquals(new BigDecimal("1.00"), calculate(middle, configA,
                 List.of(min, max), BigDecimal.ZERO));
-        assertEquals(new BigDecimal("4.00"), calculator.calculate(middle, configA,
+        assertEquals(new BigDecimal("4.00"), calculate(middle, configA,
                 List.of(min, max), new BigDecimal("3.00")));
     }
 
@@ -215,6 +223,30 @@ class PlayerValuationCalculatorTest {
         PlayerSnapshot player = new PlayerSnapshot(1L, "Forward", 0, 0, 0f, 0f, 0, 0, 0);
 
         org.junit.jupiter.api.Assertions.assertThrows(ValuationDomainException.class,
-                () -> calculator.calculate(player, configA, List.of(player), new BigDecimal("-0.01")));
+                () -> calculate(player, configA, List.of(player), new BigDecimal("-0.01")));
+    }
+
+    @Test
+    void contextoDeNormalizacionCalculaTodasLasMetricasUnaSolaVez() {
+        PlayerSnapshot min = new PlayerSnapshot(1L, "Forward", 0, 1, 50f, 2f, 0, 100, 4);
+        PlayerSnapshot max = new PlayerSnapshot(2L, "Defender", 10, 5, 90f, 8f, 3, 900, 12);
+
+        NormalizationContext context = calculator.buildNormalizationContext(List.of(min, max));
+
+        assertEquals(8, context.ranges().size());
+        assertEquals(0, context.ranges().get(Metric.goals).minimum().compareTo(BigDecimal.ZERO));
+        assertEquals(0, context.ranges().get(Metric.goals).maximum().compareTo(BigDecimal.TEN));
+        assertEquals(0, context.ranges().get(Metric.position).minimum().compareTo(BigDecimal.ZERO));
+        assertEquals(0, context.ranges().get(Metric.position).maximum().compareTo(BigDecimal.ONE));
+    }
+
+    @Test
+    void contextoVacioNoPermiteValuarMetricasSinRangos() {
+        NormalizationContext context = calculator.buildNormalizationContext(List.of());
+        StrategyConfig configA = new StrategyConfig(StrategyType.ESTRATEGIA_A, weightsA);
+        PlayerSnapshot player = new PlayerSnapshot(1L, "Forward", 10, 5, 80f, 3f, 2, 500, 10);
+
+        assertTrue(context.isEmpty());
+        assertEquals(new BigDecimal("0.00"), calculator.calculate(player, configA, context, BigDecimal.ZERO));
     }
 }

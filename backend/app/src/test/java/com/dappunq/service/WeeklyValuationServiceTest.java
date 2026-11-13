@@ -25,12 +25,13 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class WeeklyValuationServiceTest {
@@ -50,6 +51,9 @@ class WeeklyValuationServiceTest {
     @Mock
     private ValuationRepository valuationRepository;
 
+    @Mock
+    private NormalizationRangeRepository normalizationRangeRepository;
+
     private final ValuationPersistenceMapper mapper = new ValuationPersistenceMapper();
     private WeeklyValuationService service;
 
@@ -66,7 +70,8 @@ class WeeklyValuationServiceTest {
                 strategyConfigRepository,
                 holdingRepository,
                 valuationRepository,
-                mapper
+                mapper,
+                normalizationRangeRepository
         );
 
         userWithStrategy = new UserEntity(1L, "user1", "hash1");
@@ -113,6 +118,7 @@ class WeeklyValuationServiceTest {
         assertEquals("COMPLETED", result.status());
         assertEquals(1, result.playersScraped());
         assertEquals(1, result.recalculatedHoldings());
+        verify(normalizationRangeRepository).replaceCurrentRanges(argThat(ranges -> ranges.size() == 8));
     }
 
     @Test
@@ -133,6 +139,7 @@ class WeeklyValuationServiceTest {
         assertThrows(ValuationDomainException.class, () -> service.execute(ExecutionType.DOMINICAL));
 
         verify(holdingRepository, never()).save(any());
+        verify(normalizationRangeRepository, never()).replaceCurrentRanges(any());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.dappunq.service;
 
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.NormalizationContext;
 import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.PlayerValuationCalculator;
 import com.dappunq.model.valuation.RecalculationSummary;
@@ -9,6 +10,8 @@ import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.ValuationDomainException;
 import com.dappunq.persistence.HoldingEntity;
 import com.dappunq.persistence.HoldingRepository;
+import com.dappunq.persistence.MetricNormalizationEntity;
+import com.dappunq.persistence.NormalizationRangeRepository;
 import com.dappunq.persistence.PlayerEntity;
 import com.dappunq.persistence.PlayerRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
@@ -40,6 +43,7 @@ public class WeeklyValuationService {
     private final HoldingRepository holdingRepository;
     private final ValuationRepository valuationRepository;
     private final ValuationPersistenceMapper mapper;
+    private final NormalizationRangeRepository normalizationRangeRepository;
     private final PlayerValuationCalculator calculator = new PlayerValuationCalculator();
 
     private Clock clock = Clock.system(ZoneId.of("America/Argentina/Buenos_Aires"));
@@ -52,13 +56,15 @@ public class WeeklyValuationService {
                                   StrategyConfigRepository strategyConfigRepository,
                                   HoldingRepository holdingRepository,
                                   ValuationRepository valuationRepository,
-                                  ValuationPersistenceMapper mapper) {
+                                  ValuationPersistenceMapper mapper,
+                                  NormalizationRangeRepository normalizationRangeRepository) {
         this.scrapingService = scrapingService;
         this.playerRepository = playerRepository;
         this.strategyConfigRepository = strategyConfigRepository;
         this.holdingRepository = holdingRepository;
         this.valuationRepository = valuationRepository;
         this.mapper = mapper;
+        this.normalizationRangeRepository = normalizationRangeRepository;
     }
 
     @Transactional
@@ -73,6 +79,13 @@ public class WeeklyValuationService {
         }
 
         List<PlayerSnapshot> playerSnapshots = snapshot.stream().map(mapper::toSnapshot).toList();
+        NormalizationContext context = calculator.buildNormalizationContext(playerSnapshots);
+        Instant calculatedAt = Instant.now(clock);
+        List<MetricNormalizationEntity> ranges = context.ranges().values().stream()
+                .map(range -> new MetricNormalizationEntity(
+                        range.metric(), range.minimum(), range.maximum(), calculatedAt))
+                .toList();
+        normalizationRangeRepository.replaceCurrentRanges(ranges);
 
         // 1. Aplicar estrategias pendientes antes de recalcular
         List<StrategyConfigEntity> pendingList = strategyConfigRepository.findAllByEstado(StrategyStatus.PENDIENTE);
@@ -97,7 +110,7 @@ public class WeeklyValuationService {
 
             for (HoldingEntity holding : userHoldings) {
                 PlayerSnapshot playerSnapshot = mapper.toSnapshot(holding.getPlayer());
-                BigDecimal unitValue = calculator.calculate(playerSnapshot, domain, playerSnapshots,
+                BigDecimal unitValue = calculator.calculate(playerSnapshot, domain, context,
                         holding.getValorUnitario());
                 holding.valuate(unitValue);
                 holdingRepository.save(holding);

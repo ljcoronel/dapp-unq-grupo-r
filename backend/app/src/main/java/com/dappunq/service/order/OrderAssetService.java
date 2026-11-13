@@ -9,6 +9,8 @@ import com.dappunq.model.order.exception.OrdenException;
 import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.PlayerValuationCalculator;
 import com.dappunq.model.valuation.Metric;
+import com.dappunq.model.valuation.NormalizationContext;
+import com.dappunq.model.valuation.NormalizationRange;
 import com.dappunq.model.valuation.StrategyConfig;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.persistence.HoldingEntity;
@@ -16,6 +18,7 @@ import com.dappunq.persistence.HoldingRepository;
 import com.dappunq.persistence.JpaUserEntityRepository;
 import com.dappunq.persistence.PlayerEntity;
 import com.dappunq.persistence.PlayerRepository;
+import com.dappunq.persistence.NormalizationRangeRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
 import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.UserEntity;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,17 +39,20 @@ public class OrderAssetService {
     private final StrategyConfigRepository strategies;
     private final ValuationPersistenceMapper valuationMapper;
     private final PlayerValuationCalculator calculator = new PlayerValuationCalculator();
+    private final NormalizationRangeRepository normalizationRangeRepository;
 
     public OrderAssetService(JpaUserEntityRepository users,
                              PlayerRepository players,
                              HoldingRepository holdings,
                              StrategyConfigRepository strategies,
-                             ValuationPersistenceMapper valuationMapper) {
+                             ValuationPersistenceMapper valuationMapper,
+                             NormalizationRangeRepository normalizationRangeRepository) {
         this.users = users;
         this.players = players;
         this.holdings = holdings;
         this.strategies = strategies;
         this.valuationMapper = valuationMapper;
+        this.normalizationRangeRepository = normalizationRangeRepository;
     }
 
     @Transactional
@@ -178,12 +185,22 @@ public class OrderAssetService {
                         comprador.getId(), StrategyStatus.ACTUAL)
                 .orElseThrow(() -> new OrdenException(CodigoErrorOrden.ESTRATEGIA_INACTIVA,
                         "El comprador debe tener una Estrategia de Valuación activa"));
-        List<PlayerSnapshot> snapshots = players.findAll().stream()
-                .map(valuationMapper::toSnapshot).toList();
         PlayerSnapshot target = valuationMapper.toSnapshot(player);
         Map<Metric, BigDecimal> weights = valuationMapper.read(active.getPesos());
         StrategyConfig config = new StrategyConfig(active.getTipoEstrategia(), weights);
-        BigDecimal unitValue = calculator.calculate(target, config, snapshots, BigDecimal.ZERO);
+        EnumMap<Metric, NormalizationRange> ranges = new EnumMap<>(Metric.class);
+        normalizationRangeRepository.findCurrentRanges().forEach(entity ->
+                ranges.put(entity.getMetric(), valuationMapper.toNormalizationRange(entity)));
+        NormalizationContext context = new NormalizationContext(ranges);
+        if (context.isEmpty()) {
+            context = calculator.buildNormalizationContext(players.findAll().stream()
+                    .map(valuationMapper::toSnapshot).toList());
+            normalizationRangeRepository.replaceCurrentRanges(context.ranges().values().stream()
+                    .map(range -> new com.dappunq.persistence.MetricNormalizationEntity(
+                            range.metric(), range.minimum(), range.maximum(), java.time.Instant.now()))
+                    .toList());
+        }
+        BigDecimal unitValue = calculator.calculate(target, config, context, BigDecimal.ZERO);
         return new HoldingEntity(comprador, player, cantidad, unitValue);
     }
 }

@@ -2,7 +2,7 @@ package com.dappunq.model.valuation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,44 +10,56 @@ public class PlayerValuationCalculator {
 
     public static final BigDecimal FACTOR_ESCALA = BigDecimal.valueOf(2);
 
-    public BigDecimal calculate(PlayerSnapshot p, StrategyConfig c, List<PlayerSnapshot> snapshot,
+    public NormalizationContext buildNormalizationContext(List<PlayerSnapshot> snapshot) {
+        Map<Metric, NormalizationRange> ranges = new EnumMap<>(Metric.class);
+        if (snapshot == null || snapshot.isEmpty()) {
+            return new NormalizationContext(ranges);
+        }
+
+        for (Metric metric : Metric.values()) {
+            double min = Double.MAX_VALUE;
+            double max = -Double.MAX_VALUE;
+            for (PlayerSnapshot player : snapshot) {
+                double value = value(player, metric);
+                min = Math.min(min, value);
+                max = Math.max(max, value);
+            }
+            ranges.put(metric, new NormalizationRange(
+                    metric,
+                    BigDecimal.valueOf(min),
+                    BigDecimal.valueOf(max)
+            ));
+        }
+        return new NormalizationContext(ranges);
+    }
+
+    public BigDecimal calculate(PlayerSnapshot p, StrategyConfig c, NormalizationContext context,
                                 BigDecimal valorBase) {
         BigDecimal base = valorBase == null ? BigDecimal.ZERO : valorBase;
         if (base.compareTo(BigDecimal.ZERO) < 0) {
             throw new ValuationDomainException("El valor base no puede ser negativo");
         }
-        return base.add(calculateRaw(p, c, snapshot).multiply(FACTOR_ESCALA))
+        return base.add(calculateRaw(p, c, context).multiply(FACTOR_ESCALA))
                 .setScale(2, RoundingMode.HALF_UP);
     }
 
-    private BigDecimal calculateRaw(PlayerSnapshot p, StrategyConfig c, List<PlayerSnapshot> snapshot) {
-        if (p == null || snapshot == null || snapshot.isEmpty() || c == null) {
+    private BigDecimal calculateRaw(PlayerSnapshot p, StrategyConfig c, NormalizationContext context) {
+        if (p == null || context == null || context.isEmpty() || c == null) {
             return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
-        }
-
-        // TODO: la normalización debe hacerse una única vez cuando se haga el cálculo dominical o manual y no en cada cálculo de valuación
-        // TODO 2: las métricas se deberían conocer de antemano, sin depender de StrategyConfig
-        Map<Metric, double[]> ranges = new HashMap<>();
-        for (Metric m : c.weights().keySet()) {
-            double min = Double.MAX_VALUE;
-            double max = -Double.MAX_VALUE;
-            for (PlayerSnapshot x : snapshot) {
-                double v = value(x, m);
-                min = Math.min(min, v);
-                max = Math.max(max, v);
-            }
-            ranges.put(m, new double[]{min, max});
         }
 
         BigDecimal result = BigDecimal.ZERO;
         for (var e : c.weights().entrySet()) {
             Metric m = e.getKey();
-            double[] r = ranges.get(m);
+            NormalizationRange range = context.ranges().get(m);
             double n;
-            if (isMissing(p, m) || r == null || r[1] <= r[0]) {
+            if (isMissing(p, m) || range == null
+                    || range.maximum().compareTo(range.minimum()) <= 0) {
                 n = 0.0;
             } else {
-                n = (value(p, m) - r[0]) / (r[1] - r[0]);
+                double minimum = range.minimum().doubleValue();
+                double maximum = range.maximum().doubleValue();
+                n = (value(p, m) - minimum) / (maximum - minimum);
                 n = Math.max(0.0, Math.min(1.0, n));
             }
             BigDecimal weight = e.getValue().divide(BigDecimal.valueOf(100), 8, RoundingMode.HALF_UP);

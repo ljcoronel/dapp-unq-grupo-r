@@ -2,6 +2,7 @@ package com.dappunq.persistence;
 
 import com.dappunq.model.valuation.Holding;
 import com.dappunq.model.valuation.Metric;
+import com.dappunq.model.valuation.NormalizationRange;
 import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.ValuationDomainException;
 import com.dappunq.model.valuation.Valuation;
@@ -37,6 +38,7 @@ public class ValuationPersistenceMapper {
         if (entity == null) {
             return null;
         }
+
         return new PlayerSnapshot(
                 entity.getId(),
                 entity.getPosition(),
@@ -48,6 +50,10 @@ public class ValuationPersistenceMapper {
                 entity.getMinutesPlayed(),
                 entity.getAppearances()
         );
+    }
+
+    public NormalizationRange toNormalizationRange(MetricNormalizationEntity entity) {
+        return new NormalizationRange(entity.getMetric(), entity.getMinimumValue(), entity.getMaximumValue());
     }
 
     public Holding toModel(HoldingEntity entity) {
