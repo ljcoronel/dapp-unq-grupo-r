@@ -57,8 +57,6 @@ public class ValuationServiceImpl implements ValuationService {
                 .orElseThrow(() -> new ValuationDomainException("No strategy config found for userId: " + userId));
             BigDecimal v = calculator.calculate(mapper.toSnapshot(player),
                 new StrategyConfig(strategyConfig.getTipoEstrategia(), mapper.read(strategyConfig.getPesos())), context, BigDecimal.ZERO);
-            // TODO: evaluar eliminar el campo valorTotal de Valuation (ese 1 fue puesto para que funcione)
-            // TODO: evaluar eliminar el campo window de Valuation y que lo absorba ejecutadoEn
             ValuationEntity result = valuationRepository.save(new ValuationEntity(user, player,
                 v.setScale(2, RoundingMode.HALF_UP),
                 strategyConfig.getTipoEstrategia(), ExecutionType.MANUAL));

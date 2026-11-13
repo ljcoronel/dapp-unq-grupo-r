@@ -502,10 +502,8 @@ components:
       properties:
         usuarioId: {type: integer, format: int64}
         jugadorId: {type: integer, format: int64}
-        tokens: {type: integer}
         valorUnitario: {type: number, format: double}
-        valorTotal: {type: number, format: double}
-        estrategia: {type: string, enum: [ESTRATEGIA_A, ESTRATEGIA_B]}
+        tipoEstrategia: {type: string, enum: [ESTRATEGIA_A, ESTRATEGIA_B]}
         ejecutadoEn: {type: string, format: date-time}
         tipoEjecucion: {type: string, enum: [DOMINICAL, MANUAL]}
     CrearOrdenRequest:
