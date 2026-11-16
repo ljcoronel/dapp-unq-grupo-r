@@ -12,7 +12,6 @@ import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.UserEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
 import com.dappunq.persistence.ValuationRepository;
 import com.dappunq.service.SuperuserInitializationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,9 +64,6 @@ class InitialHoldingsIntegrationTest {
     private ValuationRepository valuationRepository;
 
     @Autowired
-    private ValuationHistoryRepository valuationHistoryRepository;
-
-    @Autowired
     private SuperuserInitializationService superuserInitializationService;
 
     private UserEntity user;
@@ -76,7 +72,6 @@ class InitialHoldingsIntegrationTest {
     @BeforeEach
     void setUp() {
         holdingRepository.deleteAll();
-        valuationHistoryRepository.deleteAll();
         valuationRepository.deleteAll();
         strategyConfigRepository.deleteAll();
         playerRepository.deleteAll();
@@ -126,7 +121,7 @@ class InitialHoldingsIntegrationTest {
                 .orElseThrow();
         assertEquals(100, holding.getTokens());
         assertEquals(2, holding.getValorUnitario().scale());
-        assertEquals(1, valuationHistoryRepository.findAll().stream()
+        assertEquals(1, valuationRepository.findAll().stream()
                 .filter(history -> history.getUser().getId().equals(superuser.getId()))
                 .count());
     }

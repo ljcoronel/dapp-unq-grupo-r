@@ -2,6 +2,7 @@ package com.dappunq.dto.valuation;
 
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
+import com.dappunq.model.valuation.Metric;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.math.BigDecimal;
@@ -11,13 +12,13 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record StrategyStateResponse(
         StrategyType estrategia,
-        Map<String, BigDecimal> pesos,
+        Map<Metric, BigDecimal> pesos,
         StrategyStatus estado,
         Instant vigenteDesde,
         StrategyConfigDto actual,
         StrategyConfigDto pendiente
 ) {
-    public StrategyStateResponse(StrategyType estrategia, Map<String, BigDecimal> pesos, StrategyStatus estado, Instant vigenteDesde) {
+    public StrategyStateResponse(StrategyType estrategia, Map<Metric, BigDecimal> pesos, StrategyStatus estado, Instant vigenteDesde) {
         this(
                 estrategia,
                 pesos,

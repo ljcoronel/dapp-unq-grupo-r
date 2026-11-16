@@ -53,7 +53,7 @@ class UserProfileIntegrationTest {
         User saved = userRepository.save(new User("perfilUsuario", passwordEncoder.encode("secret")));
         Long id = saved.getId();
 
-        mockMvc.perform(get("/users/" + id + "/"))
+        mockMvc.perform(get("/users/" + id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("perfilUsuario"));
     }
@@ -64,14 +64,14 @@ class UserProfileIntegrationTest {
         User saved = userRepository.save(new User("  normalizado  ", passwordEncoder.encode("secret")));
         Long id = saved.getId();
 
-        mockMvc.perform(get("/users/" + id + "/"))
+        mockMvc.perform(get("/users/" + id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("normalizado"));
     }
 
     @Test
     void shouldReturn404WhenUserDoesNotExist() throws Exception {
-        mockMvc.perform(get("/users/999999/"))
+        mockMvc.perform(get("/users/999999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(containsString("Usuario no encontrado")));
     }

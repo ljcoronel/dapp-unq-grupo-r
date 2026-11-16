@@ -1,5 +1,6 @@
 package com.dappunq.e2e;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.model.User;
@@ -15,9 +16,8 @@ import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.UserEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.order.JpaOrdenEntityRepository;
 import com.dappunq.service.WhoScoredScrapingService;
 import com.dappunq.security.JwtService;
@@ -32,6 +32,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -73,8 +74,7 @@ class OrderManagementControllerE2ETest {
     @Autowired private LeagueRepository leagues;
     @Autowired private HoldingRepository holdings;
     @Autowired private JpaOrdenEntityRepository orders;
-    @Autowired private ValuationRepository valuations;
-    @Autowired private ValuationHistoryRepository valuationHistory;
+    @Autowired private ValuationRepository valuationHistory;
     @Autowired private ApiKeyRepository apiKeys;
     @Autowired private ValuationPersistenceMapper mapper;
     @Autowired private JwtService jwtService;
@@ -88,7 +88,6 @@ class OrderManagementControllerE2ETest {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         orders.deleteAll();
         valuationHistory.deleteAll();
-        valuations.deleteAll();
         holdings.deleteAll();
         strategies.deleteAll();
         apiKeys.deleteAll();
@@ -98,12 +97,12 @@ class OrderManagementControllerE2ETest {
         users.deleteAll();
 
         user = users.save(new UserEntity("market_e2e", "password"));
-        Map<String, BigDecimal> weights = new HashMap<>();
-        weights.put("goals", BigDecimal.valueOf(30));
-        weights.put("assists", BigDecimal.valueOf(25));
-        weights.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weights.put("aerialsWon", BigDecimal.valueOf(15));
-        weights.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weights = new HashMap<>();
+        weights.put(Metric.goals, BigDecimal.valueOf(30));
+        weights.put(Metric.assists, BigDecimal.valueOf(25));
+        weights.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weights.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weights.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
         strategies.save(new StrategyConfigEntity(user, StrategyType.ESTRATEGIA_A,
                 mapper.write(weights), StrategyStatus.ACTUAL, Instant.now()));
         TeamEntity team = teams.save(new TeamEntity(1L, "Market Team"));
@@ -169,12 +168,12 @@ class OrderManagementControllerE2ETest {
     @Test
     void endpointsDeVentaEHistorialSonPublicosYRechazanDatosInvalidos() throws Exception {
         UserEntity seller = users.save(new UserEntity("market_seller", "password"));
-        Map<String, BigDecimal> weights = new HashMap<>();
-        weights.put("goals", BigDecimal.valueOf(30));
-        weights.put("assists", BigDecimal.valueOf(25));
-        weights.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weights.put("aerialsWon", BigDecimal.valueOf(15));
-        weights.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weights = new HashMap<>();
+        weights.put(Metric.goals, BigDecimal.valueOf(30));
+        weights.put(Metric.assists, BigDecimal.valueOf(25));
+        weights.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weights.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weights.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
         strategies.save(new StrategyConfigEntity(seller, StrategyType.ESTRATEGIA_A,
                 mapper.write(weights), StrategyStatus.ACTUAL, Instant.now()));
         holdings.save(new com.dappunq.persistence.HoldingEntity(seller, player, 5));
@@ -222,12 +221,12 @@ class OrderManagementControllerE2ETest {
     @Test
     void compraE2EConsumeLiquidezPrioritariaYQuedaPendienteAlAgotarse() throws Exception {
         UserEntity superuser = users.save(new UserEntity("superuser", "password"));
-        Map<String, BigDecimal> weights = new HashMap<>();
-        weights.put("goals", BigDecimal.valueOf(30));
-        weights.put("assists", BigDecimal.valueOf(25));
-        weights.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weights.put("aerialsWon", BigDecimal.valueOf(15));
-        weights.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weights = new HashMap<>();
+        weights.put(Metric.goals, BigDecimal.valueOf(30));
+        weights.put(Metric.assists, BigDecimal.valueOf(25));
+        weights.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weights.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weights.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
         strategies.save(new StrategyConfigEntity(superuser, StrategyType.ESTRATEGIA_A,
                 mapper.write(weights), StrategyStatus.ACTUAL, Instant.now()));
         holdings.save(new com.dappunq.persistence.HoldingEntity(superuser, player, 2));
@@ -245,7 +244,7 @@ class OrderManagementControllerE2ETest {
                 .andExpect(jsonPath("$.status").value("PENDIENTE"));
     }
 
-    private org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder orderPost(
+    private MockHttpServletRequestBuilder orderPost(
             String path, String content, UserEntity account) {
         return post(path)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtService.generateToken(

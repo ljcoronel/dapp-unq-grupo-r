@@ -1,14 +1,15 @@
-package com.dappunq.controller;
+package com.dappunq.controller.mapper;
 
-import com.dappunq.dto.valuation.HoldingHistoryResponse;
+import com.dappunq.dto.valuation.ValuationResponse;
 import com.dappunq.dto.valuation.HoldingResponse;
 import com.dappunq.dto.valuation.RecalculationResult;
 import com.dappunq.dto.valuation.StrategyConfigDto;
 import com.dappunq.dto.valuation.StrategyStateResponse;
 import com.dappunq.model.valuation.Holding;
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyState;
-import com.dappunq.model.valuation.ValuationHistoryRecord;
+import com.dappunq.model.valuation.Valuation;
 import com.dappunq.persistence.HoldingEntity;
 import com.dappunq.persistence.StrategyConfigEntity;
 import org.springframework.stereotype.Component;
@@ -53,19 +54,17 @@ public class ValuationDtoMapper {
         );
     }
 
-    public HoldingHistoryResponse toResponse(ValuationHistoryRecord r) {
+    public ValuationResponse toResponse(Valuation r) {
         if (r == null) {
             return null;
         }
-        return new HoldingHistoryResponse(
-                r.getUsuarioId(),
-                r.getJugadorId(),
-                r.getTokens(),
-                r.getValorUnitario(),
-                r.getValorTotal(),
-                r.getEstrategia(),
-                r.getEjecutadoEn(),
-                r.getTipoEjecucion()
+        return new ValuationResponse(
+            r.getUsuarioId(),
+            r.getJugadorId(),
+            r.getValorUnitario(),
+            r.getTipoEstrategia(),
+            r.getEjecutadoEn(),
+            r.getTipoEjecucion()
         );
     }
 
@@ -81,7 +80,7 @@ public class ValuationDtoMapper {
         );
     }
 
-    public StrategyStateResponse strategy(StrategyConfigEntity e, Map<String, BigDecimal> weights) {
+    public StrategyStateResponse strategy(StrategyConfigEntity e, Map<Metric, BigDecimal> weights) {
         return new StrategyStateResponse(e.getTipoEstrategia(), weights, e.getEstado(), e.getVigenteDesde());
     }
 

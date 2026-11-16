@@ -59,7 +59,7 @@ class UserAuthE2ETest {
         Long id = saved.getId();
 
         // Profile lookup returns the correct domain user through UserService → UserRepository → UserMapper
-        mockMvc.perform(get("/users/" + id + "/"))
+        mockMvc.perform(get("/users/" + id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("usuarioE2E"));
 

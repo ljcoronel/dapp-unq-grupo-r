@@ -1,5 +1,6 @@
 package com.dappunq.service;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.persistence.JpaUserEntityRepository;
@@ -66,12 +67,12 @@ class SuperuserInitializationServiceTest {
         assertEquals(StrategyType.ESTRATEGIA_A, config.getTipoEstrategia());
         assertEquals(StrategyStatus.ACTUAL, config.getEstado());
 
-        Map<String, BigDecimal> weights = mapper.read(config.getPesos());
-        assertEquals(BigDecimal.valueOf(30), weights.get("goals"));
-        assertEquals(BigDecimal.valueOf(25), weights.get("assists"));
-        assertEquals(BigDecimal.valueOf(15), weights.get("passSuccessPercentage"));
-        assertEquals(BigDecimal.valueOf(15), weights.get("aerialsWon"));
-        assertEquals(BigDecimal.valueOf(15), weights.get("timesManOfTheMatch"));
+        Map<Metric, BigDecimal> weights = mapper.read(config.getPesos());
+        assertEquals(BigDecimal.valueOf(30), weights.get(Metric.goals));
+        assertEquals(BigDecimal.valueOf(25), weights.get(Metric.assists));
+        assertEquals(BigDecimal.valueOf(15), weights.get(Metric.passSuccessPercentage));
+        assertEquals(BigDecimal.valueOf(15), weights.get(Metric.aerialsWon));
+        assertEquals(BigDecimal.valueOf(15), weights.get(Metric.timesManOfTheMatch));
     }
 
     @Test
@@ -97,7 +98,7 @@ class SuperuserInitializationServiceTest {
     @Test
     void initializeSuperuserEsIdempotenteCuandoYaExisteEstrategiaActual() {
         StrategyConfigEntity existing = new StrategyConfigEntity(superuser, StrategyType.ESTRATEGIA_A,
-                mapper.write(Map.of("goals", BigDecimal.valueOf(100))), StrategyStatus.ACTUAL, java.time.Instant.now());
+                mapper.write(Map.of(Metric.goals, BigDecimal.valueOf(100))), StrategyStatus.ACTUAL, java.time.Instant.now());
         when(userRepository.findByNombreIgnoreCase("superuser")).thenReturn(Optional.of(superuser));
         when(strategyConfigRepository.findFirstByUserIdAndEstado(999L, StrategyStatus.ACTUAL))
                 .thenReturn(Optional.of(existing));

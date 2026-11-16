@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 
-public record StrategyConfig(StrategyType tipo, Map<String, BigDecimal> weights) {
+public record StrategyConfig(StrategyType tipo, Map<Metric, BigDecimal> weights) {
 
     public StrategyConfig {
         weights = Map.copyOf(weights);
@@ -15,10 +15,10 @@ public record StrategyConfig(StrategyType tipo, Map<String, BigDecimal> weights)
         validate(tipo, weights);
     }
 
-    private static void validate(StrategyType strategy, Map<String, BigDecimal> weights) {
-        Set<String> required = strategy == StrategyType.ESTRATEGIA_A
-                ? Set.of("goals", "assists", "passSuccessPercentage", "aerialsWon", "timesManOfTheMatch")
-                : Set.of("passSuccessPercentage", "aerialsWon", "minutesPlayed", "appearances");
+    private static void validate(StrategyType strategy, Map<Metric, BigDecimal> weights) {
+        Set<Metric> required = strategy == StrategyType.ESTRATEGIA_A
+                ? Metric.metricsForStrategyA()
+                : Metric.metricsForStrategyB();
 
         if (!weights.keySet().equals(required)) {
             throw ValuationDomainException.invalidWeights("metricas requeridas incompletas");

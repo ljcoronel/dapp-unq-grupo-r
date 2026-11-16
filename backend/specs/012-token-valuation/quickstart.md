@@ -132,7 +132,7 @@ La suite cubre:
 
 1. Ejecutar de manera consecutiva dos solicitudes a `POST /quotes/recalculate` o dos ejecuciones del scheduler dentro de la misma ventana dominical.
 2. **Verificación de Idempotencia**:
-   - La restricción de unicidad `(usuario_id, jugador_id, ventana)` en `ValuacionEntity` y `ValuationHistoryEntity` evita filas duplicadas por ejecución.
+   - La restricción de unicidad `(usuario_id, jugador_id, ventana)` en `ValuacionEntity` y `ValuationEntity` evita filas duplicadas por ejecución.
    - Las cantidades de `tokens` en `HoldingEntity` permanecen constantes (invariante de 100 tokens por jugador en el Superusuario, sin creación ni pérdida de tokens).
    - El historial preserva la trazabilidad exacta de las ejecuciones sin duplicar snapshots para la misma clave única de ventana y tipo.
 
@@ -155,5 +155,5 @@ La suite cubre:
    - La transacción de `WeeklyValuationService.execute(...)` se revierte por completo.
    - Ninguna estrategia `PENDIENTE` es promovida a `ACTUAL`.
    - No se alteran los valores vigentes de `valorUnitario` o `valorTotal` en las tenencias.
-   - No se crean snapshots corruptos en `ValuationHistoryEntity`.
+   - No se crean snapshots corruptos en `ValuationEntity`.
    - La última valuación válida permanece intacta y disponible para consulta.

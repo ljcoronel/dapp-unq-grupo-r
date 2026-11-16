@@ -1,23 +1,11 @@
 package com.dappunq.e2e;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.User;
+import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
-import com.dappunq.persistence.HoldingEntity;
-import com.dappunq.persistence.HoldingRepository;
-import com.dappunq.persistence.JpaUserEntityRepository;
-import com.dappunq.persistence.LeagueEntity;
-import com.dappunq.persistence.LeagueRepository;
-import com.dappunq.persistence.PlayerEntity;
-import com.dappunq.persistence.PlayerRepository;
-import com.dappunq.persistence.StrategyConfigEntity;
-import com.dappunq.persistence.StrategyConfigRepository;
-import com.dappunq.persistence.TeamEntity;
-import com.dappunq.persistence.TeamRepository;
-import com.dappunq.persistence.UserEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
-import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.*;
 import com.dappunq.security.JwtService;
 import com.dappunq.security.UserPrincipal;
 import com.dappunq.service.WhoScoredScrapingService;
@@ -91,9 +79,6 @@ class HoldingsInvariantE2ETest {
     private ValuationRepository valuationRepository;
 
     @Autowired
-    private ValuationHistoryRepository valuationHistoryRepository;
-
-    @Autowired
     private ValuationPersistenceMapper mapper;
 
     @Autowired
@@ -110,7 +95,6 @@ class HoldingsInvariantE2ETest {
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
 
-        valuationHistoryRepository.deleteAll();
         valuationRepository.deleteAll();
         holdingRepository.deleteAll();
         strategyConfigRepository.deleteAll();
@@ -128,15 +112,16 @@ class HoldingsInvariantE2ETest {
         LeagueEntity league = leagueRepository.save(new LeagueEntity(1L, "League Test", "Region Test"));
         PlayerEntity player = playerRepository.save(new PlayerEntity(1L, "Player Test", team, league, 24, 180, 75, "Defender", 10, 900, 2, 1, 0, 0, 1.5f, 85f, 3f, 1));
 
-        Map<String, BigDecimal> weightsA = new HashMap<>();
-        weightsA.put("goals", BigDecimal.valueOf(30));
-        weightsA.put("assists", BigDecimal.valueOf(25));
-        weightsA.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weightsA.put("aerialsWon", BigDecimal.valueOf(15));
-        weightsA.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weightsA = new HashMap<>();
+        weightsA.put(Metric.goals, BigDecimal.valueOf(30));
+        weightsA.put(Metric.assists, BigDecimal.valueOf(25));
+        weightsA.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weightsA.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weightsA.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
 
         strategyConfigRepository.save(new StrategyConfigEntity(user, StrategyType.ESTRATEGIA_A, mapper.write(weightsA), StrategyStatus.ACTUAL, Instant.now()));
         holdingRepository.save(new HoldingEntity(user, player, 100));
+        valuationRepository.save(new ValuationEntity(user, player, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, ExecutionType.DOMINICAL));
     }
 
     @Test

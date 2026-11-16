@@ -1,6 +1,7 @@
 package com.dappunq.service;
 
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.NormalizationContext;
 import com.dappunq.model.valuation.PlayerSnapshot;
 import com.dappunq.model.valuation.PlayerValuationCalculator;
 import com.dappunq.model.valuation.RecalculationSummary;
@@ -9,15 +10,15 @@ import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.ValuationDomainException;
 import com.dappunq.persistence.HoldingEntity;
 import com.dappunq.persistence.HoldingRepository;
+import com.dappunq.persistence.MetricNormalizationEntity;
+import com.dappunq.persistence.NormalizationRangeRepository;
 import com.dappunq.persistence.PlayerEntity;
 import com.dappunq.persistence.PlayerRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
 import com.dappunq.persistence.StrategyConfigRepository;
 import com.dappunq.persistence.ValuationEntity;
-import com.dappunq.persistence.ValuationHistoryEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.ValuationPersistenceMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
@@ -41,8 +41,8 @@ public class WeeklyValuationService {
     private final StrategyConfigRepository strategyConfigRepository;
     private final HoldingRepository holdingRepository;
     private final ValuationRepository valuationRepository;
-    private final ValuationHistoryRepository valuationHistoryRepository;
     private final ValuationPersistenceMapper mapper;
+    private final NormalizationRangeRepository normalizationRangeRepository;
     private final PlayerValuationCalculator calculator = new PlayerValuationCalculator();
 
     private Clock clock = Clock.system(ZoneId.of("America/Argentina/Buenos_Aires"));
@@ -55,15 +55,15 @@ public class WeeklyValuationService {
                                   StrategyConfigRepository strategyConfigRepository,
                                   HoldingRepository holdingRepository,
                                   ValuationRepository valuationRepository,
-                                  ValuationHistoryRepository valuationHistoryRepository,
-                                  ValuationPersistenceMapper mapper) {
+                                  ValuationPersistenceMapper mapper,
+                                  NormalizationRangeRepository normalizationRangeRepository) {
         this.scrapingService = scrapingService;
         this.playerRepository = playerRepository;
         this.strategyConfigRepository = strategyConfigRepository;
         this.holdingRepository = holdingRepository;
         this.valuationRepository = valuationRepository;
-        this.valuationHistoryRepository = valuationHistoryRepository;
         this.mapper = mapper;
+        this.normalizationRangeRepository = normalizationRangeRepository;
     }
 
     @Transactional
@@ -72,12 +72,19 @@ public class WeeklyValuationService {
         scrapingService.scrape(playersLimit != null ? playersLimit : "50");
 
         List<PlayerEntity> snapshot = playerRepository.findAll();
-        if (snapshot == null || snapshot.isEmpty()) {
+        if (snapshot.isEmpty()) {
             log.error("Fallo de snapshot: la lista de jugadores obtenida tras el scrape esta vacia o incompleta");
             throw ValuationDomainException.snapshotFailure("Snapshot de jugadores vacio o incompleto");
         }
 
         List<PlayerSnapshot> playerSnapshots = snapshot.stream().map(mapper::toSnapshot).toList();
+        NormalizationContext context = calculator.buildNormalizationContext(playerSnapshots);
+        Instant calculatedAt = Instant.now(clock);
+        List<MetricNormalizationEntity> ranges = context.ranges().values().stream()
+                .map(range -> new MetricNormalizationEntity(
+                        range.metric(), range.minimum(), range.maximum(), calculatedAt))
+                .toList();
+        normalizationRangeRepository.replaceCurrentRanges(ranges);
 
         // 1. Aplicar estrategias pendientes antes de recalcular
         List<StrategyConfigEntity> pendingList = strategyConfigRepository.findAllByEstado(StrategyStatus.PENDIENTE);
@@ -91,7 +98,6 @@ public class WeeklyValuationService {
         }
 
         // 2. Recalcular tenencias de usuarios con tipo actual (omitir usuarios sin tipo)
-        String window = LocalDate.now(clock).toString() + "-" + executionType.name();
         List<StrategyConfigEntity> activeConfigs = strategyConfigRepository.findAllByEstado(StrategyStatus.ACTUAL);
         int recalculatedHoldings = 0;
 
@@ -102,32 +108,23 @@ public class WeeklyValuationService {
 
             for (HoldingEntity holding : userHoldings) {
                 PlayerSnapshot playerSnapshot = mapper.toSnapshot(holding.getPlayer());
-                BigDecimal unitValue = calculator.calculate(playerSnapshot, domain, playerSnapshots,
+                BigDecimal unitValue = calculator.calculate(playerSnapshot, domain, context,
                         holding.getValorUnitario());
                 holding.valuate(unitValue);
                 holdingRepository.save(holding);
 
-                if (!valuationRepository.existsByUserIdAndPlayerIdAndVentana(userId, holding.getPlayer().getId(), window)) {
-                    valuationRepository.save(new ValuationEntity(
-                            holding.getUser(),
-                            holding.getPlayer(),
-                            window,
-                            domain.tipo(),
-                            unitValue
-                    ));
-                }
+                ValuationEntity valuacionActual = valuationRepository.findCurrentByUserAndPlayer(holding.getUser().getId(), holding.getPlayer().getId())
+                    .orElseThrow(() -> new ValuationDomainException("Si existe la tenencia, entonces debe existir al menos una valuacion"));
 
-                if (!valuationHistoryRepository.existsByUserIdAndPlayerIdAndVentanaAndTipoEjecucion(userId, holding.getPlayer().getId(), window, executionType)) {
-                    valuationHistoryRepository.save(new ValuationHistoryEntity(
-                            holding.getUser(),
-                            holding.getPlayer(),
-                            holding.getTokens(),
-                            unitValue,
-                            domain.tipo(),
-                            window,
-                            executionType
-                    ));
-                }
+                valuacionActual.setIsCurrent(false);
+                valuationRepository.saveAndFlush(valuacionActual);
+                valuationRepository.save(new ValuationEntity(
+                    holding.getUser(),
+                    holding.getPlayer(),
+                    unitValue,
+                    domain.tipo(),
+                    executionType
+                ));
                 recalculatedHoldings++;
             }
         }

@@ -57,7 +57,7 @@ class ScrapingApiKeyE2ETest {
     void shouldAuthorizeValidScrapingApiKey() throws Exception {
         String apiKey = apiKeyService.rotateScrapingApiKey();
 
-        mockMvc.perform(post("/scrape")
+        mockMvc.perform(post("/quotes/scrape")
                         .param("numberOfPlayers", "1")
                         .header("X-API-Key", apiKey))
                 .andExpect(status().isOk());
@@ -67,12 +67,12 @@ class ScrapingApiKeyE2ETest {
 
     @Test
     void shouldRejectMissingOrInvalidScrapingApiKey() throws Exception {
-        mockMvc.perform(post("/scrape")
+        mockMvc.perform(post("/quotes/scrape")
                         .param("numberOfPlayers", "1"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("No autorizado. Se requiere una API key válida para scraping."));
 
-        mockMvc.perform(post("/scrape")
+        mockMvc.perform(post("/quotes/scrape")
                         .param("numberOfPlayers", "1")
                         .header("X-API-Key", "bad-key"))
                 .andExpect(status().isUnauthorized())

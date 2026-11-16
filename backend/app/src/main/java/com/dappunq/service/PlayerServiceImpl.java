@@ -3,7 +3,6 @@ package com.dappunq.service;
 import com.dappunq.dto.LeagueResponse;
 import com.dappunq.dto.PlayerResponse;
 import com.dappunq.dto.TeamResponse;
-import com.dappunq.exception.CatalogUnavailableException;
 import com.dappunq.exception.InvalidPlayerIdException;
 import com.dappunq.exception.PlayerNotFoundException;
 import com.dappunq.persistence.PlayerEntity;
@@ -26,14 +25,14 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Transactional
-    public List<PlayerResponse> findCatalog() {
+    public List<PlayerResponse> getAll() {
         return playerRepository.findAll().stream()
                     .map(this::toResponse)
                     .toList();
     }
 
     @Transactional
-    public PlayerResponse findPlayer(Integer id) {
+    public PlayerResponse findPlayer(Long id) {
         if (id == null || id <= 0) {
             throw new InvalidPlayerIdException("El identificador del jugador debe ser positivo");
         }

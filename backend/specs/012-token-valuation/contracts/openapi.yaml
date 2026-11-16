@@ -67,9 +67,9 @@ paths:
         '404': { description: Usuario inexistente. }
   /users/{usuarioId}/holdings:
     get:
-      tags: [Tenencias]
+      tags: [ Tenencias ]
       summary: Consultar tenencias y valor unitario
-      security: [{ bearerAuth: [] }]
+      security: [ { bearerAuth: [ ] } ]
       parameters:
         - $ref: '#/components/parameters/UsuarioId'
       responses:
@@ -84,9 +84,9 @@ paths:
         '404': { description: Usuario inexistente. }
   /users/{usuarioId}/holdings/history:
     get:
-      tags: [Tenencias]
+      tags: [ Tenencias ]
       summary: Consultar historial de valores de tokens poseidos
-      security: [{ bearerAuth: [] }]
+      security: [ { bearerAuth: [ ] } ]
       parameters:
         - $ref: '#/components/parameters/UsuarioId'
       responses:

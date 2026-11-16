@@ -1,4 +1,4 @@
-package com.dappunq.controller;
+package com.dappunq.controller.handlers;
 
 import com.dappunq.model.order.exception.OrdenException;
 import org.springframework.http.HttpStatus;

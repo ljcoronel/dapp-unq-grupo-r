@@ -21,7 +21,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,29 +37,29 @@ class StrategyConfigurationServiceTest {
     private HoldingsValuationService holdingsValuationService;
 
     private final ValuationPersistenceMapper mapper = new ValuationPersistenceMapper();
-    private StrategyConfigurationService service;
+    private StrategyConfigurationServiceImpl service;
 
     private UserEntity user;
-    private Map<String, BigDecimal> validWeightsA;
-    private Map<String, BigDecimal> validWeightsB;
+    private Map<Metric, BigDecimal> validWeightsA;
+    private Map<Metric, BigDecimal> validWeightsB;
 
     @BeforeEach
     void setUp() {
-        service = new StrategyConfigurationService(userRepository, strategyConfigRepository, mapper);
+        service = new StrategyConfigurationServiceImpl(userRepository, strategyConfigRepository, mapper);
         user = new UserEntity(1L, "testuser", "hash");
 
         validWeightsA = new HashMap<>();
-        validWeightsA.put("goals", BigDecimal.valueOf(30));
-        validWeightsA.put("assists", BigDecimal.valueOf(25));
-        validWeightsA.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        validWeightsA.put("aerialsWon", BigDecimal.valueOf(15));
-        validWeightsA.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        validWeightsA.put(Metric.goals, BigDecimal.valueOf(30));
+        validWeightsA.put(Metric.assists, BigDecimal.valueOf(25));
+        validWeightsA.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        validWeightsA.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        validWeightsA.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
 
         validWeightsB = new HashMap<>();
-        validWeightsB.put("passSuccessPercentage", BigDecimal.valueOf(35));
-        validWeightsB.put("aerialsWon", BigDecimal.valueOf(20));
-        validWeightsB.put("minutesPlayed", BigDecimal.valueOf(20));
-        validWeightsB.put("appearances", BigDecimal.valueOf(20));
+        validWeightsB.put(Metric.passSuccessPercentage, BigDecimal.valueOf(35));
+        validWeightsB.put(Metric.aerialsWon, BigDecimal.valueOf(20));
+        validWeightsB.put(Metric.minutesPlayed, BigDecimal.valueOf(20));
+        validWeightsB.put(Metric.appearances, BigDecimal.valueOf(20));
     }
 
     @Test

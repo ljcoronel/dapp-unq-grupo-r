@@ -3,6 +3,7 @@ package com.dappunq.service;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.model.valuation.ExecutionType;
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.persistence.JpaUserEntityRepository;
 import com.dappunq.persistence.StrategyConfigEntity;
 import com.dappunq.persistence.StrategyConfigRepository;
@@ -60,12 +61,12 @@ public class SuperuserInitializationService {
     public StrategyConfigEntity initializeSuperuserStrategy(UserEntity superuser) {
         return strategyConfigRepository.findFirstByUserIdAndEstado(superuser.getId(), StrategyStatus.ACTUAL)
                 .orElseGet(() -> {
-                    Map<String, BigDecimal> weights = new HashMap<>();
-                    weights.put("goals", BigDecimal.valueOf(30));
-                    weights.put("assists", BigDecimal.valueOf(25));
-                    weights.put("passSuccessPercentage", BigDecimal.valueOf(15));
-                    weights.put("aerialsWon", BigDecimal.valueOf(15));
-                    weights.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+                    Map<Metric, BigDecimal> weights = new HashMap<>();
+                    weights.put(Metric.goals, BigDecimal.valueOf(30));
+                    weights.put(Metric.assists, BigDecimal.valueOf(25));
+                    weights.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+                    weights.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+                    weights.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
 
                     StrategyConfigEntity config = new StrategyConfigEntity(
                             superuser,

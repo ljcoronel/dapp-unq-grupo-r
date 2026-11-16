@@ -1,5 +1,6 @@
 package com.dappunq.integration;
 
+import com.dappunq.model.valuation.Metric;
 import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.RecalculationSummary;
 import com.dappunq.model.valuation.StrategyStatus;
@@ -17,10 +18,8 @@ import com.dappunq.persistence.TeamEntity;
 import com.dappunq.persistence.TeamRepository;
 import com.dappunq.persistence.UserEntity;
 import com.dappunq.persistence.ValuationEntity;
-import com.dappunq.persistence.ValuationHistoryEntity;
-import com.dappunq.persistence.ValuationHistoryRepository;
-import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.persistence.ValuationRepository;
+import com.dappunq.persistence.ValuationPersistenceMapper;
 import com.dappunq.service.WeeklyValuationService;
 import com.dappunq.service.WhoScoredScrapingService;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,9 +85,6 @@ class WeeklyValuationIntegrationTest {
     private ValuationRepository valuationRepository;
 
     @Autowired
-    private ValuationHistoryRepository valuationHistoryRepository;
-
-    @Autowired
     private ValuationPersistenceMapper mapper;
 
     private UserEntity user1;
@@ -98,7 +94,6 @@ class WeeklyValuationIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        valuationHistoryRepository.deleteAll();
         valuationRepository.deleteAll();
         holdingRepository.deleteAll();
         strategyConfigRepository.deleteAll();
@@ -118,18 +113,18 @@ class WeeklyValuationIntegrationTest {
         player = playerRepository.save(new PlayerEntity(10L, "Player 1", team, league, 25, 180, 75, "Defender", 10, 900, 2, 1, 0, 0, 1.5f, 85f, 3f, 1));
         playerRepository.save(new PlayerEntity(11L, "Player 2", team, league, 0, 180, 75, "Forward", 0, 100, 0, 0, 0, 0, 0f, 50f, 1f, 0));
 
-        Map<String, BigDecimal> weightsA = new HashMap<>();
-        weightsA.put("goals", BigDecimal.valueOf(30));
-        weightsA.put("assists", BigDecimal.valueOf(25));
-        weightsA.put("passSuccessPercentage", BigDecimal.valueOf(15));
-        weightsA.put("aerialsWon", BigDecimal.valueOf(15));
-        weightsA.put("timesManOfTheMatch", BigDecimal.valueOf(15));
+        Map<Metric, BigDecimal> weightsA = new HashMap<>();
+        weightsA.put(Metric.goals, BigDecimal.valueOf(30));
+        weightsA.put(Metric.assists, BigDecimal.valueOf(25));
+        weightsA.put(Metric.passSuccessPercentage, BigDecimal.valueOf(15));
+        weightsA.put(Metric.aerialsWon, BigDecimal.valueOf(15));
+        weightsA.put(Metric.timesManOfTheMatch, BigDecimal.valueOf(15));
 
-        Map<String, BigDecimal> weightsB = new HashMap<>();
-        weightsB.put("passSuccessPercentage", BigDecimal.valueOf(35));
-        weightsB.put("aerialsWon", BigDecimal.valueOf(20));
-        weightsB.put("minutesPlayed", BigDecimal.valueOf(20));
-        weightsB.put("appearances", BigDecimal.valueOf(20));
+        Map<Metric, BigDecimal> weightsB = new HashMap<>();
+        weightsB.put(Metric.passSuccessPercentage, BigDecimal.valueOf(35));
+        weightsB.put(Metric.aerialsWon, BigDecimal.valueOf(20));
+        weightsB.put(Metric.minutesPlayed, BigDecimal.valueOf(20));
+        weightsB.put(Metric.appearances, BigDecimal.valueOf(20));
 
         // User 1 tiene Estrategia A ACTUAL
         strategyConfigRepository.save(new StrategyConfigEntity(user1, StrategyType.ESTRATEGIA_A, mapper.write(weightsA), StrategyStatus.ACTUAL, Instant.now()));
@@ -139,9 +134,15 @@ class WeeklyValuationIntegrationTest {
         strategyConfigRepository.save(new StrategyConfigEntity(user2, StrategyType.ESTRATEGIA_B, mapper.write(weightsB), StrategyStatus.PENDIENTE, Instant.now()));
 
         // Holdings
+        // TODO: no debería permitirse que haya más de 100 tokens por jugador. ¿Usar Service?
         holdingRepository.save(new HoldingEntity(user1, player, 100));
         holdingRepository.save(new HoldingEntity(user2, player, 100));
+        // TODO: no debería permitirse que un usuario común tenga un Holding sin Estrategia configurada. ¿Usar Service?
         holdingRepository.save(new HoldingEntity(userWithoutStrategy, player, 100));
+
+        // Valuation
+        valuationRepository.save(new ValuationEntity(user1, player, BigDecimal.ONE, StrategyType.ESTRATEGIA_A, null));
+        valuationRepository.save(new ValuationEntity(user2, player, BigDecimal.ONE, StrategyType.ESTRATEGIA_B, null));
     }
 
     @Test
@@ -158,18 +159,17 @@ class WeeklyValuationIntegrationTest {
         assertTrue(strategyConfigRepository.findFirstByUserIdAndEstado(user2.getId(), StrategyStatus.PENDIENTE).isEmpty());
 
         // Verificar historial
-        List<ValuationHistoryEntity> historyUser1 = valuationHistoryRepository.findByUserIdOrderByEjecutadoEnDesc(user1.getId());
+        List<ValuationEntity> historyUser1 = valuationRepository.findHistoricalByUser(user1.getId());
         assertEquals(1, historyUser1.size());
         assertEquals(StrategyType.ESTRATEGIA_A, historyUser1.get(0).getEstrategia());
-        assertEquals(100, historyUser1.get(0).getTokens());
         assertNotNull(historyUser1.get(0).getValorUnitario());
 
-        List<ValuationHistoryEntity> historyUser2 = valuationHistoryRepository.findByUserIdOrderByEjecutadoEnDesc(user2.getId());
+        List<ValuationEntity> historyUser2 = valuationRepository.findHistoricalByUser(user2.getId());
         assertEquals(1, historyUser2.size());
         assertEquals(StrategyType.ESTRATEGIA_B, historyUser2.get(0).getEstrategia());
 
-        // User sin tipo no debe tener historial
-        List<ValuationHistoryEntity> historyNoStrat = valuationHistoryRepository.findByUserIdOrderByEjecutadoEnDesc(userWithoutStrategy.getId());
+        // User sin estrategia no debe tener historial
+        List<ValuationEntity> historyNoStrat = valuationRepository.findHistoricalByUser(userWithoutStrategy.getId());
         assertEquals(0, historyNoStrat.size());
 
         // Idempotencia: reejecutar en la misma ventana no debe duplicar historial ni valuaciones
@@ -178,10 +178,10 @@ class WeeklyValuationIntegrationTest {
         BigDecimal secondUserValue = holdingRepository.findByUserId(user1.getId()).get(0).getValorUnitario();
         assertTrue(secondUserValue.compareTo(firstUserValue) > 0);
 
-        List<ValuationHistoryEntity> totalHistory = valuationHistoryRepository.findAll();
-        assertEquals(2, totalHistory.size());
+        List<ValuationEntity> totalHistory = valuationRepository.findAllHistorical();
+        assertEquals(4, totalHistory.size());
 
-        List<ValuationEntity> totalValuations = valuationRepository.findAll();
+        List<ValuationEntity> totalValuations = valuationRepository.findAllCurrent();
         assertEquals(2, totalValuations.size());
     }
 }
