@@ -18,9 +18,9 @@
 
 **Purpose**: Prepare dependencies and confirm the existing frontend baseline.
 
-- [ ] T001 Install Recharts from `frontend/` with `pnpm add recharts` and update `frontend/package.json`
-- [ ] T002 [P] Review existing authentication, routing, player, and profile implementations in `frontend/src/App.jsx`, `frontend/src/context/AuthContext.jsx`, `frontend/src/services/playerService.js`, and `frontend/src/components/ProfileMenu.jsx`
-- [ ] T003 [P] Confirm the feature contracts and shared conventions in `frontend/specs/003-mercado-tokens/contracts/api-services.md` and `frontend/specs/003-mercado-tokens/contracts/component-contracts.md`
+- [x] T001 Install Recharts from `frontend/` with `npm install recharts` and update `frontend/package.json`
+- [x] T002 [P] Review existing authentication, routing, player, and profile implementations in `frontend/src/App.jsx`, `frontend/src/context/AuthContext.jsx`, `frontend/src/services/playerService.js`, and `frontend/src/components/ProfileMenu.jsx`
+- [x] T003 [P] Confirm the feature contracts and shared conventions in `frontend/specs/003-mercado-tokens/contracts/api-services.md` and `frontend/specs/003-mercado-tokens/contracts/component-contracts.md`
 
 ---
 
@@ -30,16 +30,16 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T004 Create Base64url JWT payload parsing in `frontend/src/utils/jwt.js`
-- [ ] T005 Update session state to expose `authToken`, `userId`, and existing authentication feedback in `frontend/src/context/AuthContext.jsx`
-- [ ] T006 Add the JWT request interceptor to `frontend/src/services/apiClient.js`
-- [ ] T007 [P] Create `frontend/src/services/orderService.js` for buy, sell, pending-order, transaction, and cancel operations
-- [ ] T008 [P] Create `frontend/src/services/strategyService.js` for strategy retrieval and configuration
-- [ ] T009 [P] Create `frontend/src/services/holdingService.js` for portfolio holdings
-- [ ] T010 [P] Create `frontend/src/services/userService.js` for user profile retrieval
-- [ ] T011 [P] Extend valuation methods in `frontend/src/services/playerService.js`
-- [ ] T012 Create shared loading, error, and empty-state presentation utilities in `frontend/src/components/FeedbackState.jsx`
-- [ ] T013 Configure protected nested routes and `/app` layout routing in `frontend/src/App.jsx`
+- [x] T004 Create Base64url JWT payload parsing in `frontend/src/utils/jwt.js`
+- [x] T005 Update session state to expose `authToken`, `userId`, and existing authentication feedback in `frontend/src/context/AuthContext.jsx`
+- [x] T006 Add the JWT request interceptor to `frontend/src/services/apiClient.js`
+- [x] T007 [P] Create `frontend/src/services/orderService.js` for buy, sell, pending-order, transaction, and cancel operations
+- [x] T008 [P] Create `frontend/src/services/strategyService.js` for strategy retrieval and configuration
+- [x] T009 [P] Create `frontend/src/services/holdingService.js` for portfolio holdings
+- [x] T010 [P] Create `frontend/src/services/userService.js` for user profile retrieval
+- [x] T011 [P] Extend valuation methods in `frontend/src/services/playerService.js`
+- [x] T012 Create shared loading, error, and empty-state presentation utilities in `frontend/src/components/FeedbackState.jsx`
+- [x] T013 Configure protected nested routes and `/app` layout routing in `frontend/src/App.jsx`
 
 **Checkpoint**: Shared JWT, API, routing, and feedback foundations are ready.
 
@@ -51,11 +51,11 @@
 
 **Independent Test**: Authenticate, open every `/app/*` route, and verify that the sidebar remains visible and the active section is highlighted.
 
-- [ ] T014 [P] [US1] Create the permanent responsive sidebar in `frontend/src/components/Sidebar.jsx`
-- [ ] T015 [US1] Update `frontend/src/App.jsx` with protected `/app/catalogo`, `/app/comerciar`, `/app/portfolio`, `/app/estrategia`, and `/app/perfil` child routes
-- [ ] T016 [US1] Replace the old `/home` redirect behavior with `/app/catalogo` in `frontend/src/App.jsx`
-- [ ] T017 [US1] Integrate `ProfileMenu` into `AppLayout` so it remains available across routed sections in `frontend/src/components/AppLayout.jsx`
-- [ ] T018 [US1] Add responsive sidebar collapse behavior for viewports from 320px upward in `frontend/src/components/Sidebar.jsx`
+- [x] T014 [P] [US1] Create the permanent responsive sidebar in `frontend/src/components/Sidebar.jsx`
+- [x] T015 [US1] Update `frontend/src/App.jsx` with protected `/app/catalogo`, `/app/comerciar`, `/app/portfolio`, `/app/estrategia`, and `/app/perfil` child routes
+- [x] T016 [US1] Replace the old `/home` redirect behavior with `/app/catalogo` in `frontend/src/App.jsx`
+- [x] T017 [US1] Integrate `ProfileMenu` into `AppLayout` so it remains available across routed sections in `frontend/src/components/AppLayout.jsx`
+- [x] T018 [US1] Add responsive sidebar collapse behavior for viewports from 320px upward in `frontend/src/components/Sidebar.jsx`
 
 **Checkpoint**: User Story 1 is complete: authenticated navigation and the permanent layout work independently.
 
@@ -67,13 +67,13 @@
 
 **Independent Test**: Load `/app/catalogo`, verify the nine required columns, filter by league/team/nationality, and sort filtered results in both directions.
 
-- [ ] T019 [P] [US2] Create `frontend/src/pages/CatalogoPage.jsx` to fetch all players and manage loading, error, filters, and sorting
-- [ ] T020 [P] [US2] Create league/team/nationality dropdown controls in `frontend/src/components/PlayerFilters.jsx`
-- [ ] T021 [P] [US2] Create the unified nine-column sortable table in `frontend/src/components/PlayerTable.jsx`
-- [ ] T022 [US2] Normalize the existing player response shape and extract filter options in `frontend/src/pages/CatalogoPage.jsx`
-- [ ] T023 [US2] Implement client-side combined filtering and ascending/descending sorting in `frontend/src/pages/CatalogoPage.jsx`
-- [ ] T024 [US2] Replace `frontend/src/pages/HomePage.jsx` or remove its grouped-table usage so the catalog route uses `CatalogoPage`
-- [ ] T025 [US2] Add loading, error/retry, empty-result, and horizontal-scroll states to `frontend/src/components/PlayerTable.jsx`
+- [x] T019 [P] [US2] Create `frontend/src/pages/CatalogoPage.jsx` to fetch all players and manage loading, error, filters, and sorting
+- [x] T020 [P] [US2] Create league/team/nationality dropdown controls in `frontend/src/components/PlayerFilters.jsx`
+- [x] T021 [P] [US2] Create the unified nine-column sortable table in `frontend/src/components/PlayerTable.jsx`
+- [x] T022 [US2] Normalize the existing player response shape and extract filter options in `frontend/src/pages/CatalogoPage.jsx`
+- [x] T023 [US2] Implement client-side combined filtering and ascending/descending sorting in `frontend/src/pages/CatalogoPage.jsx`
+- [x] T024 [US2] Replace `frontend/src/pages/HomePage.jsx` or remove its grouped-table usage so the catalog route uses `CatalogoPage`
+- [x] T025 [US2] Add loading, error/retry, empty-result, and horizontal-scroll states to `frontend/src/components/PlayerTable.jsx`
 
 **Checkpoint**: User Story 2 is complete: the unified catalog works independently.
 
@@ -85,13 +85,13 @@
 
 **Independent Test**: Open the buy modal with and without a strategy, select a player, verify price calculations and quantity/tolerance validation, and submit a valid order.
 
-- [ ] T026 [P] [US3] Create the buy modal in `frontend/src/components/BuyModal.jsx`
-- [ ] T027 [P] [US3] Create reusable integer, tolerance, and credit validation helpers in `frontend/src/utils/orderValidation.js`
-- [ ] T028 [US3] Load the current valuation for the selected player through `frontend/src/services/playerService.js`
-- [ ] T029 [US3] Implement quantity 1-100, two-decimal tolerance, credit, and submit validation in `frontend/src/components/BuyModal.jsx`
-- [ ] T030 [US3] Display unit price, price without tolerance, and price with tolerance in `frontend/src/components/BuyModal.jsx`
-- [ ] T031 [US3] Submit buy orders through `frontend/src/services/orderService.js` and handle success/error feedback in `frontend/src/components/BuyModal.jsx`
-- [ ] T032 [US3] Prevent opening purchase when no strategy exists and show an actionable message in `frontend/src/pages/ComerciarPage.jsx`
+- [x] T026 [P] [US3] Create the buy modal in `frontend/src/components/BuyModal.jsx`
+- [x] T027 [P] [US3] Create reusable integer, tolerance, and credit validation helpers in `frontend/src/utils/orderValidation.js`
+- [x] T028 [US3] Load the current valuation for the selected player through `frontend/src/services/playerService.js`
+- [x] T029 [US3] Implement quantity 1-100, two-decimal tolerance, credit, and submit validation in `frontend/src/components/BuyModal.jsx`
+- [x] T030 [US3] Display unit price, price without tolerance, and price with tolerance in `frontend/src/components/BuyModal.jsx`
+- [x] T031 [US3] Submit buy orders through `frontend/src/services/orderService.js` and handle success/error feedback in `frontend/src/components/BuyModal.jsx`
+- [x] T032 [US3] Prevent opening purchase when no strategy exists and show an actionable message in `frontend/src/pages/ComerciarPage.jsx`
 
 **Checkpoint**: User Story 3 is complete: valid buy orders can be issued and invalid ones blocked independently.
 
@@ -103,13 +103,13 @@
 
 **Independent Test**: Open the sell modal with holdings and active SELL orders, verify available-token limits and tolerance calculations, and submit a valid order.
 
-- [ ] T033 [P] [US4] Create the sell modal in `frontend/src/components/SellModal.jsx`
-- [ ] T034 [US4] Compute available tokens as holdings minus active SELL quantities in `frontend/src/components/SellModal.jsx`
-- [ ] T035 [US4] Load the current valuation for the selected player through `frontend/src/services/playerService.js`
-- [ ] T036 [US4] Implement quantity, available-token, tolerance, and submit validation in `frontend/src/components/SellModal.jsx`
-- [ ] T037 [US4] Display unit price, price without tolerance, and price with total tolerance deduction in `frontend/src/components/SellModal.jsx`
-- [ ] T038 [US4] Submit sell orders through `frontend/src/services/orderService.js` and refresh blocked availability in `frontend/src/pages/ComerciarPage.jsx`
-- [ ] T039 [US4] Prevent opening sales when no strategy exists and show an actionable message in `frontend/src/pages/ComerciarPage.jsx`
+- [x] T033 [P] [US4] Create the sell modal in `frontend/src/components/SellModal.jsx`
+- [x] T034 [US4] Compute available tokens as holdings minus active SELL quantities in `frontend/src/components/SellModal.jsx`
+- [x] T035 [US4] Load the current valuation for the selected player through `frontend/src/services/playerService.js`
+- [x] T036 [US4] Implement quantity, available-token, tolerance, and submit validation in `frontend/src/components/SellModal.jsx`
+- [x] T037 [US4] Display unit price, price without tolerance, and price with total tolerance deduction in `frontend/src/components/SellModal.jsx`
+- [x] T038 [US4] Submit sell orders through `frontend/src/services/orderService.js` and refresh blocked availability in `frontend/src/pages/ComerciarPage.jsx`
+- [x] T039 [US4] Prevent opening sales when no strategy exists and show an actionable message in `frontend/src/pages/ComerciarPage.jsx`
 
 **Checkpoint**: User Story 4 is complete: sell orders respect available-token blocking independently.
 
@@ -121,11 +121,11 @@
 
 **Independent Test**: Visit `/app/comerciar` with and without pending orders and verify both lists, empty states, and cancel actions.
 
-- [ ] T040 [P] [US5] Create the pending BUY/SELL order list in `frontend/src/components/OrderList.jsx`
-- [ ] T041 [US5] Create `frontend/src/pages/ComerciarPage.jsx` to load strategy, holdings, players, and pending orders
-- [ ] T042 [US5] Split pending orders into BUY and SELL groups and connect them to `OrderList` in `frontend/src/pages/ComerciarPage.jsx`
-- [ ] T043 [US5] Add clear empty-order states and loading/error feedback to `frontend/src/pages/ComerciarPage.jsx`
-- [ ] T044 [US5] Add cancel-order behavior through `frontend/src/services/orderService.js` and refresh pending orders in `frontend/src/pages/ComerciarPage.jsx`
+- [x] T040 [P] [US5] Create the pending BUY/SELL order list in `frontend/src/components/OrderList.jsx`
+- [x] T041 [US5] Create `frontend/src/pages/ComerciarPage.jsx` to load strategy, holdings, players, and pending orders
+- [x] T042 [US5] Split pending orders into BUY and SELL groups and connect them to `OrderList` in `frontend/src/pages/ComerciarPage.jsx`
+- [x] T043 [US5] Add clear empty-order states and loading/error feedback to `frontend/src/pages/ComerciarPage.jsx`
+- [x] T044 [US5] Add cancel-order behavior through `frontend/src/services/orderService.js` and refresh pending orders in `frontend/src/pages/ComerciarPage.jsx`
 
 **Checkpoint**: User Story 5 is complete: active trading orders are visible and manageable.
 
@@ -137,12 +137,12 @@
 
 **Independent Test**: Visit `/app/portfolio` with and without holdings and verify holdings metrics, green/red history, and empty states.
 
-- [ ] T045 [P] [US6] Create `frontend/src/pages/PortfolioPage.jsx` to load holdings, transactions, and players
-- [ ] T046 [P] [US6] Create holdings table rendering with joined player names in `frontend/src/components/HoldingList.jsx`
-- [ ] T047 [P] [US6] Create buy/sell-coded transaction history in `frontend/src/components/TransactionHistory.jsx`
-- [ ] T048 [US6] Display quantity, unit/value fallback, and current total value in `frontend/src/components/HoldingList.jsx`
-- [ ] T049 [US6] Display operation type, player, quantity, settled total, and date in `frontend/src/components/TransactionHistory.jsx`
-- [ ] T050 [US6] Add portfolio empty, loading, and error states to `frontend/src/pages/PortfolioPage.jsx`
+- [x] T045 [P] [US6] Create `frontend/src/pages/PortfolioPage.jsx` to load holdings, transactions, and players
+- [x] T046 [P] [US6] Create holdings table rendering with joined player names in `frontend/src/components/HoldingList.jsx`
+- [x] T047 [P] [US6] Create buy/sell-coded transaction history in `frontend/src/components/TransactionHistory.jsx`
+- [x] T048 [US6] Display quantity, unit/value fallback, and current total value in `frontend/src/components/HoldingList.jsx`
+- [x] T049 [US6] Display operation type, player, quantity, settled total, and date in `frontend/src/components/TransactionHistory.jsx`
+- [x] T050 [US6] Add portfolio empty, loading, and error states to `frontend/src/pages/PortfolioPage.jsx`
 
 **Checkpoint**: User Story 6 is complete: holdings and transaction history are independently usable.
 

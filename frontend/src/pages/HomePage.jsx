@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import ProfileMenu from '../components/ProfileMenu.jsx'
 import PlayerLeagueTable from '../components/PlayerLeagueTable.jsx'
 import { fetchPlayers } from '../services/playerService.js'
 
@@ -94,15 +93,8 @@ const HomePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <nav className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <div className="text-lg font-semibold text-slate-900">Home</div>
-          <ProfileMenu />
-        </div>
-      </nav>
-
-      <main className="mx-auto max-w-5xl px-4 py-8">
+    <div className="w-full">
+      <main className="mx-auto max-w-5xl px-2 py-4 md:px-4 md:py-6">
         <header className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             Catálogo de Jugadores por Liga

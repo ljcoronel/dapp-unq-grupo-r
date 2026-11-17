@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 import { useNavigate } from 'react-router'
 
 import { login as loginRequest, register as registerRequest } from '../services/authService'
+import { extractUserId } from '../utils/jwt'
 
 const STORAGE_KEY = 'authToken'
 
@@ -52,6 +53,7 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const userId = useMemo(() => extractUserId(authToken), [authToken])
   const isAuthenticated = Boolean(authToken)
 
   const persistToken = (nextToken) => {
@@ -111,6 +113,7 @@ export function AuthProvider({ children }) {
   const value = useMemo(
     () => ({
       authToken,
+      userId,
       isAuthenticated,
       isLoading,
       error,
@@ -119,7 +122,7 @@ export function AuthProvider({ children }) {
       logout,
       setError,
     }),
-    [authToken, isAuthenticated, isLoading, error, login, registration, logout],
+    [authToken, userId, isAuthenticated, isLoading, error, login, registration, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
