@@ -22,7 +22,7 @@ const LoginPage = () => {
 
     try {
       await login(nombre, password)
-      navigate('/home', { replace: true })
+      navigate('/app/catalogo', { replace: true })
     } catch {
       // The AuthContext already stores the user-facing error message.
     }

@@ -4,16 +4,16 @@
 
 ## 1. ID de Usuario desde el JWT
 
-**Decision**: Extraer el `userId` numérico del payload JWT decodificado en Base64.
+**Decision**: Extraer el `userId` numérico del claim `userId` en el payload JWT decodificado en Base64url. El claim `sub` conserva el nombre de usuario para la autenticación del backend.
 
-**Rationale**: El endpoint `POST /login` devuelve un `UserResponse` que solo contiene `{ nombre: string }`, sin exponer `id`. Sin embargo, múltiples endpoints del backend requieren el `userId` como parámetro de ruta o query (`/users/{usuarioId}/orders`, `/users/{usuarioId}/transactions`, `/users/{usuarioId}/holdings`, `/strategy/{usuarioId}`, `/strategy/{usuarioId}/configure`). La práctica estándar para JWT es embeber el subject (`sub`) en el payload con el identificador del usuario. Se decodificará el payload (segunda sección del token, Base64url) en `AuthContext` al momento del login para extraer el campo `sub` (o equivalente) como `userId`.
+**Rationale**: El endpoint `POST /login` devuelve un `UserResponse` que solo contiene `{ nombre: string }`, sin exponer `id`. Los endpoints de usuario requieren el identificador numérico. El backend usa `sub` como nombre de usuario para rehidratar el principal, por lo que `JwtService` agrega un claim `userId` numérico sin cambiar ese subject. `AuthContext` decodifica el claim para construir las rutas de usuario.
 
 **Alternatives considered**:
 - Llamar a `GET /users/{id}` al iniciar sesión — descartado porque requiere conocer `id` antes de hacer la llamada (problema circular).
 - Almacenar solo `nombre` y usarlo como identificador en URLs — descartado porque los endpoints esperan ID numérico entero.
-- Extender `UserResponse` en el backend para incluir `id` — fuera del alcance del frontend (cambio de backend).
+- Extender `UserResponse` en el backend para incluir `id` — se mantiene fuera de alcance; el claim evita exponer el ID en las respuestas de autenticación.
 
-**Implementation note**: `AuthContext` expondrá tanto `authToken` como `userId` (number | null). El parsing se realiza en `parseJwtPayload(token)` extraído a `src/utils/jwt.ts`.
+**Implementation note**: `AuthContext` expondrá tanto `authToken` como `userId` (number | null). El parsing se realiza en `parseJwtPayload(token)` extraído a `src/utils/jwt.ts`. El frontend acepta `userId`, `id` o un `sub` numérico para tokens antiguos, pero el backend emite `userId`.
 
 ---
 
@@ -73,7 +73,7 @@
 
 ## 5. Filtros y ordenamiento del catálogo (client-side vs server-side)
 
-**Decision**: Implementar filtros y ordenamiento **client-side** sobre el array de jugadores ya cargado.
+**Decision**: Implementar filtros y ordenamiento **client-side** sobre el array de jugadores ya cargado. La nacionalidad se filtra por `league.pais`, el único campo de país expuesto por el modelo de jugador.
 
 **Rationale**: El endpoint `GET /players` devuelve todos los jugadores en una única respuesta. No existe un endpoint de búsqueda/filtrado en el backend (el OpenAPI no lo expone). Por lo tanto, los filtros por liga, equipo y nacionalidad, y el ordenamiento por métricas, se aplican directamente sobre el array en memoria usando `Array.prototype.filter` y `Array.prototype.sort`.
 
@@ -92,6 +92,8 @@
 - **Compra**: `totalSinTolerancia = cantidad × precioUnitario`; `totalConTolerancia = totalSinTolerancia + tolerancia`
 - **Venta**: `totalSinTolerancia = cantidad × precioUnitario`; `totalConTolerancia = totalSinTolerancia − (cantidad × toleranciaPorToken)`
 
+En compras, la tolerancia ingresada es un monto absoluto por orden; en ventas, es el descuento por token.
+
 **Rationale**: El spec define explícitamente las fórmulas (FR-018, FR-024) y el backend devuelve el `valorUnitario` en `ValuationResponse`. El frontend solo muestra los cálculos; el backend valida la orden al momento de procesarla.
 
 **Note**: El campo `price` del `CrearOrdenRequest` enviado al backend corresponde al `valorUnitario` de la `ValuationResponse`; `tolerance` es el valor absoluto ingresado por el usuario.
@@ -100,13 +102,13 @@
 
 ## 7. Bloqueo de tokens en órdenes de venta
 
-**Decision**: La cantidad de tokens "disponibles" para vender se calcula como: `tokensDisponibles = holding.tokens − tokensEnOrdenesVentaActivas`. Los `tokensEnOrdenesVentaActivas` se obtienen sumando `quantity` de las `OrdenPendienteResponse` donde `operation === 'SELL'`.
+**Decision**: La cantidad de tokens "disponibles" para vender se calcula como: `tokensDisponibles = holding.tokens − tokensEnOrdenesVentaActivas`. Los `tokensEnOrdenesVentaActivas` se obtienen sumando `quantity` de las `OrdenPendienteResponse` donde `operation` representa una venta (`VENTA` en el backend actual; `SELL` también se acepta por compatibilidad).
 
 **Rationale**: El backend no expone directamente "tokens bloqueados", pero `GET /users/{usuarioId}/orders` devuelve las órdenes pendientes incluyendo su `operation` y `quantity`. El frontend puede calcular el disponible localmente con estos datos.
 
 **Data sources**:
 - `GET /users/{usuarioId}/holdings` → `HoldingResponse[]` (campo `tokens`)
-- `GET /users/{usuarioId}/orders` → `OrdenPendienteResponse[]` (campo `quantity`, `operation`, `playerId`)
+- `GET /users/{usuarioId}/orders` → `OrdenPendienteResponse[]` (campo `quantity`, `operation` — `VENTA` —, `playerId`)
 
 ---
 
@@ -131,6 +133,4 @@
 **Decision**:
 - Tokens: `<input type="number" step="1" min="1">` con validación de número entero.
 - Créditos/tolerancia: `<input type="number" step="0.01" min="0">` con redondeo a 2 decimales en display.
-- El campo `créditos disponibles del usuario` no está expuesto directamente en el `UserResponse` ni en el `HoldingResponse`. **NEEDS CLARIFICATION → se asume que los créditos del usuario se obtienen de `GET /users/{id}` si el backend los expone, o del contexto de autenticación**. Revisar si `UserResponse` incluye créditos en la implementación real del backend (el OpenAPI solo declara `nombre`).
-
-**Action required**: Verificar si el backend devuelve créditos en algún endpoint. Si no, el modal de compra no podrá mostrar "créditos insuficientes" basado en datos reales y deberá depender del error 400 del backend.
+**Contract gap**: No existe un endpoint/campo que exponga créditos disponibles. El frontend no inventa ni cachea un saldo; el backend conserva la validación final de créditos y el modal muestra el error recibido si rechaza la orden.

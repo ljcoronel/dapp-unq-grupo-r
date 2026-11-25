@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router'
 
 import { login as loginRequest, register as registerRequest, type User } from '../api/auth'
 import { getUserFacingError } from '../api/client'
+import { getUserIdFromToken } from '../utils/jwt'
 
 const STORAGE_KEY = 'authToken'
 
 interface AuthContextValue {
   authToken: string | null
+  userId: number | null
   isAuthenticated: boolean
   isLoading: boolean
   error: string
@@ -35,6 +37,7 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate()
   const [authToken, setAuthToken] = useState(() => getStoredToken())
+  const userId = getUserIdFromToken(authToken)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -97,6 +100,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value = useMemo(
     () => ({
       authToken,
+      userId,
       isAuthenticated,
       isLoading,
       error,
@@ -105,7 +109,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       logout,
       setError,
     }),
-    [authToken, isAuthenticated, isLoading, error, login, registration, logout],
+    [authToken, userId, isAuthenticated, isLoading, error, login, registration, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

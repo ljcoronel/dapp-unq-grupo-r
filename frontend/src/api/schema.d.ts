@@ -547,6 +547,7 @@ export interface components {
     };
     parameters: {
         UserId: number;
+        UserIdQuotes: number;
         UserIdUsuario: number;
         PlayerId: number;
         NumberOfPlayers: number;
@@ -682,7 +683,7 @@ export interface operations {
             header?: never;
             path: {
                 playerId: components["parameters"]["PlayerId"];
-                id: components["parameters"]["UserId"];
+                userId: components["parameters"]["UserIdQuotes"];
             };
             cookie?: never;
         };
@@ -707,7 +708,7 @@ export interface operations {
             header?: never;
             path: {
                 playerId: components["parameters"]["PlayerId"];
-                id: components["parameters"]["UserId"];
+                userId: components["parameters"]["UserIdQuotes"];
             };
             cookie?: never;
         };
@@ -730,7 +731,7 @@ export interface operations {
             header?: never;
             path: {
                 playerId: components["parameters"]["PlayerId"];
-                id: components["parameters"]["UserId"];
+                userId: components["parameters"]["UserIdQuotes"];
             };
             cookie?: never;
         };

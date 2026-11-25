@@ -30,7 +30,7 @@ apiClient.use({
 
 `requireApiData<T>(data, error, response, fallbackMessage)` comprueba el estado HTTP y la presencia de datos, y lanza `ApiRequestError` ante respuestas fallidas o inesperadas. Para operaciones sin cuerpo de respuesta (por ejemplo, cancelar una orden), el servicio debe comprobar `error` y `response.ok` explícitamente. No se debe crear otro cliente HTTP ni realizar llamadas de red directamente desde componentes.
 
-> **Consistencia de tipos OpenAPI**: los nombres de `params.path` deben coincidir con los placeholders de cada ruta (`{playerId}`, `{userId}`, `{usuarioId}`). Actualmente el parámetro compartido `UserId` en `docs/openapi.yaml` se llama `id`, aunque las rutas de valuaciones usan `{userId}`; corregir ese nombre en la definición OpenAPI antes de implementar esas llamadas y regenerar `src/api/schema.d.ts`. No debilitar los tipos con casts.
+> **Consistencia de tipos OpenAPI**: los nombres de `params.path` deben coincidir con los placeholders de cada ruta (`{id}`, `{playerId}`, `{userId}`, `{usuarioId}`). `GET /users/{id}` conserva su parámetro `id`; las valuaciones usan un parámetro dedicado `UserIdQuotes` cuyo nombre es `userId`. Regenerar `src/api/schema.d.ts` desde `docs/openapi.yaml` y no debilitar los tipos con casts.
 
 ## userService.ts
 

@@ -18,9 +18,9 @@
 
 **Purpose**: Prepare dependencies and confirm the existing frontend baseline.
 
-- [ ] T001 Install Recharts from `frontend/` with `pnpm add recharts` and update `frontend/package.json`
-- [ ] T002 [P] Review existing authentication, routing, player, and profile implementations in `frontend/src/App.tsx`, `frontend/src/context/AuthContext.tsx`, `frontend/src/services/playerService.ts`, and `frontend/src/components/ProfileMenu.tsx`
-- [ ] T003 [P] Confirm the feature contracts and shared conventions in `frontend/specs/003-mercado-tokens/contracts/api-services.md` and `frontend/specs/003-mercado-tokens/contracts/component-contracts.md`
+- [X] T001 Install Recharts from `frontend/` with `npm install recharts` and update `frontend/package.json` (use the existing npm lockfile)
+- [X] T002 [P] Review existing authentication, routing, player, and profile implementations in `frontend/src/App.tsx`, `frontend/src/context/AuthContext.tsx`, `frontend/src/services/playerService.ts`, and `frontend/src/components/ProfileMenu.tsx`
+- [X] T003 [P] Confirm the feature contracts and shared conventions in `frontend/specs/003-mercado-tokens/contracts/api-services.md` and `frontend/specs/003-mercado-tokens/contracts/component-contracts.md`
 
 ---
 
@@ -30,16 +30,16 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T004 Create Base64url JWT payload parsing in `frontend/src/utils/jwt.ts`
-- [ ] T005 Update session state to expose `authToken`, `userId`, and existing authentication feedback in `frontend/src/context/AuthContext.tsx`
-- [ ] T006 Add the JWT openapi-fetch request middleware to `frontend/src/api/client.ts`
-- [ ] T007 [P] Create `frontend/src/services/orderService.ts` for buy, sell, pending-order, transaction, and cancel operations
-- [ ] T008 [P] Create `frontend/src/services/strategyService.ts` for strategy retrieval and configuration
-- [ ] T009 [P] Create `frontend/src/services/holdingService.ts` for portfolio holdings
-- [ ] T010 [P] Create `frontend/src/services/userService.ts` for user profile retrieval
-- [ ] T011 [P] Extend valuation methods in `frontend/src/services/playerService.ts`
-- [ ] T012 Create shared loading, error, and empty-state presentation utilities in `frontend/src/components/FeedbackState.tsx`
-- [ ] T013 Configure protected nested routes and `/app` layout routing in `frontend/src/App.tsx`
+- [X] T004 Create Base64url JWT payload parsing in `frontend/src/utils/jwt.ts`
+- [X] T005 Update session state to expose `authToken`, `userId`, and existing authentication feedback in `frontend/src/context/AuthContext.tsx`
+- [X] T006 Add the JWT openapi-fetch request middleware to `frontend/src/api/client.ts`
+- [X] T007 [P] Create `frontend/src/services/orderService.ts` for buy, sell, pending-order, transaction, and cancel operations
+- [X] T008 [P] Create `frontend/src/services/strategyService.ts` for strategy retrieval and configuration
+- [X] T009 [P] Create `frontend/src/services/holdingService.ts` for portfolio holdings
+- [X] T010 [P] Create `frontend/src/services/userService.ts` for user profile retrieval
+- [X] T011 [P] Extend valuation methods in `frontend/src/services/playerService.ts`
+- [X] T012 Create shared loading, error, and empty-state presentation utilities in `frontend/src/components/FeedbackState.tsx`
+- [X] T013 Configure protected nested routes and `/app` layout routing in `frontend/src/App.tsx`
 
 **Checkpoint**: Shared JWT, API, routing, and feedback foundations are ready.
 
@@ -51,11 +51,11 @@
 
 **Independent Test**: Authenticate, open every `/app/*` route, and verify that the sidebar remains visible and the active section is highlighted.
 
-- [ ] T014 [P] [US1] Create the permanent responsive sidebar in `frontend/src/components/Sidebar.tsx`
-- [ ] T015 [US1] Update `frontend/src/App.tsx` with protected `/app/catalogo`, `/app/comerciar`, `/app/portfolio`, `/app/estrategia`, and `/app/perfil` child routes
-- [ ] T016 [US1] Replace the old `/home` redirect behavior with `/app/catalogo` in `frontend/src/App.tsx`
-- [ ] T017 [US1] Integrate `ProfileMenu` into `AppLayout` so it remains available across routed sections in `frontend/src/components/AppLayout.tsx`
-- [ ] T018 [US1] Add responsive sidebar collapse behavior for viewports from 320px upward in `frontend/src/components/Sidebar.tsx`
+- [X] T014 [P] [US1] Create the permanent responsive sidebar in `frontend/src/components/Sidebar.tsx`
+- [X] T015 [US1] Update `frontend/src/App.tsx` with protected `/app/catalogo`, `/app/comerciar`, `/app/portfolio`, `/app/estrategia`, and `/app/perfil` child routes
+- [X] T016 [US1] Replace the old `/home` redirect behavior with `/app/catalogo` in `frontend/src/App.tsx`
+- [X] T017 [US1] Integrate `ProfileMenu` into `AppLayout` so it remains available across routed sections in `frontend/src/components/AppLayout.tsx`
+- [X] T018 [US1] Add responsive sidebar collapse behavior for viewports from 320px upward in `frontend/src/components/Sidebar.tsx`
 
 **Checkpoint**: User Story 1 is complete: authenticated navigation and the permanent layout work independently.
 
@@ -67,13 +67,13 @@
 
 **Independent Test**: Load `/app/catalogo`, verify the nine required columns, filter by league/team/nationality, and sort filtered results in both directions.
 
-- [ ] T019 [P] [US2] Create `frontend/src/pages/CatalogoPage.tsx` to fetch all players and manage loading, error, filters, and sorting
-- [ ] T020 [P] [US2] Create league/team/nationality dropdown controls in `frontend/src/components/PlayerFilters.tsx`
-- [ ] T021 [P] [US2] Create the unified nine-column sortable table in `frontend/src/components/PlayerTable.tsx`
-- [ ] T022 [US2] Normalize the existing player response shape and extract filter options in `frontend/src/pages/CatalogoPage.tsx`
-- [ ] T023 [US2] Implement client-side combined filtering and ascending/descending sorting in `frontend/src/pages/CatalogoPage.tsx`
-- [ ] T024 [US2] Replace `frontend/src/pages/HomePage.tsx` or remove its grouped-table usage so the catalog route uses `CatalogoPage`
-- [ ] T025 [US2] Add loading, error/retry, empty-result, and horizontal-scroll states to `frontend/src/components/PlayerTable.tsx`
+- [X] T019 [P] [US2] Create `frontend/src/pages/CatalogoPage.tsx` to fetch all players and manage loading, error, filters, and sorting
+- [X] T020 [P] [US2] Create league/team/nationality dropdown controls in `frontend/src/components/PlayerFilters.tsx`
+- [X] T021 [P] [US2] Create the unified nine-column sortable table in `frontend/src/components/PlayerTable.tsx`
+- [X] T022 [US2] Normalize the existing player response shape and extract filter options in `frontend/src/pages/CatalogoPage.tsx`
+- [X] T023 [US2] Implement client-side combined filtering and ascending/descending sorting in `frontend/src/pages/CatalogoPage.tsx`
+- [X] T024 [US2] Replace `frontend/src/pages/HomePage.tsx` or remove its grouped-table usage so the catalog route uses `CatalogoPage`
+- [X] T025 [US2] Add loading, error/retry, empty-result, and horizontal-scroll states to `frontend/src/components/PlayerTable.tsx`
 
 **Checkpoint**: User Story 2 is complete: the unified catalog works independently.
 
@@ -85,13 +85,13 @@
 
 **Independent Test**: Open the buy modal with and without a strategy, select a player, verify price calculations and quantity/tolerance validation, and submit a valid order.
 
-- [ ] T026 [P] [US3] Create the buy modal in `frontend/src/components/BuyModal.tsx`
-- [ ] T027 [P] [US3] Create reusable integer, tolerance, and credit validation helpers in `frontend/src/utils/orderValidation.ts`
-- [ ] T028 [US3] Load the current valuation for the selected player through `frontend/src/services/playerService.ts`
-- [ ] T029 [US3] Implement quantity 1-100, two-decimal tolerance, credit, and submit validation in `frontend/src/components/BuyModal.tsx`
-- [ ] T030 [US3] Display unit price, price without tolerance, and price with tolerance in `frontend/src/components/BuyModal.tsx`
-- [ ] T031 [US3] Submit buy orders through `frontend/src/services/orderService.ts` and handle success/error feedback in `frontend/src/components/BuyModal.tsx`
-- [ ] T032 [US3] Prevent opening purchase when no strategy exists and show an actionable message in `frontend/src/pages/ComerciarPage.tsx`
+- [X] T026 [P] [US3] Create the buy modal in `frontend/src/components/BuyModal.tsx`
+- [X] T027 [P] [US3] Create reusable integer, tolerance, and credit validation helpers in `frontend/src/utils/orderValidation.ts`
+- [X] T028 [US3] Load the current valuation for the selected player through `frontend/src/services/playerService.ts`
+- [X] T029 [US3] Implement quantity 1-100, two-decimal tolerance, and submit validation in `frontend/src/components/BuyModal.tsx`; surface backend insufficient-credit errors because no balance endpoint exists
+- [X] T030 [US3] Display unit price, price without tolerance, and price with tolerance in `frontend/src/components/BuyModal.tsx`
+- [X] T031 [US3] Submit buy orders through `frontend/src/services/orderService.ts` and handle success/error feedback in `frontend/src/components/BuyModal.tsx`
+- [X] T032 [US3] Prevent opening purchase when no strategy exists and show an actionable message in `frontend/src/pages/ComerciarPage.tsx`
 
 **Checkpoint**: User Story 3 is complete: valid buy orders can be issued and invalid ones blocked independently.
 
@@ -103,13 +103,13 @@
 
 **Independent Test**: Open the sell modal with holdings and active SELL orders, verify available-token limits and tolerance calculations, and submit a valid order.
 
-- [ ] T033 [P] [US4] Create the sell modal in `frontend/src/components/SellModal.tsx`
-- [ ] T034 [US4] Compute available tokens as holdings minus active SELL quantities in `frontend/src/components/SellModal.tsx`
-- [ ] T035 [US4] Load the current valuation for the selected player through `frontend/src/services/playerService.ts`
-- [ ] T036 [US4] Implement quantity, available-token, tolerance, and submit validation in `frontend/src/components/SellModal.tsx`
-- [ ] T037 [US4] Display unit price, price without tolerance, and price with total tolerance deduction in `frontend/src/components/SellModal.tsx`
-- [ ] T038 [US4] Submit sell orders through `frontend/src/services/orderService.ts` and refresh blocked availability in `frontend/src/pages/ComerciarPage.tsx`
-- [ ] T039 [US4] Prevent opening sales when no strategy exists and show an actionable message in `frontend/src/pages/ComerciarPage.tsx`
+- [X] T033 [P] [US4] Create the sell modal in `frontend/src/components/SellModal.tsx`
+- [X] T034 [US4] Compute available tokens as holdings minus active sell quantities (`VENTA`/`SELL`) in `frontend/src/components/SellModal.tsx`
+- [X] T035 [US4] Load the current valuation for the selected player through `frontend/src/services/playerService.ts`
+- [X] T036 [US4] Implement quantity, available-token, tolerance, and submit validation in `frontend/src/components/SellModal.tsx`
+- [X] T037 [US4] Display unit price, price without tolerance, and price with total tolerance deduction in `frontend/src/components/SellModal.tsx`
+- [X] T038 [US4] Submit sell orders through `frontend/src/services/orderService.ts` and refresh blocked availability in `frontend/src/pages/ComerciarPage.tsx`
+- [X] T039 [US4] Prevent opening sales when no strategy exists and show an actionable message in `frontend/src/pages/ComerciarPage.tsx`
 
 **Checkpoint**: User Story 4 is complete: sell orders respect available-token blocking independently.
 
@@ -121,11 +121,11 @@
 
 **Independent Test**: Visit `/app/comerciar` with and without pending orders and verify both lists, empty states, and cancel actions.
 
-- [ ] T040 [P] [US5] Create the pending BUY/SELL order list in `frontend/src/components/OrderList.tsx`
-- [ ] T041 [US5] Create `frontend/src/pages/ComerciarPage.tsx` to load strategy, holdings, players, and pending orders
-- [ ] T042 [US5] Split pending orders into BUY and SELL groups and connect them to `OrderList` in `frontend/src/pages/ComerciarPage.tsx`
-- [ ] T043 [US5] Add clear empty-order states and loading/error feedback to `frontend/src/pages/ComerciarPage.tsx`
-- [ ] T044 [US5] Add cancel-order behavior through `frontend/src/services/orderService.ts` and refresh pending orders in `frontend/src/pages/ComerciarPage.tsx`
+- [X] T040 [P] [US5] Create the pending BUY/SELL order list in `frontend/src/components/OrderList.tsx`
+- [X] T041 [US5] Create `frontend/src/pages/ComerciarPage.tsx` to load strategy, holdings, players, and pending orders
+- [X] T042 [US5] Split pending orders into BUY and SELL groups and connect them to `OrderList` in `frontend/src/pages/ComerciarPage.tsx`
+- [X] T043 [US5] Add clear empty-order states and loading/error feedback to `frontend/src/pages/ComerciarPage.tsx`
+- [X] T044 [US5] Add cancel-order behavior through `frontend/src/services/orderService.ts` and refresh pending orders in `frontend/src/pages/ComerciarPage.tsx`
 
 **Checkpoint**: User Story 5 is complete: active trading orders are visible and manageable.
 
@@ -137,12 +137,12 @@
 
 **Independent Test**: Visit `/app/portfolio` with and without holdings and verify holdings metrics, green/red history, and empty states.
 
-- [ ] T045 [P] [US6] Create `frontend/src/pages/PortfolioPage.tsx` to load holdings, transactions, and players
-- [ ] T046 [P] [US6] Create holdings table rendering with joined player names in `frontend/src/components/HoldingList.tsx`
-- [ ] T047 [P] [US6] Create buy/sell-coded transaction history in `frontend/src/components/TransactionHistory.tsx`
-- [ ] T048 [US6] Display quantity, unit/value fallback, and current total value in `frontend/src/components/HoldingList.tsx`
-- [ ] T049 [US6] Display operation type, player, quantity, settled total, and date in `frontend/src/components/TransactionHistory.tsx`
-- [ ] T050 [US6] Add portfolio empty, loading, and error states to `frontend/src/pages/PortfolioPage.tsx`
+- [X] T045 [P] [US6] Create `frontend/src/pages/PortfolioPage.tsx` to load holdings, transactions, and players
+- [X] T046 [P] [US6] Create holdings table rendering with joined player names in `frontend/src/components/HoldingList.tsx`
+- [X] T047 [P] [US6] Create buy/sell-coded transaction history in `frontend/src/components/TransactionHistory.tsx`
+- [X] T048 [US6] Display quantity, unit/value fallback, and current total value in `frontend/src/components/HoldingList.tsx`
+- [X] T049 [US6] Display operation type, player, quantity, settled total, and date in `frontend/src/components/TransactionHistory.tsx`
+- [X] T050 [US6] Add portfolio empty, loading, and error states to `frontend/src/pages/PortfolioPage.tsx`
 
 **Checkpoint**: User Story 6 is complete: holdings and transaction history are independently usable.
 
@@ -154,13 +154,13 @@
 
 **Independent Test**: Visit `/app/estrategia`, create/change a strategy, test sums of 1 and 0.95, and verify current strategy display.
 
-- [ ] T051 [P] [US7] Create `frontend/src/pages/EstrategiaPage.tsx` to load and refresh strategy state
-- [ ] T052 [P] [US7] Create current strategy presentation in `frontend/src/components/StrategyDisplay.tsx`
-- [ ] T053 [P] [US7] Create the Strategy A/B configuration modal in `frontend/src/components/StrategyForm.tsx`
-- [ ] T054 [US7] Implement Strategy A weight inputs and sum-of-1 validation in `frontend/src/components/StrategyForm.tsx`
-- [ ] T055 [US7] Implement Strategy B weight inputs and sum-of-0.95 validation in `frontend/src/components/StrategyForm.tsx`
-- [ ] T056 [US7] Submit and refresh strategy configuration through `frontend/src/services/strategyService.ts`
-- [ ] T057 [US7] Add no-strategy, configured-strategy, loading, and error states to `frontend/src/pages/EstrategiaPage.tsx`
+- [X] T051 [P] [US7] Create `frontend/src/pages/EstrategiaPage.tsx` to load and refresh strategy state
+- [X] T052 [P] [US7] Create current strategy presentation in `frontend/src/components/StrategyDisplay.tsx`
+- [X] T053 [P] [US7] Create the Strategy A/B configuration modal in `frontend/src/components/StrategyForm.tsx`
+- [X] T054 [US7] Implement Strategy A weight inputs and sum-of-1 validation in `frontend/src/components/StrategyForm.tsx`
+- [X] T055 [US7] Implement Strategy B weight inputs and sum-of-0.95 validation in `frontend/src/components/StrategyForm.tsx`
+- [X] T056 [US7] Submit and refresh strategy configuration through `frontend/src/services/strategyService.ts`
+- [X] T057 [US7] Add no-strategy, configured-strategy, loading, and error states to `frontend/src/pages/EstrategiaPage.tsx`
 
 **Checkpoint**: User Story 7 is complete: valid strategy configurations are enforced independently.
 
@@ -172,9 +172,9 @@
 
 **Independent Test**: Open the profile menu and verify `/app/perfil` navigation and the displayed username.
 
-- [ ] T058 [P] [US8] Create `frontend/src/pages/ProfilePage.tsx` to load the profile through `userService`
-- [ ] T059 [US8] Update `frontend/src/components/ProfileMenu.tsx` to navigate to `/app/perfil` and preserve logout behavior
-- [ ] T060 [US8] Add profile loading, error, retry, and null-name states to `frontend/src/pages/ProfilePage.tsx`
+- [X] T058 [P] [US8] Create `frontend/src/pages/ProfilePage.tsx` to load the profile through `userService`
+- [X] T059 [US8] Update `frontend/src/components/ProfileMenu.tsx` to navigate to `/app/perfil` and preserve logout behavior
+- [X] T060 [US8] Add profile loading, error, retry, and null-name states to `frontend/src/pages/ProfilePage.tsx`
 
 **Checkpoint**: User Story 8 is complete: profile navigation and name display work independently.
 
@@ -186,10 +186,10 @@
 
 **Independent Test**: Open Portfolio with no holdings, fewer than ten holdings, and more than ten holdings and verify chart display and grouping.
 
-- [ ] T061 [P] [US10] Create `frontend/src/components/PortfolioPieChart.tsx` with Recharts
-- [ ] T062 [US10] Join holdings to player names and build pie-chart data in `frontend/src/components/PortfolioPieChart.tsx`
-- [ ] T063 [US10] Group the remaining holdings behind "Otros" after the ten largest values in `frontend/src/components/PortfolioPieChart.tsx`
-- [ ] T064 [US10] Integrate the chart below holdings/history and hide or explain it for empty portfolios in `frontend/src/pages/PortfolioPage.tsx`
+- [X] T061 [P] [US10] Create `frontend/src/components/PortfolioPieChart.tsx` with Recharts
+- [X] T062 [US10] Join holdings to player names and build pie-chart data in `frontend/src/components/PortfolioPieChart.tsx`
+- [X] T063 [US10] Group the remaining holdings behind "Otros" after the ten largest values in `frontend/src/components/PortfolioPieChart.tsx`
+- [X] T064 [US10] Integrate the chart below holdings/history and hide or explain it for empty portfolios in `frontend/src/pages/PortfolioPage.tsx`
 
 **Checkpoint**: User Story 10 is complete: portfolio distribution is visualized independently.
 
@@ -199,12 +199,12 @@
 
 **Purpose**: Finish responsive behavior, consistency, and validation across all completed stories.
 
-- [ ] T065 [P] Audit all new pages and components at 320px, tablet, desktop widths in `frontend/src/components/` and `frontend/src/pages/`
-- [ ] T066 [P] Replace remaining technical or raw API errors with Spanish user feedback in `frontend/src/services/` and `frontend/src/pages/`
-- [ ] T067 [P] Remove or deprecate the old grouped catalog components and `/home` route references in `frontend/src/pages/HomePage.tsx`, `frontend/src/components/PlayerLeagueTable.tsx`, and `frontend/src/App.tsx`
-- [ ] T068 Run a production build and lint pass from `frontend/` with `pnpm build` and `pnpm lint`
-- [ ] T069 Execute all scenarios in `frontend/specs/003-mercado-tokens/quickstart.md` and document any backend contract gaps
-- [ ] T070 Review final API and route behavior against `frontend/specs/003-mercado-tokens/contracts/api-services.md` and `frontend/specs/003-mercado-tokens/contracts/component-contracts.md`
+- [X] T065 [P] Audit all new pages and components at 320px, tablet, desktop widths in `frontend/src/components/` and `frontend/src/pages/`
+- [X] T066 [P] Replace remaining technical or raw API errors with Spanish user feedback in `frontend/src/services/` and `frontend/src/pages/`
+- [X] T067 [P] Remove or deprecate the old grouped catalog components and `/home` route references in `frontend/src/pages/HomePage.tsx`, `frontend/src/components/PlayerLeagueTable.tsx`, and `frontend/src/App.tsx`
+- [X] T068 Run a production build, type-check, and lint pass from `frontend/` with `npm run build`, `npm run typecheck`, and `npm run lint`
+- [ ] T069 Execute all scenarios in `frontend/specs/003-mercado-tokens/quickstart.md` and document any backend contract gaps (blocked for live execution: backend unavailable at `localhost:8080`)
+- [X] T070 Review final API and route behavior against `frontend/specs/003-mercado-tokens/contracts/api-services.md` and `frontend/specs/003-mercado-tokens/contracts/component-contracts.md`
 
 ---
 

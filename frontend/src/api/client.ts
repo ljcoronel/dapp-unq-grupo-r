@@ -5,6 +5,18 @@ export const apiClient = createClient<paths>({
   baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
 })
 
+apiClient.use({
+  onRequest({ request }) {
+    const token = window.localStorage.getItem('authToken')
+
+    if (token) {
+      request.headers.set('Authorization', `Bearer ${token}`)
+    }
+
+    return request
+  },
+})
+
 export class ApiRequestError extends Error {
   constructor(message: string, public readonly status?: number) {
     super(message)
