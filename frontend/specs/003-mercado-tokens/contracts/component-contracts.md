@@ -10,7 +10,7 @@ Este documento define los contratos de props e interfaces de los componentes nue
 
 **Responsabilidad**: Layout base que renderiza el Sidebar permanente a la izquierda y el contenido principal (Outlet) a la derecha.
 
-```jsx
+```tsx
 // No recibe props externas; lee AuthContext internamente.
 // Renderiza: <Sidebar /> + <Outlet />
 ```
@@ -21,7 +21,7 @@ Este documento define los contratos de props e interfaces de los componentes nue
 
 **Responsabilidad**: Navegación lateral permanente con las cuatro secciones.
 
-```jsx
+```tsx
 // Props: ninguna (usa useLocation de react-router para sección activa)
 // Items: Catálogo → /app/catalogo
 //        Comerciar → /app/comerciar
@@ -36,7 +36,7 @@ Este documento define los contratos de props e interfaces de los componentes nue
 
 **Responsabilidad**: Vista de catálogo unificado de jugadores con filtros y ordenamiento.
 
-```jsx
+```tsx
 // Estado interno:
 //   players: PlayerResponse[]
 //   isLoading: boolean
@@ -52,8 +52,8 @@ Este documento define los contratos de props e interfaces de los componentes nue
 
 **Responsabilidad**: Controles de filtro (dropdowns) para liga, equipo y nacionalidad.
 
-```jsx
-Props = {
+```tsx
+type Props = {
   filters: PlayerTableFilters,
   options: { ligas: string[], equipos: string[], nacionalidades: string[] },
   onChange: (filters: PlayerTableFilters) => void
@@ -66,8 +66,8 @@ Props = {
 
 **Responsabilidad**: Tabla de jugadores con columnas ordenables.
 
-```jsx
-Props = {
+```tsx
+type Props = {
   players: PlayerResponse[],     // Array ya filtrado y ordenado
   sort: PlayerTableSort,
   onSortChange: (sort: PlayerTableSort) => void
@@ -82,7 +82,7 @@ Props = {
 
 **Responsabilidad**: Vista de comercio con lista de órdenes activas y botones Comprar/Vender.
 
-```jsx
+```tsx
 // Estado interno:
 //   orders: OrdenPendienteResponse[]
 //   strategy: StrategyStateResponse | null
@@ -98,8 +98,8 @@ Props = {
 
 **Responsabilidad**: Lista de órdenes pendientes (compra o venta).
 
-```jsx
-Props = {
+```tsx
+type Props = {
   orders: OrdenPendienteResponse[],
   type: 'BUY' | 'SELL',
   players: PlayerResponse[],     // Para mostrar nombre del jugador
@@ -113,8 +113,8 @@ Props = {
 
 **Responsabilidad**: Modal de creación de orden de compra.
 
-```jsx
-Props = {
+```tsx
+type Props = {
   isOpen: boolean,
   players: PlayerResponse[],
   userId: number,
@@ -131,8 +131,8 @@ Props = {
 
 **Responsabilidad**: Modal de creación de orden de venta.
 
-```jsx
-Props = {
+```tsx
+type Props = {
   isOpen: boolean,
   players: PlayerResponse[],
   holdings: HoldingResponse[],
@@ -150,7 +150,7 @@ Props = {
 
 **Responsabilidad**: Vista de portfolio con tenencias, historial y gráfico.
 
-```jsx
+```tsx
 // Estado interno:
 //   holdings: HoldingResponse[]
 //   transactions: TransaccionEjecutadaResponse[]
@@ -165,8 +165,8 @@ Props = {
 
 **Responsabilidad**: Tabla de tenencias por jugador.
 
-```jsx
-Props = {
+```tsx
+type Props = {
   holdings: HoldingResponse[],
   players: PlayerResponse[]   // Para nombre del jugador
 }
@@ -180,8 +180,8 @@ Props = {
 
 **Responsabilidad**: Historial de transacciones ejecutadas.
 
-```jsx
-Props = {
+```tsx
+type Props = {
   transactions: TransaccionEjecutadaResponse[],
   players: PlayerResponse[]
 }
@@ -194,8 +194,8 @@ Props = {
 
 **Responsabilidad**: Gráfico de torta de distribución del portfolio.
 
-```jsx
-Props = {
+```tsx
+type Props = {
   holdings: HoldingResponse[],
   players: PlayerResponse[]
 }
@@ -208,7 +208,7 @@ Props = {
 
 **Responsabilidad**: Vista de estrategia de valuación actual y botón para cambiar.
 
-```jsx
+```tsx
 // Estado interno:
 //   strategy: StrategyStateResponse | null
 //   showModal: boolean
@@ -222,8 +222,8 @@ Props = {
 
 **Responsabilidad**: Visualización de la estrategia de valuación actual.
 
-```jsx
-Props = {
+```tsx
+type Props = {
   strategy: StrategyStateResponse
 }
 // Muestra tipo de estrategia y tabla de métricas con pesos
@@ -235,8 +235,8 @@ Props = {
 
 **Responsabilidad**: Formulario de configuración de estrategia (dentro de modal).
 
-```jsx
-Props = {
+```tsx
+type Props = {
   initialStrategy: StrategyStateResponse | null,
   userId: number,
   onConfirm: (result: StrategyStateResponse) => void,
@@ -252,7 +252,7 @@ Props = {
 
 **Responsabilidad**: Vista de perfil del usuario.
 
-```jsx
+```tsx
 // Lee userId de AuthContext
 // Llama a userService.getUserProfile(userId)
 // Muestra: nombre de usuario

@@ -13,7 +13,7 @@
 - Almacenar solo `nombre` y usarlo como identificador en URLs — descartado porque los endpoints esperan ID numérico entero.
 - Extender `UserResponse` en el backend para incluir `id` — fuera del alcance del frontend (cambio de backend).
 
-**Implementation note**: `AuthContext` expondrá tanto `authToken` como `userId` (number | null). El parsing se realiza en `parseJwtPayload(token)` extraído a `src/utils/jwt.js`.
+**Implementation note**: `AuthContext` expondrá tanto `authToken` como `userId` (number | null). El parsing se realiza en `parseJwtPayload(token)` extraído a `src/utils/jwt.ts`.
 
 ---
 
@@ -57,17 +57,17 @@
 
 ---
 
-## 4. Interceptor Axios para JWT
+## 4. Middleware de `openapi-fetch` para JWT
 
-**Decision**: Añadir un interceptor de request en `apiClient.js` que inyecte el header `Authorization: Bearer <token>` para todos los requests que lo requieran.
+**Decision**: Configurar middleware `onRequest` en el cliente compartido `src/api/client.ts` basado en `openapi-fetch` para adjuntar el JWT a cada request autenticada.
 
-**Rationale**: Actualmente `apiClient.js` no adjunta el token JWT. Los endpoints de órdenes (`POST /orders/buy`, `POST /orders/sell`) requieren `bearerAuth`. El patrón estándar en proyectos Axios es un interceptor de request que lee el token del `localStorage` (o del contexto) y lo adjunta automáticamente. Esto centraliza la lógica de autenticación sin modificar cada llamada individual.
+**Rationale**: Los endpoints protegidos requieren el token en el header `Authorization`. El middleware de request del cliente compartido lee `localStorage.getItem('authToken')` al enviar cada request y configura el header con el esquema `Bearer`. Esto centraliza la autenticación y evita duplicar lógica en los servicios.
 
 **Alternatives considered**:
 - Pasar el token como parámetro a cada función de servicio — descartado porque viola el principio DRY y dispersa la lógica de autenticación.
-- Crear un segundo `apiClient` autenticado — descartado por innecesario; el interceptor puede omitir el header si el token es null.
+- Crear un segundo cliente HTTP autenticado — descartado por innecesario; el middleware puede omitir el header si el token es null.
 
-**Implementation**: El interceptor leerá `localStorage.getItem('authToken')` en cada request (no en la inicialización del cliente) para capturar cambios de sesión.
+**Implementation**: Todos los servicios usan la instancia tipada exportada desde `src/api/client.ts`. Las rutas, parámetros, cuerpos y respuestas se tipan con `paths` y `components` generados desde el contrato OpenAPI; los servicios manejan explícitamente la unión `data`/`error`/`response` de `openapi-fetch`.
 
 ---
 
