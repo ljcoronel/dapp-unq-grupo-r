@@ -18,9 +18,9 @@
 
 **Purpose**: Preparar la línea base y la estructura existente de la feature
 
-- [ ] T001 Revisar los artefactos y el contrato HTTP de `backend/specs/006-api-key-recalculate/`
-- [ ] T002 Confirmar los puntos de integración existentes en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java`, `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java` y `backend/app/src/main/java/com/dappunq/service/ApiKeyService.java`
-- [ ] T003 Confirmar las fixtures y herramientas de prueba existentes en `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java`, `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` y `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
+- [X] T001 Revisar los artefactos y el contrato HTTP de `backend/specs/006-api-key-recalculate/`
+- [X] T002 Confirmar los puntos de integración existentes en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java`, `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java` y `backend/app/src/main/java/com/dappunq/service/ApiKeyService.java`
+- [X] T003 Confirmar las fixtures y herramientas de prueba existentes en `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java`, `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` y `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
 
 ---
 
@@ -30,11 +30,11 @@
 
 **CRITICAL**: Ninguna historia de usuario puede validarse hasta completar esta fase
 
-- [ ] T004 Agregar a `backend/app/src/main/java/com/dappunq/service/ApiKeyService.java` un resultado tipado que clasifique credencial administrativa ausente, encabezado ausente/vacio, clave inválida y clave válida sin exponer el secreto
-- [ ] T005 Extender `backend/app/src/main/java/com/dappunq/service/ApiKeyService.java` para consultar la fila activa con permiso `scraping` y comparar el valor recibido exacta y sin normalización
-- [ ] T006 Mantener en `backend/app/src/main/java/com/dappunq/service/ApiKeyService.java` el comportamiento preexistente de `isValidScrapingApiKey` para `/quotes/scrape`
-- [ ] T007 Actualizar `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` para aplicar el filtro a los POST de `/quotes/scrape` y `/quotes/recalculate`
-- [ ] T008 Agregar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` un Correlation ID entrante o generado y su limpieza posterior al terminar el intento
+- [X] T004 Agregar a `backend/app/src/main/java/com/dappunq/service/ApiKeyService.java` un resultado tipado que clasifique credencial administrativa ausente, encabezado ausente/vacio, clave inválida y clave válida sin exponer el secreto
+- [X] T005 Extender `backend/app/src/main/java/com/dappunq/service/ApiKeyService.java` para consultar la fila activa con permiso `scraping` y comparar el valor recibido exacta y sin normalización
+- [X] T006 Mantener en `backend/app/src/main/java/com/dappunq/service/ApiKeyService.java` el comportamiento preexistente de `isValidScrapingApiKey` para `/quotes/scrape`
+- [X] T007 Actualizar `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` para aplicar el filtro a los POST de `/quotes/scrape` y `/quotes/recalculate`
+- [X] T008 Agregar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` un Correlation ID entrante o generado y su limpieza posterior al terminar el intento
 
 **Checkpoint**: Base de autenticación compartida lista para historias de usuario
 
@@ -48,17 +48,17 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Ampliar `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java` con pruebas unitarias de clave válida para `/quotes/recalculate`, sin JWT y con JWT presente
-- [ ] T010 [P] [US1] Actualizar `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` para provisionar una API Key válida y enviarla en los casos exitosos y de 503
-- [ ] T011 [P] [US1] Actualizar `backend/app/src/test/java/com/dappunq/e2e/ValuationConfigurationE2ETest.java` para que las solicitudes existentes a `/quotes/recalculate` incluyan la API Key válida
-- [ ] T012 [P] [US1] Actualizar `backend/app/src/test/java/com/dappunq/e2e/HoldingsInvariantE2ETest.java` para que las solicitudes existentes a `/quotes/recalculate` incluyan la API Key válida
+- [X] T009 [P] [US1] Ampliar `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java` con pruebas unitarias de clave válida para `/quotes/recalculate`, sin JWT y con JWT presente
+- [X] T010 [P] [US1] Actualizar `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` para provisionar una API Key válida y enviarla en los casos exitosos y de 503
+- [X] T011 [P] [US1] Actualizar `backend/app/src/test/java/com/dappunq/e2e/ValuationConfigurationE2ETest.java` para que las solicitudes existentes a `/quotes/recalculate` incluyan la API Key válida
+- [X] T012 [P] [US1] Actualizar `backend/app/src/test/java/com/dappunq/e2e/HoldingsInvariantE2ETest.java` para que las solicitudes existentes a `/quotes/recalculate` incluyan la API Key válida
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Hacer que `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` cree autoridad `scraping` solo cuando el resultado tipado sea clave válida
-- [ ] T014 [US1] Cambiar `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java` la regla de `/quotes/recalculate` de permitida públicamente a `hasAuthority("scraping")`
-- [ ] T015 [US1] Conservar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` el flujo funcional 200 y la lógica existente de recálculo sin modificar el controlador
-- [ ] T016 [US1] Mantener en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java` la autorización y el rechazo 401 existentes de `/quotes/scrape`
+- [X] T013 [US1] Hacer que `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` cree autoridad `scraping` solo cuando el resultado tipado sea clave válida
+- [X] T014 [US1] Cambiar `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java` la regla de `/quotes/recalculate` de permitida públicamente a `hasAuthority("scraping")`
+- [X] T015 [US1] Conservar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` el flujo funcional 200 y la lógica existente de recálculo sin modificar el controlador
+- [X] T016 [US1] Mantener en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java` la autorización y el rechazo 401 existentes de `/quotes/scrape`
 
 **Checkpoint**: El recálculo es accesible únicamente con una API Key válida y conserva el comportamiento 200/503
 
@@ -72,19 +72,19 @@
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] Añadir a `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java` pruebas unitarias para 401 ausente/vacio, 403 incorrecta/malformada y 500 sin configuración
-- [ ] T018 [P] [US2] Añadir a `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` pruebas MockMvc para API Key ausente y solo Bearer JWT
-- [ ] T019 [P] [US2] Añadir a `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` pruebas MockMvc para clave incorrecta, con diferencia de un carácter y con mayúsculas/espacios
-- [ ] T020 [P] [US2] Añadir a `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` una prueba aislada MockMvc con la credencial activa retirada que espera 500
-- [ ] T021 [P] [US2] Verificar en `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` que los rechazos no invocan scraping ni recálculo
+- [X] T017 [P] [US2] Añadir a `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java` pruebas unitarias para 401 ausente/vacio, 403 incorrecta/malformada y 500 sin configuración
+- [X] T018 [P] [US2] Añadir a `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` pruebas MockMvc para API Key ausente y solo Bearer JWT
+- [X] T019 [P] [US2] Añadir a `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` pruebas MockMvc para clave incorrecta, con diferencia de un carácter y con mayúsculas/espacios
+- [X] T020 [P] [US2] Añadir a `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` una prueba aislada MockMvc con la credencial activa retirada que espera 500
+- [X] T021 [P] [US2] Verificar en `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` que los rechazos no invocan scraping ni recálculo
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Implementar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` la respuesta 401 genérica para recálculo con encabezado ausente o vacio
-- [ ] T023 [US2] Implementar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` la respuesta 403 genérica para clave distinta o malformada
-- [ ] T024 [US2] Implementar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` la respuesta 500 genérica cuando no exista credencial activa
-- [ ] T025 [US2] Registrar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` timestamp, ruta, resultado y Correlation ID para cada intento sin API Key, JWT ni cuerpo
-- [ ] T026 [US2] Garantizar que `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` responda antes de invocar el recálculo o realizar consultas de cotizaciones
+- [X] T022 [US2] Implementar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` la respuesta 401 genérica para recálculo con encabezado ausente o vacio
+- [X] T023 [US2] Implementar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` la respuesta 403 genérica para clave distinta o malformada
+- [X] T024 [US2] Implementar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` la respuesta 500 genérica cuando no exista credencial activa
+- [X] T025 [US2] Registrar en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` timestamp, ruta, resultado y Correlation ID para cada intento sin API Key, JWT ni cuerpo
+- [X] T026 [US2] Garantizar que `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` responda antes de invocar el recálculo o realizar consultas de cotizaciones
 
 **Checkpoint**: Todos los rechazos tienen el código requerido, terminan antes de lógica de negocio y producen trazabilidad segura
 
@@ -98,11 +98,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T027 [P] [US3] Cambiar en `backend/app/src/main/resources/static/openapi.yaml` `/quotes/recalculate` de `security: []` a `ApiKeyAuth` con encabezado `X-API-Key`
-- [ ] T028 [P] [US3] Agregar a `/quotes/recalculate` en `backend/app/src/main/resources/static/openapi.yaml` las respuestas documentadas 401, 403 y 500 sin secretos ni JWT como alternativa
-- [ ] T029 [P] [US3] Declarar en `backend/app/src/main/resources/static/openapi.yaml` el esquema `ApiKeyAuth` como `apiKey` con nombre de encabezado `X-API-Key`
-- [ ] T030 [P] [US3] Actualizar `backend/postman/token-valuation.postman_collection.json` para agregar `X-API-Key: {{apiKey}}` al request de recálculo y reemplazar la descripción de endpoint público
-- [ ] T031 [US3] Actualizar `backend/specs/006-api-key-recalculate/quickstart.md` si el flujo manual o los resultados documentados difieren de los cambios finales
+- [X] T027 [P] [US3] Cambiar en `backend/app/src/main/resources/static/openapi.yaml` `/quotes/recalculate` de `security: []` a `ApiKeyAuth` con encabezado `X-API-Key`
+- [X] T028 [P] [US3] Agregar a `/quotes/recalculate` en `backend/app/src/main/resources/static/openapi.yaml` las respuestas documentadas 401, 403 y 500 sin secretos ni JWT como alternativa
+- [X] T029 [P] [US3] Declarar en `backend/app/src/main/resources/static/openapi.yaml` el esquema `ApiKeyAuth` como `apiKey` con nombre de encabezado `X-API-Key`
+- [X] T030 [P] [US3] Actualizar `backend/postman/token-valuation.postman_collection.json` para agregar `X-API-Key: {{apiKey}}` al request de recálculo y reemplazar la descripción de endpoint público
+- [X] T031 [US3] Actualizar `backend/specs/006-api-key-recalculate/quickstart.md` si el flujo manual o los resultados documentados difieren de los cambios finales
 
 **Checkpoint**: OpenAPI y Postman identifican la credencial requerida y todos los rechazos posibles
 
@@ -112,12 +112,12 @@
 
 **Purpose**: Validación final, seguridad y consistencia transversal
 
-- [ ] T032 [P] Revisar que `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` y `backend/app/src/main/java/com/dappunq/service/ApiKeyService.java` no registren ni serialicen API Key o JWT
-- [ ] T033 [P] Revisar que los mensajes JSON de error de recálculo sean genéricos y estén escritos en español
-- [ ] T034 Ejecutar las pruebas de unidad y E2E de `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java` y `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java`
-- [ ] T035 Ejecutar las pruebas E2E completas indicadas por `backend/specs/006-api-key-recalculate/quickstart.md`
-- [ ] T036 Ejecutar la compilación y el conjunto de pruebas de `backend/app` desde `backend`
-- [ ] T037 Validar el contrato final contra `backend/app/src/main/resources/static/openapi.yaml`, `backend/postman/token-valuation.postman_collection.json` y `backend/specs/006-api-key-recalculate/contracts/recalculate.md`
+- [X] T032 [P] Revisar que `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` y `backend/app/src/main/java/com/dappunq/service/ApiKeyService.java` no registren ni serialicen API Key o JWT
+- [X] T033 [P] Revisar que los mensajes JSON de error de recálculo sean genéricos y estén escritos en español
+- [X] T034 Ejecutar las pruebas de unidad y E2E de `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java` y `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java`
+- [X] T035 Ejecutar las pruebas E2E completas indicadas por `backend/specs/006-api-key-recalculate/quickstart.md`
+- [X] T036 Ejecutar la compilación y el conjunto de pruebas de `backend/app` desde `backend`
+- [X] T037 Validar el contrato final contra `backend/app/src/main/resources/static/openapi.yaml`, `backend/postman/token-valuation.postman_collection.json` y `backend/specs/006-api-key-recalculate/contracts/recalculate.md`
 
 ---
 

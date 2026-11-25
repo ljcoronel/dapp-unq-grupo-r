@@ -341,7 +341,8 @@ paths:
       tags: [Cotizaciones]
       summary: Recalcular cotizaciones
       operationId: recalculate
-      security: []
+      security:
+        - ApiKeyAuth: []
       responses:
         '200':
           description: Recalculo completado.
@@ -349,6 +350,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecalculationResult'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         '503':
           description: No se pudo completar el recalculo.
           content:
@@ -361,7 +368,7 @@ paths:
       summary: Ejecutar scraping
       operationId: scrape
       security:
-        - scrapingApiKey: []
+        - ApiKeyAuth: []
       parameters:
         - $ref: '#/components/parameters/NumberOfPlayers'
       responses:
@@ -375,7 +382,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    scrapingApiKey:
+    ApiKeyAuth:
       type: apiKey
       in: header
       name: X-API-Key
@@ -421,6 +428,18 @@ components:
             $ref: '#/components/schemas/MessageError'
     Unauthorized:
       description: No autorizado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MessageError'
+    Forbidden:
+      description: Credencial invalida o rechazada.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MessageError'
+    InternalServerError:
+      description: Credencial administrativa activa no configurada.
       content:
         application/json:
           schema:

@@ -8,10 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 public class ApiKeyService {
     public static final String SCRAPING_PERMISSION = "scraping";
+    private static final Pattern API_KEY_PATTERN = Pattern.compile("^[A-Za-z0-9._-]{16,128}$");
+
+    public enum RecalculateApiKeyResult {
+        ACTIVE_CREDENTIAL_MISSING,
+        HEADER_MISSING,
+        INVALID,
+        VALID
+    }
 
     private final ApiKeyRepository apiKeyRepository;
     private final PasswordEncoder passwordEncoder;
@@ -62,6 +71,25 @@ public class ApiKeyService {
         return apiKeyRepository.findByPermissionAndActiveTrue(SCRAPING_PERMISSION)
                 .map(entity -> passwordEncoder.matches(normalized, entity.getKeyHash()))
                 .orElse(false);
+    }
+
+    @Transactional(readOnly = true)
+    public RecalculateApiKeyResult validateRecalculateApiKey(String apiKey) {
+        ApiKeyEntity activeCredential = apiKeyRepository
+                .findByPermissionAndActiveTrue(SCRAPING_PERMISSION)
+                .orElse(null);
+        if (activeCredential == null) {
+            return RecalculateApiKeyResult.ACTIVE_CREDENTIAL_MISSING;
+        }
+        if (apiKey == null || apiKey.isBlank()) {
+            return RecalculateApiKeyResult.HEADER_MISSING;
+        }
+        if (!API_KEY_PATTERN.matcher(apiKey).matches()) {
+            return RecalculateApiKeyResult.INVALID;
+        }
+        return passwordEncoder.matches(apiKey, activeCredential.getKeyHash())
+                ? RecalculateApiKeyResult.VALID
+                : RecalculateApiKeyResult.INVALID;
     }
 
     public String generateScrapingApiKey() {
