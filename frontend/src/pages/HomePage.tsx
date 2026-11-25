@@ -1,96 +1,85 @@
 import { useEffect, useState } from 'react'
-import ProfileMenu from '../components/ProfileMenu.jsx'
-import PlayerLeagueTable from '../components/PlayerLeagueTable.jsx'
-import { fetchPlayers } from '../services/playerService.js'
+import ProfileMenu from '../components/ProfileMenu'
+import PlayerLeagueTable from '../components/PlayerLeagueTable'
+import { getUserFacingError } from '../api/client'
+import { getPlayers, type Player } from '../api/players'
 
-const LEAGUES = [
-  { id: 'premier-league', name: 'Premier League (Inglaterra)' },
-  { id: 'bundesliga', name: 'Bundesliga (Alemania)' },
-  { id: 'primera-division', name: 'Primera División (España)' },
-  { id: 'serie-a', name: 'Serie A (Italia)' },
-  { id: 'ligue-1', name: 'Ligue 1 (Francia)' },
-]
-
-const getInitialExpansionState = () =>
-  LEAGUES.reduce((accumulator, league) => {
-    accumulator[league.id] = true
-    return accumulator
-  }, {})
+interface LeagueGroup {
+  id: string
+  name: string
+  players: Player[]
+}
 
 const HomePage = () => {
-  const [leaguesData, setLeaguesData] = useState([])
+  const [players, setPlayers] = useState<Player[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
-  const [expandedMap, setExpandedMap] = useState(getInitialExpansionState)
-
-  const loadData = async () => {
-    setIsLoading(true)
-    setError('')
-
-    try {
-      const data = await fetchPlayers()
-
-      if (!Array.isArray(data)) {
-        throw new Error('El formato de respuesta de los jugadores no es válido.')
-      }
-
-      setLeaguesData(data)
-    } catch (requestError) {
-      const message =
-        requestError.response?.data?.mensaje ||
-        requestError.response?.data?.message ||
-        'No se pudo cargar el catálogo de jugadores. Por favor, intente nuevamente.'
-      setError(message)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    let isCancelled = false
+    const controller = new AbortController()
 
-    const initialFetch = async () => {
-      try {
-        const data = await fetchPlayers()
-
-        if (isCancelled) {
-          return
+    void getPlayers(controller.signal)
+      .then((loadedPlayers) => {
+        if (!controller.signal.aborted) {
+          setPlayers(loadedPlayers)
         }
-
-        if (!Array.isArray(data)) {
-          throw new Error('El formato de respuesta de los jugadores no es válido.')
+      })
+      .catch((requestError: unknown) => {
+        if (!controller.signal.aborted) {
+          setError(
+            getUserFacingError(
+              requestError,
+              'No se pudo cargar el catálogo de jugadores. Por favor, intente nuevamente.',
+            ),
+          )
         }
-
-        setLeaguesData(data)
-      } catch (requestError) {
-        if (isCancelled) {
-          return
-        }
-
-        const message =
-          requestError.response?.data?.mensaje ||
-          requestError.response?.data?.message ||
-          'No se pudo cargar el catálogo de jugadores. Por favor, intente nuevamente.'
-        setError(message)
-      } finally {
-        if (!isCancelled) {
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
           setIsLoading(false)
         }
-      }
-    }
+      })
 
-    initialFetch()
-
-    return () => {
-      isCancelled = true
-    }
+    return () => controller.abort()
   }, [])
 
-  const handleToggleLeague = (leagueId) => {
+  const leagueGroups = players.reduce<LeagueGroup[]>((groups, player) => {
+    const leagueName = player.league?.nombre || 'Liga sin nombre'
+    const leagueId = player.league?.codigo || leagueName
+    const existingGroup = groups.find((group) => group.id === leagueId)
+
+    if (existingGroup) {
+      existingGroup.players.push(player)
+    } else {
+      groups.push({ id: leagueId, name: leagueName, players: [player] })
+    }
+
+    return groups
+  }, [])
+
+  const handleToggleLeague = (leagueId: string) => {
     setExpandedMap((previousState) => ({
       ...previousState,
       [leagueId]: !previousState[leagueId],
     }))
+  }
+
+  const retryLoad = () => {
+    setIsLoading(true)
+    setError('')
+
+    void getPlayers()
+      .then(setPlayers)
+      .catch((requestError: unknown) => {
+        setError(
+          getUserFacingError(
+            requestError,
+            'No se pudo cargar el catálogo de jugadores. Por favor, intente nuevamente.',
+          ),
+        )
+      })
+      .finally(() => setIsLoading(false))
   }
 
   return (
@@ -126,7 +115,7 @@ const HomePage = () => {
             <p className="text-sm font-semibold text-red-800">{error}</p>
             <button
               type="button"
-              onClick={loadData}
+              onClick={retryLoad}
               className="mt-4 inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
             >
               Reintentar
@@ -134,7 +123,7 @@ const HomePage = () => {
           </div>
         )}
 
-        {!isLoading && !error && leaguesData.length === 0 && (
+        {!isLoading && !error && players.length === 0 && (
           <div className="rounded-lg border border-slate-200 bg-white p-8 text-center shadow-sm">
             <p className="text-sm text-slate-600">
               No se encontraron ligas disponibles en este momento.
@@ -142,20 +131,16 @@ const HomePage = () => {
           </div>
         )}
 
-        {!isLoading && !error && leaguesData.length > 0 && (
+        {!isLoading && !error && players.length > 0 && (
           <div className="space-y-6">
-            {LEAGUES.map((league, index) => {
-              const playersForLeague = Array.isArray(leaguesData[index])
-                ? leaguesData[index]
-                : []
-
+            {leagueGroups.map((league) => {
               return (
                 <PlayerLeagueTable
                   key={league.id}
                   tableId={`table-${league.id}`}
                   leagueName={league.name}
-                  players={playersForLeague}
-                  isExpanded={Boolean(expandedMap[league.id])}
+                  players={league.players}
+                  isExpanded={expandedMap[league.id] ?? true}
                   onToggle={() => handleToggleLeague(league.id)}
                 />
               )

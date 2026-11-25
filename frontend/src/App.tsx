@@ -1,11 +1,11 @@
 import { Navigate, Route, Routes } from 'react-router'
 
-import ProtectedRoute from './components/ProtectedRoute.jsx'
-import HomePage from './pages/HomePage.jsx'
-import LoginPage from './pages/LoginPage.jsx'
-import RegisterPage from './pages/RegisterPage.jsx'
+import ProtectedRoute from './components/ProtectedRoute'
+import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
 
-function App() {
+const App = () => {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
       <Routes>

@@ -1,8 +1,13 @@
 import { Navigate, useLocation } from 'react-router'
+import type { ReactNode } from 'react'
 
 import { useAuth } from '../context/AuthContext'
 
-export default function ProtectedRoute({ children }) {
+interface ProtectedRouteProps {
+  children: ReactNode
+}
+
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth()
   const location = useLocation()
 
@@ -16,3 +21,5 @@ export default function ProtectedRoute({ children }) {
 
   return children
 }
+
+export default ProtectedRoute

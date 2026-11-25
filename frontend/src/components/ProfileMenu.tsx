@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
-import { useAuth } from '../context/AuthContext.jsx'
+import { useAuth } from '../context/AuthContext'
 
-export default function ProfileMenu() {
+const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { logout } = useAuth()
 
@@ -60,3 +60,5 @@ export default function ProfileMenu() {
     </div>
   )
 }
+
+export default ProfileMenu

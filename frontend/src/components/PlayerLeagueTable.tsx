@@ -1,27 +1,40 @@
-const formatCellValue = (value) => {
+import type { components } from '../api/schema'
+
+const formatCellValue = (value: string | number | null | undefined) => {
   if (value === null || value === undefined || value === '') {
     return '-'
   }
   return value
 }
 
+type Player = components['schemas']['PlayerResponse']
+
 const COLUMNS = [
-  { key: 'nombre', label: 'Nombre completo' },
-  { key: 'seccion', label: 'Posición' },
-  { key: 'equipo', label: 'Equipo' },
-  { key: 'partidosJugados', label: 'Partidos jugados' },
-  { key: 'goles', label: 'Goles' },
-  { key: 'asistencias', label: 'Asistencias' },
-  { key: 'penaltis', label: 'Penales' },
+  { key: 'name', label: 'Nombre completo' },
+  { key: 'position', label: 'Posición' },
+  { key: 'team', label: 'Equipo' },
+  { key: 'appearances', label: 'Partidos jugados' },
+  { key: 'goals', label: 'Goles' },
+  { key: 'assists', label: 'Asistencias' },
+  { key: 'yellowCards', label: 'Amarillas' },
+  { key: 'redCards', label: 'Rojas' },
 ]
 
-export const PlayerLeagueTable = ({
+interface PlayerLeagueTableProps {
+  leagueName: string
+  players: Player[]
+  isExpanded: boolean
+  onToggle: () => void
+  tableId: string
+}
+
+const PlayerLeagueTable = ({
   leagueName,
-  players = [],
-  isExpanded = true,
+  players,
+  isExpanded,
   onToggle,
   tableId,
-}) => {
+}: PlayerLeagueTableProps) => {
   return (
     <section className="mb-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
       <button
@@ -74,32 +87,35 @@ export const PlayerLeagueTable = ({
               </thead>
               <tbody className="divide-y divide-slate-200 bg-white">
                 {players.map((player, index) => {
-                  const rowKey = player?.id ?? `${leagueName}-${index}`
+                  const rowKey = player.externalId ?? `${leagueName}-${index}`
                   return (
                     <tr
                       key={rowKey}
                       className="transition-colors hover:bg-slate-50"
                     >
                       <td className="whitespace-nowrap px-4 py-3 font-medium text-slate-900">
-                        {formatCellValue(player?.nombre)}
+                        {formatCellValue(player.name)}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                        {formatCellValue(player?.seccion)}
+                        {formatCellValue(player.position)}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                        {formatCellValue(player?.equipo)}
+                        {formatCellValue(player.team?.name)}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                        {formatCellValue(player?.partidosJugados)}
+                        {formatCellValue(player.appearances)}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                        {formatCellValue(player?.goles)}
+                        {formatCellValue(player.goals)}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                        {formatCellValue(player?.asistencias)}
+                        {formatCellValue(player.assists)}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                        {formatCellValue(player?.penaltis)}
+                        {formatCellValue(player.yellowCards)}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-slate-600">
+                        {formatCellValue(player.redCards)}
                       </td>
                     </tr>
                   )
