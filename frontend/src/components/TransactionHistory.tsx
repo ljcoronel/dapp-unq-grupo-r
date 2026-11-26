@@ -38,7 +38,7 @@ const TransactionHistory = ({ transactions, players }: TransactionHistoryProps) 
                     {isBuy ? 'Compra' : 'Venta'}
                   </td>
                   <td className="px-4 py-3">
-                    {players.find((player) => player.externalId === transaction.playerId)?.name
+                    {players.find((player) => player.id === transaction.playerId)?.name
                       ?? `Jugador ${transaction.playerId ?? ''}`}
                   </td>
                   <td className="px-4 py-3">{transaction.quantity?.toLocaleString('es-AR') ?? '—'}</td>

@@ -31,7 +31,7 @@ const HoldingList = ({ holdings, players }: HoldingListProps) => (
             {holdings.map((holding, index) => (
               <tr key={holding.id ?? `${holding.jugadorId}-${index}`}>
                 <td className="px-4 py-3 font-medium text-slate-900">
-                  {players.find((player) => player.externalId === holding.jugadorId)?.name
+                  {players.find((player) => player.id === holding.jugadorId)?.name
                     ?? `Jugador ${holding.jugadorId ?? ''}`}
                 </td>
                 <td className="px-4 py-3">{holding.tokens?.toLocaleString('es-AR') ?? '—'}</td>

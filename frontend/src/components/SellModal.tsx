@@ -134,9 +134,9 @@ const SellModal = ({
 
   const availablePlayers = holdings
     .filter((holding) => (holding.jugadorId ?? 0) > 0)
-    .map((holding) => players.find((player) => player.externalId === holding.jugadorId))
+    .map((holding) => players.find((player) => player.id === holding.jugadorId))
     .filter((player): player is Player => Boolean(player))
-    .filter((player) => getAvailableTokens(player.externalId ?? 0, holdings, pendingOrders) > 0)
+    .filter((player) => getAvailableTokens(player.id ?? 0, holdings, pendingOrders) > 0)
 
   return (
     <div className="fixed inset-0 z-30 flex items-end justify-center bg-slate-950/50 p-0 sm:items-center sm:p-4">
@@ -163,7 +163,7 @@ const SellModal = ({
             >
               <option value="">Seleccione un jugador</option>
               {availablePlayers.map((player, index) => (
-                <option key={player.externalId ?? index} value={player.externalId ?? ''}>
+                <option key={player.id ?? index} value={player.id ?? ''}>
                   {player.name ?? 'Jugador sin nombre'}
                 </option>
               ))}

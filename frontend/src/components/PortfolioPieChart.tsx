@@ -23,7 +23,7 @@ const PortfolioPieChart = ({ holdings, players }: PortfolioPieChartProps) => {
   const data = useMemo(() => {
     const valuedHoldings = holdings
       .map((holding) => ({
-        name: players.find((player) => player.externalId === holding.jugadorId)?.name
+        name: players.find((player) => player.id === holding.jugadorId)?.name
           ?? `Jugador ${holding.jugadorId ?? ''}`,
         value: holding.valorTotal ?? 0,
       }))

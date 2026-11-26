@@ -147,7 +147,7 @@ const BuyModal = ({ isOpen, players, userId, onConfirm, onClose }: BuyModalProps
             >
               <option value="">Seleccione un jugador</option>
               {players.map((player, index) => (
-                <option key={player.externalId ?? index} value={player.externalId ?? ''}>
+                <option key={player.id ?? index} value={player.id ?? ''}>
                   {player.name ?? 'Jugador sin nombre'}
                 </option>
               ))}

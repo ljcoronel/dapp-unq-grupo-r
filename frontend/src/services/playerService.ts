@@ -13,6 +13,7 @@ export const getCurrentValuation = async (
   playerId: number,
   userId: number,
 ): Promise<Valuation> => {
+  console.log("Pasé acá");
   const { data, error, response } = await apiClient.GET(
     '/players/{playerId}/quotes/{userId}/current',
     { params: { path: { playerId, userId } } },

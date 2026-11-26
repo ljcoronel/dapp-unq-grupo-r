@@ -87,7 +87,7 @@ const PlayerTable = ({
           </thead>
           <tbody className="divide-y divide-slate-100">
             {players.map((player, index) => (
-              <tr key={player.externalId ?? `${player.name ?? 'player'}-${index}`} className="hover:bg-slate-50">
+              <tr key={player.id ?? `${player.name ?? 'player'}-${index}`} className="hover:bg-slate-50">
                 <td className="whitespace-nowrap px-4 py-3 font-medium text-slate-900">{player.name ?? '—'}</td>
                 <td className="whitespace-nowrap px-4 py-3">{player.team?.name ?? '—'}</td>
                 <td className="whitespace-nowrap px-4 py-3">{player.league?.nombre ?? '—'}</td>

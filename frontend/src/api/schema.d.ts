@@ -342,6 +342,8 @@ export interface components {
         };
         PlayerResponse: {
             /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
             externalId?: number;
             name?: string;
             team?: components["schemas"]["TeamResponse"];

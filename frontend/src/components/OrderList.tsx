@@ -39,7 +39,7 @@ const OrderList = ({ orders, type, players, onCancel }: OrderListProps) => (
               return (
                 <tr key={orderId ?? `${type}-${index}`}>
                   <td className="px-4 py-3 font-medium text-slate-900">
-                    {players.find((player) => player.externalId === order.playerId)?.name ?? `Jugador ${order.playerId ?? ''}`}
+                    {players.find((player) => player.id === order.playerId)?.name ?? `Jugador ${order.playerId ?? ''}`}
                   </td>
                   <td className="px-4 py-3">{formatNumber(order.quantity)}</td>
                   <td className="px-4 py-3">{formatNumber(order.price)}</td>
