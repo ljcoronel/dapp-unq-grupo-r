@@ -28,6 +28,7 @@ public class StrategyConfigEntity {
     private UserEntity user;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipoestrategia")
     private StrategyType tipoEstrategia;
 
     @Column(nullable = false, length = 2000)

@@ -18,9 +18,9 @@
 
 **Purpose**: Confirmar la línea base existente antes de incorporar el ranking.
 
-- [ ] T001 Ejecutar `backend\gradlew.bat test` y documentar el estado inicial de compilación y pruebas en `backend/specs/016-ranking-jugadores/tasks.md`.
-- [ ] T002 Revisar y conservar los patrones existentes de capas en `backend/app/src/main/java/com/dappunq/controller/`, `service/`, `model/`, `persistence/` y `dto/`.
-- [ ] T003 [P] Revisar `GET /players/ranking` y conservar el contrato existente de `POST /quotes/scrape` en `docs/openapi.yaml`, sin crear un OpenAPI duplicado de feature.
+- [X] T001 Ejecutar `backend\gradlew.bat test` y documentar el estado inicial de compilación y pruebas en `backend/specs/016-ranking-jugadores/tasks.md`. Resultado inicial: BUILD SUCCESSFUL; todas las pruebas configuradas pasan y no hay fallos de compilación.
+- [X] T002 Revisar y conservar los patrones existentes de capas en `backend/app/src/main/java/com/dappunq/controller/`, `service/`, `model/`, `persistence/` y `dto/`.
+- [X] T003 [P] Revisar `GET /players/ranking` y conservar el contrato existente de `POST /quotes/scrape` en `docs/openapi.yaml`, sin crear un OpenAPI duplicado de feature.
 
 ---
 
@@ -30,16 +30,16 @@
 
 **CRITICAL**: Ninguna historia puede comenzar hasta completar esta fase.
 
-- [ ] T004 Confirmar que el ranking lee exclusivamente jugadores ya persistidos y no realiza altas ni escrituras de entidades de jugador en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
-- [ ] T005 Crear o actualizar solo los índices de ranking requeridos en `backend/app/src/main/resources/schema.sql`; no agregar columnas de estado no soportadas por el modelo actual.
-- [ ] T006 [P] Implementar el modelo de dominio `RankingFiltros` con validación de filtros, página y límite en `backend/app/src/main/java/com/dappunq/model/ranking/RankingFiltros.java`.
-- [ ] T007 [P] Implementar el modelo de dominio `RankingJugador` con posición, datos del jugador, valor, origen y reglas de invariante en `backend/app/src/main/java/com/dappunq/model/ranking/RankingJugador.java`.
-- [ ] T008 [P] Implementar el modelo de dominio `RankingPagina` con items, total, página y límite en `backend/app/src/main/java/com/dappunq/model/ranking/RankingPagina.java`.
-- [ ] T009 Crear el contrato interno `RankingRepository` en `backend/app/src/main/java/com/dappunq/repository/RankingRepository.java`.
-- [ ] T010 Implementar `RankingRepositoryAdapter` con JdbcTemplate y CTE PostgreSQL en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
-- [ ] T011 [P] Crear los DTO de entrada/salida del ranking en `backend/app/src/main/java/com/dappunq/dto/ranking/RankingPlayerResponse.java` y `backend/app/src/main/java/com/dappunq/dto/ranking/RankingPageResponse.java`.
-- [ ] T012 Crear el servicio de ranking en `backend/app/src/main/java/com/dappunq/service/RankingService.java` y `backend/app/src/main/java/com/dappunq/service/RankingServiceImpl.java`.
-- [ ] T013 Registrar la configuración necesaria para que Spring resuelva JdbcTemplate, repositorio y servicio del ranking en `backend/app/src/main/java/com/dappunq/`.
+- [X] T004 Confirmar que el ranking lee exclusivamente jugadores ya persistidos y no realiza altas ni escrituras de entidades de jugador en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T005 Crear o actualizar solo los índices de ranking requeridos en `backend/app/src/main/resources/schema.sql`; no agregar columnas de estado no soportadas por el modelo actual.
+- [X] T006 [P] Implementar el modelo de dominio `RankingFiltros` con validación de filtros, página y límite en `backend/app/src/main/java/com/dappunq/model/ranking/RankingFiltros.java`.
+- [X] T007 [P] Implementar el modelo de dominio `RankingJugador` con posición, datos del jugador, valor, origen y reglas de invariante en `backend/app/src/main/java/com/dappunq/model/ranking/RankingJugador.java`.
+- [X] T008 [P] Implementar el modelo de dominio `RankingPagina` con items, total, página y límite en `backend/app/src/main/java/com/dappunq/model/ranking/RankingPagina.java`.
+- [X] T009 Crear el contrato interno `RankingRepository` en `backend/app/src/main/java/com/dappunq/repository/RankingRepository.java`.
+- [X] T010 Implementar `RankingRepositoryAdapter` con JdbcTemplate y CTE PostgreSQL en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T011 [P] Crear los DTO de entrada/salida del ranking en `backend/app/src/main/java/com/dappunq/dto/ranking/RankingPlayerResponse.java` y `backend/app/src/main/java/com/dappunq/dto/ranking/RankingPageResponse.java`.
+- [X] T012 Crear el servicio de ranking en `backend/app/src/main/java/com/dappunq/service/RankingService.java` y `backend/app/src/main/java/com/dappunq/service/RankingServiceImpl.java`.
+- [X] T013 Registrar la configuración necesaria para que Spring resuelva JdbcTemplate, repositorio y servicio del ranking en `backend/app/src/main/java/com/dappunq/`.
 
 **Checkpoint**: La infraestructura y los modelos compartidos están listos; el ranking puede implementarse por historias.
 
@@ -53,20 +53,20 @@
 
 ### Tests for User Story 1
 
-- [ ] T014 [P] [US1] Agregar unitarias de invariantes de `RankingFiltros`, `RankingJugador` y `RankingPagina` en `backend/app/src/test/java/com/dappunq/unit/RankingDomainTest.java`.
-- [ ] T015 [P] [US1] Agregar pruebas unitarias del servicio y los desempates sin persistencia en `backend/app/src/test/java/com/dappunq/service/RankingServiceImplTest.java`.
-- [ ] T016 [P] [US1] Agregar integración Testcontainers del Adapter JDBC con datos vigentes, históricas y tenencias en `backend/app/src/test/java/com/dappunq/integration/RankingRepositoryAdapterIntegrationTest.java`.
-- [ ] T017 [P] [US1] Agregar contrato y E2E MockMvc de `GET /players/ranking` para 200, 400 y 500; el E2E debe llamar primero `POST /quotes/scrape?numberOfPlayers=N` y usar un doble determinista de `ScrapingService` para persistir fixtures sin red en `backend/app/src/test/java/com/dappunq/e2e/RankingControllerE2ETest.java`, y validar `docs/openapi.yaml`.
+- [X] T014 [P] [US1] Agregar unitarias de invariantes de `RankingFiltros`, `RankingJugador` y `RankingPagina` en `backend/app/src/test/java/com/dappunq/unit/RankingDomainTest.java`.
+- [X] T015 [P] [US1] Agregar pruebas unitarias del servicio y los desempates sin persistencia en `backend/app/src/test/java/com/dappunq/service/RankingServiceImplTest.java`.
+- [X] T016 [P] [US1] Agregar integración Testcontainers del Adapter JDBC con datos vigentes, históricas y tenencias en `backend/app/src/test/java/com/dappunq/integration/RankingRepositoryAdapterIntegrationTest.java`.
+- [X] T017 [P] [US1] Agregar contrato y E2E MockMvc de `GET /players/ranking` para 200, 400 y 500; el E2E debe llamar primero `POST /quotes/scrape?numberOfPlayers=N` y usar un doble determinista de `ScrapingService` para persistir fixtures sin red en `backend/app/src/test/java/com/dappunq/e2e/RankingControllerE2ETest.java`, y validar `docs/openapi.yaml`.
 
 ### Implementation for User Story 1
 
-- [ ] T018 [P] [US1] Limitar el contrato de lectura del ranking a consultas sobre registros persistidos y asegurar que no incluya operaciones de alta/modificación de jugadores en `backend/app/src/main/java/com/dappunq/repository/RankingRepository.java`.
-- [ ] T019 [P] [US1] Verificar en E2E que invocar `GET /players/ranking` no inserta ni modifica jugadores fuera del endpoint de scraping en `backend/app/src/test/java/com/dappunq/e2e/RankingControllerE2ETest.java`.
-- [ ] T020 [US1] Completar la consulta consolidada del catálogo persistido de las cinco ligas y cotizaciones vigentes en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
-- [ ] T021 [US1] Implementar la selección del máximo vigente y el origen determinista Estrategia A/B o Cotización base en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
-- [ ] T022 [US1] Implementar el fallback de cotización base del superusuario o 1 crédito en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
-- [ ] T023 [US1] Implementar el orden por valor, base, tenencias actuales de inversores, nombre e identificador estable en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
-- [ ] T024 [US1] Exponer `GET /players/ranking` y mapear modelos a DTO sin mezclar persistencia en `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java` y `backend/app/src/main/java/com/dappunq/controller/mapper/RankingDtoMapper.java`.
+- [X] T018 [P] [US1] Limitar el contrato de lectura del ranking a consultas sobre registros persistidos y asegurar que no incluya operaciones de alta/modificación de jugadores en `backend/app/src/main/java/com/dappunq/repository/RankingRepository.java`.
+- [X] T019 [P] [US1] Verificar en E2E que invocar `GET /players/ranking` no inserta ni modifica jugadores fuera del endpoint de scraping en `backend/app/src/test/java/com/dappunq/e2e/RankingControllerE2ETest.java`.
+- [X] T020 [US1] Completar la consulta consolidada del catálogo persistido de las cinco ligas y cotizaciones vigentes en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T021 [US1] Implementar la selección del máximo vigente y el origen determinista Estrategia A/B o Cotización base en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T022 [US1] Implementar el fallback de cotización base del superusuario o 1 crédito en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T023 [US1] Implementar el orden por valor, base, tenencias actuales de inversores, nombre e identificador estable en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T024 [US1] Exponer `GET /players/ranking` y mapear modelos a DTO sin mezclar persistencia en `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java` y `backend/app/src/main/java/com/dappunq/controller/mapper/RankingDtoMapper.java`.
 
 **Checkpoint**: User Story 1 está completa y puede demostrarse de forma independiente como MVP.
 
@@ -80,17 +80,17 @@
 
 ### Tests for User Story 2
 
-- [ ] T025 [P] [US2] Agregar unitarias de validación y normalización de filtros de ranking en `backend/app/src/test/java/com/dappunq/unit/RankingDomainTest.java`.
-- [ ] T026 [P] [US2] Agregar integración Testcontainers para filtros combinados, páginas vacías y continuidad de posición en `backend/app/src/test/java/com/dappunq/integration/RankingRepositoryAdapterIntegrationTest.java`.
-- [ ] T027 [P] [US2] Agregar E2E MockMvc para filtros válidos, parámetros inválidos y resultado vacío en `backend/app/src/test/java/com/dappunq/e2e/RankingControllerE2ETest.java`.
+- [X] T025 [P] [US2] Agregar unitarias de validación y normalización de filtros de ranking en `backend/app/src/test/java/com/dappunq/unit/RankingDomainTest.java`.
+- [X] T026 [P] [US2] Agregar integración Testcontainers para filtros combinados, páginas vacías y continuidad de posición en `backend/app/src/test/java/com/dappunq/integration/RankingRepositoryAdapterIntegrationTest.java`.
+- [X] T027 [P] [US2] Agregar E2E MockMvc para filtros válidos, parámetros inválidos y resultado vacío en `backend/app/src/test/java/com/dappunq/e2e/RankingControllerE2ETest.java`.
 
 ### Implementation for User Story 2
 
-- [ ] T028 [US2] Aplicar filtros antes del ranking y paginar mediante parámetros seguros en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
-- [ ] T029 [US2] Agregar recuento total del conjunto filtrado y metadatos `total`, `page` y `limit` en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
-- [ ] T030 [US2] Numerar posiciones dentro del conjunto filtrado y conservarlas entre páginas en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
-- [ ] T031 [US2] Validar `page >= 1`, `limit 1-100` y filtros trim, 1-100 caracteres y sin control en `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java`.
-- [ ] T032 [US2] Devolver `RankingPageResponse` con array vacío y total cero sin jugadores fuera del filtro en `backend/app/src/main/java/com/dappunq/controller/mapper/RankingDtoMapper.java`.
+- [X] T028 [US2] Aplicar filtros antes del ranking y paginar mediante parámetros seguros en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T029 [US2] Agregar recuento total del conjunto filtrado y metadatos `total`, `page` y `limit` en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T030 [US2] Numerar posiciones dentro del conjunto filtrado y conservarlas entre páginas en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T031 [US2] Validar `page >= 1`, `limit 1-100` y filtros trim, 1-100 caracteres y sin control en `backend/app/src/main/java/com/dappunq/controller/PlayerControllerRest.java`.
+- [X] T032 [US2] Devolver `RankingPageResponse` con array vacío y total cero sin jugadores fuera del filtro en `backend/app/src/main/java/com/dappunq/controller/mapper/RankingDtoMapper.java`.
 
 **Checkpoint**: El ranking global y sus filtros/páginas funcionan de forma independiente y no omiten ni duplican coincidencias.
 
@@ -104,15 +104,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T033 [P] [US3] Agregar integración Testcontainers para cambios vigentes de configuración y cotización en `backend/app/src/test/java/com/dappunq/integration/RankingRepositoryAdapterIntegrationTest.java`.
-- [ ] T034 [P] [US3] Agregar integración Testcontainers que excluya cotizaciones reemplazadas y estrategias no ACTUAL en `backend/app/src/test/java/com/dappunq/integration/RankingRepositoryAdapterIntegrationTest.java`.
-- [ ] T035 [P] [US3] Agregar E2E MockMvc que invoque scraping nuevamente con cambios en el fixture y compruebe en una segunda consulta que catálogo/cotizaciones se reflejan sin duplicados en `backend/app/src/test/java/com/dappunq/e2e/RankingControllerE2ETest.java`.
+- [X] T033 [P] [US3] Agregar integración Testcontainers para cambios vigentes de configuración y cotización en `backend/app/src/test/java/com/dappunq/integration/RankingRepositoryAdapterIntegrationTest.java`.
+- [X] T034 [P] [US3] Agregar integración Testcontainers que excluya cotizaciones reemplazadas y estrategias no ACTUAL en `backend/app/src/test/java/com/dappunq/integration/RankingRepositoryAdapterIntegrationTest.java`.
+- [X] T035 [P] [US3] Agregar E2E MockMvc que invoque scraping nuevamente con cambios en el fixture y compruebe en una segunda consulta que catálogo/cotizaciones se reflejan sin duplicados en `backend/app/src/test/java/com/dappunq/e2e/RankingControllerE2ETest.java`.
 
 ### Implementation for User Story 3
 
-- [ ] T036 [US3] Filtrar cotizaciones por `is_current=true` y configuración ACTUAL del mismo usuario/estrategia, sin referenciar una columna de usuario activo inexistente en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
-- [ ] T037 [US3] Evitar cachear valores consolidados entre consultas para que cada consulta completada use la información vigente en `backend/app/src/main/java/com/dappunq/service/RankingServiceImpl.java`.
-- [ ] T038 [US3] Verificar que las tenencias usadas para desempatar correspondan a tokens actuales en manos de inversores, excluyendo al superusuario y sin usar compras históricas, en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T036 [US3] Filtrar cotizaciones por `is_current=true` y configuración ACTUAL del mismo usuario/estrategia, sin referenciar una columna de usuario activo inexistente en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
+- [X] T037 [US3] Evitar cachear valores consolidados entre consultas para que cada consulta completada use la información vigente en `backend/app/src/main/java/com/dappunq/service/RankingServiceImpl.java`.
+- [X] T038 [US3] Verificar que las tenencias usadas para desempatar correspondan a tokens actuales en manos de inversores, excluyendo al superusuario y sin usar compras históricas, en `backend/app/src/main/java/com/dappunq/adapter/RankingRepositoryAdapter.java`.
 
 **Checkpoint**: Las consultas reflejan la vigencia actual y excluyen datos históricos o configuraciones inactivas.
 
@@ -122,14 +122,14 @@
 
 **Purpose**: Completar documentación, errores uniformes y validación integral.
 
-- [ ] T039 [P] Agregar `GET /players/ranking` al contrato OpenAPI central `docs/openapi.yaml`, preservando el contrato de `POST /quotes/scrape` sin duplicar la especificación.
-- [ ] T040 [P] Agregar al Postman de backend el endpoint `GET /players/ranking`, parámetros, ejemplos y respuestas en `backend/postman/token-valuation.postman_collection.json` y `backend/postman/token-market.postman_collection.json`.
-- [ ] T041 [P] Actualizar `backend/specs/016-ranking-jugadores/quickstart.md` para invocar `POST /quotes/scrape` antes del ranking y documentar filtros, paginación, vigencia y sincronización.
-- [ ] T042 Uniformar respuestas 400 y 500 del ranking mediante `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java` y `backend/app/src/main/java/com/dappunq/dto/ErrorResponse.java`.
-- [ ] T043 Revisar nombres, excepciones y mensajes en español sin acentos ni letra `ñ` en identificadores Java dentro de `backend/app/src/main/java/com/dappunq/model/ranking/`, `service/`, `adapter/`, `repository/` y `controller/`.
-- [ ] T044 Ejecutar toda la suite `backend\gradlew.bat test` y resolver fallos sin modificar ni eliminar pruebas existentes.
-- [ ] T045 Ejecutar `backend\gradlew.bat bootRun` y validar arranque local, Swagger y `GET /players/ranking`.
-- [ ] T046 Ejecutar las consultas documentadas en `backend/specs/016-ranking-jugadores/quickstart.md` y confirmar todos los criterios medibles aplicables.
+- [X] T039 [P] Agregar `GET /players/ranking` al contrato OpenAPI central `docs/openapi.yaml`, preservando el contrato de `POST /quotes/scrape` sin duplicar la especificación.
+- [X] T040 [P] Agregar al Postman de backend el endpoint `GET /players/ranking`, parámetros, ejemplos y respuestas en `backend/postman/token-valuation.postman_collection.json` y `backend/postman/token-market.postman_collection.json`.
+- [X] T041 [P] Actualizar `backend/specs/016-ranking-jugadores/quickstart.md` para invocar `POST /quotes/scrape` antes del ranking y documentar filtros, paginación, vigencia y sincronización.
+- [X] T042 Uniformar respuestas 400 y 500 del ranking mediante `backend/app/src/main/java/com/dappunq/exception/GlobalExceptionHandler.java` y `backend/app/src/main/java/com/dappunq/dto/ErrorResponse.java`.
+- [X] T043 Revisar nombres, excepciones y mensajes en español sin acentos ni letra `ñ` en identificadores Java dentro de `backend/app/src/main/java/com/dappunq/model/ranking/`, `service/`, `adapter/`, `repository/` y `controller/`.
+- [X] T044 Ejecutar toda la suite `backend\gradlew.bat test` y resolver fallos sin modificar ni eliminar pruebas existentes. Resultado: BUILD SUCCESSFUL, suite completa aprobada.
+- [X] T045 Ejecutar `backend\gradlew.bat bootRun` y validar arranque local, Swagger y `GET /players/ranking`. Resultado: servidor iniciado en puerto 8080, Swagger 200 y ranking 200.
+- [X] T046 Ejecutar las consultas documentadas en `backend/specs/016-ranking-jugadores/quickstart.md` y confirmar todos los criterios medibles aplicables.
 
 ---
 

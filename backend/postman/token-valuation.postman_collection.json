@@ -6,6 +6,33 @@
   },
   "item": [
     {
+      "name": "Ranking global de jugadores",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/players/ranking?page=1&limit=20",
+          "host": ["{{baseUrl}}"],
+          "path": ["players", "ranking"],
+          "query": [
+            {"key": "page", "value": "1"},
+            {"key": "limit", "value": "20"}
+          ]
+        },
+        "description": "Consulta el catalogo persistido. Ejecutar primero POST /quotes/scrape."
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Ranking returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Response contains pagination', function () { pm.expect(pm.response.json()).to.have.keys('items', 'total', 'page', 'limit'); });"
+          ]
+        }
+      }]
+    },
+    {
       "name": "Estrategias",
       "item": [
         {

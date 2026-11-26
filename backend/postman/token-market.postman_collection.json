@@ -13,6 +13,36 @@
   ],
   "item": [
     {
+      "name": "Global player ranking",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/players/ranking?page=1&limit=20&league=Premier%20League&team=Arsenal&position=Forward",
+          "host": ["{{baseUrl}}"],
+          "path": ["players", "ranking"],
+          "query": [
+            {"key": "page", "value": "1"},
+            {"key": "limit", "value": "20"},
+            {"key": "league", "value": "Premier League"},
+            {"key": "team", "value": "Arsenal"},
+            {"key": "position", "value": "Forward"}
+          ]
+        },
+        "description": "Consulta el ranking sin autenticacion. Ejecute primero POST /quotes/scrape."
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Ranking returns 200', function () { pm.response.to.have.status(200); });",
+            "pm.test('Ranking includes pagination metadata', function () { pm.expect(pm.response.json()).to.have.keys('items', 'total', 'page', 'limit'); });"
+          ]
+        }
+      }]
+    },
+    {
       "name": "Create buy order",
       "request": {
         "method": "POST",
