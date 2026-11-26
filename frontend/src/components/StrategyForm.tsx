@@ -42,7 +42,7 @@ const StrategyForm = ({ initialStrategy, onConfirm, onClose }: StrategyFormProps
     const value = weights[key]
     return sum + (value?.trim() ? Number(value) : 0)
   }, 0)
-  const expectedSum = type === 'ESTRATEGIA_A' ? 1 : 0.95
+  const expectedSum = type === 'ESTRATEGIA_A' ? 100 : 95
   const isValid = fields[type].every(({ key }) => {
     const value = weights[key]
     return Boolean(value?.trim()) && Number.isFinite(Number(value)) && Number(value) >= 0
@@ -114,7 +114,7 @@ const StrategyForm = ({ initialStrategy, onConfirm, onClose }: StrategyFormProps
               <input
                 type="number"
                 min="0"
-                max="1"
+                max="100"
                 step="0.01"
                 value={weights[key] ?? ''}
                 onChange={(event) => setWeights((current) => ({ ...current, [key]: event.target.value }))}

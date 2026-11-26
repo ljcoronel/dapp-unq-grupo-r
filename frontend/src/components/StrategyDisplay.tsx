@@ -34,7 +34,7 @@ const StrategyDisplay = ({ strategy }: StrategyDisplayProps) => {
           <div key={metric} className="flex items-center justify-between gap-4 px-5 py-3 text-sm">
             <dt className="text-slate-600">{metricLabels[metric] ?? metric}</dt>
             <dd className="font-semibold tabular-nums text-slate-900">
-              {(weight * 100).toLocaleString('es-AR', { maximumFractionDigits: 2 })}%
+              {(weight).toLocaleString('es-AR')}%
             </dd>
           </div>
         ))}
