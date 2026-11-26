@@ -1,6 +1,7 @@
 package com.dappunq.exception;
 
 import com.dappunq.dto.ErrorResponse;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -44,6 +45,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> handleConstraintViolation(ConstraintViolationException ex) {
+        String message = ex.getConstraintViolations().stream()
+                .findFirst()
+                .map(violation -> violation.getMessage())
+                .orElse("Los datos ingresados no son válidos");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", message));
     }
 
     @ExceptionHandler(InvalidPlayerIdException.class)

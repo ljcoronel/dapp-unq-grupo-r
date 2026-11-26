@@ -121,4 +121,17 @@ class ApiKeyAuthenticationFilterTest {
         assertThat(response.getStatus()).isEqualTo(500);
         assertThat(response.getContentAsString()).contains("Error interno");
     }
+
+    @Test
+    void shouldSkipOnlyExactPublicScrapePost() {
+        MockHttpServletRequest scrape = new MockHttpServletRequest("POST", "/quotes/scrape");
+        MockHttpServletRequest scrapeGet = new MockHttpServletRequest("GET", "/quotes/scrape");
+        MockHttpServletRequest scrapeOther = new MockHttpServletRequest("POST", "/quotes/scrape/other");
+        MockHttpServletRequest recalculate = new MockHttpServletRequest("POST", "/quotes/recalculate");
+
+        assertThat(filter.shouldNotFilter(scrape)).isTrue();
+        assertThat(filter.shouldNotFilter(scrapeGet)).isTrue();
+        assertThat(filter.shouldNotFilter(scrapeOther)).isFalse();
+        assertThat(filter.shouldNotFilter(recalculate)).isFalse();
+    }
 }

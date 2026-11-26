@@ -367,15 +367,14 @@ paths:
       tags: [Cotizaciones]
       summary: Ejecutar scraping
       operationId: scrape
-      security:
-        - ApiKeyAuth: []
+      security: []
       parameters:
         - $ref: '#/components/parameters/NumberOfPlayers'
       responses:
         '200':
           description: Scraping completado.
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
 components:
   securitySchemes:
     bearerAuth:

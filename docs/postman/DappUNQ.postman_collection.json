@@ -253,12 +253,6 @@
           "name": "POST /quotes/scrape",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "X-API-Key",
-                "value": "{{apiKey}}"
-              }
-            ],
             "url": "{{baseUrl}}/quotes/scrape?numberOfPlayers={{numberOfPlayers}}"
           }
         }

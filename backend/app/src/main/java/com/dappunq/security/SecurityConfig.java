@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/swagger-ui.html", "/swagger-ui/**", "/openapi.yaml", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login", "/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/quotes/recalculate").hasAuthority("scraping")
-                        .requestMatchers(HttpMethod.POST, "/quotes/scrape").hasAuthority("scraping")
+                        .requestMatchers(HttpMethod.POST, "/quotes/scrape").permitAll()
                         .requestMatchers(HttpMethod.POST, "/orders/buy", "/orders/sell").authenticated()
                         .requestMatchers("/orders/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/**", "/players", "/players/**").permitAll()

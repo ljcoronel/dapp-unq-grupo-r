@@ -17,6 +17,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -54,30 +55,52 @@ class ScrapingApiKeyE2ETest {
     }
 
     @Test
-    void shouldAuthorizeValidScrapingApiKey() throws Exception {
-        String apiKey = apiKeyService.rotateScrapingApiKey();
-
+    void shouldAllowScrapingWithoutApiKey() throws Exception {
         mockMvc.perform(post("/quotes/scrape")
-                        .param("numberOfPlayers", "1")
-                        .header("X-API-Key", apiKey))
+                        .param("numberOfPlayers", "1"))
                 .andExpect(status().isOk());
 
         verify(whoScoredScrapingService).scrape("1");
     }
 
     @Test
-    void shouldRejectMissingOrInvalidScrapingApiKey() throws Exception {
-        mockMvc.perform(post("/quotes/scrape")
-                        .param("numberOfPlayers", "1"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("No autorizado. Se requiere una API key válida para scraping."));
+    void shouldIgnoreAnyApiKeyValue() throws Exception {
+        String apiKey = apiKeyService.rotateScrapingApiKey();
 
-        mockMvc.perform(post("/quotes/scrape")
-                        .param("numberOfPlayers", "1")
-                        .header("X-API-Key", "bad-key"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("No autorizado. Se requiere una API key válida para scraping."));
+        for (String value : new String[]{apiKey, "bad-key", "arbitrary", ""}) {
+            mockMvc.perform(post("/quotes/scrape")
+                            .param("numberOfPlayers", "1")
+                            .header("X-API-Key", value))
+                    .andExpect(status().isOk());
+        }
 
+        verify(whoScoredScrapingService, times(4)).scrape("1");
+    }
+
+    @Test
+    void shouldUseDefaultWhenNumberOfPlayersIsMissing() throws Exception {
+        mockMvc.perform(post("/quotes/scrape"))
+                .andExpect(status().isOk());
+
+        verify(whoScoredScrapingService).scrape("50");
+    }
+
+    @Test
+    void shouldReturn400AndNotScrapeForInvalidNumberOfPlayers() throws Exception {
+        for (String value : new String[]{"texto", "0", "-1"}) {
+            mockMvc.perform(post("/quotes/scrape")
+                            .param("numberOfPlayers", value))
+                    .andExpect(status().isBadRequest());
+        }
         verifyNoInteractions(whoScoredScrapingService);
+    }
+
+    @Test
+    void shouldScrapeForPositiveNumberOfPlayers() throws Exception {
+        mockMvc.perform(post("/quotes/scrape")
+                        .param("numberOfPlayers", "25"))
+                .andExpect(status().isOk());
+
+        verify(whoScoredScrapingService).scrape("25");
     }
 }

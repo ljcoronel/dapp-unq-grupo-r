@@ -39,13 +39,22 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
             return true;
         }
 
-        String requestPath = request.getRequestURI();
-        if (requestPath == null || requestPath.isBlank()) {
-            requestPath = request.getServletPath();
+        if (isScrapeRequest(request)) {
+            return true;
         }
 
-        return requestPath == null
-                || (!requestPath.endsWith("/scrape") && !requestPath.endsWith("/recalculate"));
+        String requestPath = request.getServletPath();
+        if (requestPath == null || requestPath.isBlank()) {
+            requestPath = request.getRequestURI();
+        }
+
+        if (requestPath == null) {
+            return true;
+        }
+        if (requestPath.startsWith("/quotes/")) {
+            return false;
+        }
+        return !requestPath.endsWith("/scrape") && !requestPath.endsWith("/recalculate");
     }
 
     @Override
@@ -124,13 +133,22 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isRecalculateRequest(HttpServletRequest request) {
-        String requestPath = request.getRequestURI();
+        String requestPath = request.getServletPath();
         if (requestPath == null || requestPath.isBlank()) {
-            requestPath = request.getServletPath();
+            requestPath = request.getRequestURI();
         }
         return "POST".equalsIgnoreCase(request.getMethod())
                 && requestPath != null
-                && requestPath.endsWith("/recalculate");
+                && "/quotes/recalculate".equals(requestPath);
+    }
+
+    private boolean isScrapeRequest(HttpServletRequest request) {
+        String requestPath = request.getServletPath();
+        if (requestPath == null || requestPath.isBlank()) {
+            requestPath = request.getRequestURI();
+        }
+        return "POST".equalsIgnoreCase(request.getMethod())
+                && "/quotes/scrape".equals(requestPath);
     }
 
     private String correlationId(HttpServletRequest request) {

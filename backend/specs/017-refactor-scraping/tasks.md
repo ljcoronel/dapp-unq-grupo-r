@@ -18,9 +18,9 @@
 
 **Purpose**: Confirmar los puntos de extension existentes antes de modificar seguridad y contrato.
 
-- [ ] T001 Revisar la configuracion actual de Spring Security y del filtro API key en `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java` y `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java`
-- [ ] T002 [P] Revisar las pruebas E2E y unitarias existentes en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`, `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` y `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java`
-- [ ] T003 [P] Revisar el contrato publicado y el controlador existentes en `backend/app/src/main/resources/static/openapi.yaml` y `backend/app/src/main/java/com/dappunq/controller/QuoteControllerRest.java`
+- [X] T001 Revisar la configuracion actual de Spring Security y del filtro API key en `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java` y `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java`
+- [X] T002 [P] Revisar las pruebas E2E y unitarias existentes en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`, `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java` y `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java`
+- [X] T003 [P] Revisar el contrato publicado y el controlador existentes en `backend/app/src/main/resources/static/openapi.yaml` y `backend/app/src/main/java/com/dappunq/controller/QuoteControllerRest.java`
 
 ---
 
@@ -30,9 +30,9 @@
 
 **CRITICAL**: No iniciar ninguna historia hasta completar esta fase.
 
-- [ ] T004 Definir el matcher exacto `POST /quotes/scrape` y conservar separado el matcher protegido `POST /quotes/recalculate` en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` y `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java`
-- [ ] T005 [P] Confirmar que `numberOfPlayers` conserva `defaultValue = "50"` y la firma actual del controlador en `backend/app/src/main/java/com/dappunq/controller/QuoteControllerRest.java`
-- [ ] T006 [P] Confirmar la estructura de pruebas MockMvc y Testcontainers necesaria en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
+- [X] T004 Definir el matcher exacto `POST /quotes/scrape` y conservar separado el matcher protegido `POST /quotes/recalculate` en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` y `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java`
+- [X] T005 [P] Confirmar que `numberOfPlayers` conserva `defaultValue = "50"` y la firma actual del controlador en `backend/app/src/main/java/com/dappunq/controller/QuoteControllerRest.java`
+- [X] T006 [P] Confirmar la estructura de pruebas MockMvc y Testcontainers necesaria en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
 
 **Checkpoint**: Fundacion lista; las historias pueden empezar sin cambios compartidos adicionales.
 
@@ -46,15 +46,15 @@
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Actualizar la prueba E2E para aceptar solicitudes validas sin API key y con API key valida, invalida, arbitraria o vacia en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
-- [ ] T008 [P] [US1] Añadir pruebas unitarias del filtro que prueben el bypass exclusivo para `POST /quotes/scrape` y el rechazo de metodos o rutas distintas en `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java`
+- [X] T007 [P] [US1] Actualizar la prueba E2E para aceptar solicitudes validas sin API key y con API key valida, invalida, arbitraria o vacia en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
+- [X] T008 [P] [US1] Añadir pruebas unitarias del filtro que prueben el bypass exclusivo para `POST /quotes/scrape` y el rechazo de metodos o rutas distintas en `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java`
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Ajustar `shouldNotFilter` en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` para omitir el filtro unicamente en `POST /quotes/scrape` y no consultar `X-API-Key`
-- [ ] T010 [US1] Cambiar la regla de autorizacion en `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java` para usar `.permitAll()` exclusivamente en `POST /quotes/scrape`
-- [ ] T011 [US1] Declarar `security: []` en `POST /quotes/scrape` sin alterar el esquema ni las operaciones protegidas en `backend/app/src/main/resources/static/openapi.yaml`
-- [ ] T012 [P] [US1] Crear la prueba de contrato OpenAPI para verificar seguridad vacia en `/quotes/scrape` y conservar `ApiKeyAuth` en operaciones protegidas en `backend/app/src/test/java/com/dappunq/contract/ScrapingOpenApiContractTest.java`
+- [X] T009 [US1] Ajustar `shouldNotFilter` en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java` para omitir el filtro unicamente en `POST /quotes/scrape` y no consultar `X-API-Key`
+- [X] T010 [US1] Cambiar la regla de autorizacion en `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java` para usar `.permitAll()` exclusivamente en `POST /quotes/scrape`
+- [X] T011 [US1] Declarar `security: []` en `POST /quotes/scrape` sin alterar el esquema ni las operaciones protegidas en `backend/app/src/main/resources/static/openapi.yaml`
+- [X] T012 [P] [US1] Crear la prueba de contrato OpenAPI para verificar seguridad vacia en `/quotes/scrape` y conservar `ApiKeyAuth` en operaciones protegidas en `backend/app/src/test/java/com/dappunq/contract/ScrapingOpenApiContractTest.java`
 
 **Checkpoint**: US1 esta completa y puede demostrarse mediante scraping publico valido sin credenciales.
 
@@ -68,15 +68,15 @@
 
 ### Tests for User Story 2
 
-- [ ] T013 [P] [US2] Añadir casos E2E sin `numberOfPlayers` que verifiquen la invocacion con `"50"` en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
-- [ ] T014 [P] [US2] Añadir casos E2E para texto, cero y negativo que verifiquen `400` y ausencia de invocacion del scraping en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
-- [ ] T015 [P] [US2] Añadir un caso E2E con entero positivo que verifique la invocacion normal del scraping en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
+- [X] T013 [P] [US2] Añadir casos E2E sin `numberOfPlayers` que verifiquen la invocacion con `"50"` en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
+- [X] T014 [P] [US2] Añadir casos E2E para texto, cero y negativo que verifiquen `400` y ausencia de invocacion del scraping en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
+- [X] T015 [P] [US2] Añadir un caso E2E con entero positivo que verifique la invocacion normal del scraping en `backend/app/src/test/java/com/dappunq/e2e/ScrapingApiKeyE2ETest.java`
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Verificar y, solo si fuera necesario, conservar `@RequestParam(defaultValue = "50") int numberOfPlayers` sin cambiar la firma ni la logica de `backend/app/src/main/java/com/dappunq/controller/QuoteControllerRest.java`
-- [ ] T017 [US2] Mantener intactos el binding y la validacion existentes de Spring MVC para producir `400` en conversion invalida o valor no positivo, sin agregar limite superior
-- [ ] T018 [P] [US2] Actualizar el contrato OpenAPI de `NumberOfPlayers` y las respuestas `200`/`400` en `backend/app/src/main/resources/static/openapi.yaml` sin cambiar el formato funcional ni la persistencia
+- [X] T016 [US2] Verificar y, solo si fuera necesario, conservar `@RequestParam(defaultValue = "50") int numberOfPlayers` sin cambiar la firma ni la logica de `backend/app/src/main/java/com/dappunq/controller/QuoteControllerRest.java`
+- [X] T017 [US2] Mantener intactos el binding y la validacion existentes de Spring MVC para producir `400` en conversion invalida o valor no positivo, sin agregar limite superior
+- [X] T018 [P] [US2] Actualizar el contrato OpenAPI de `NumberOfPlayers` y las respuestas `200`/`400` en `backend/app/src/main/resources/static/openapi.yaml` sin cambiar el formato funcional ni la persistencia
 
 **Checkpoint**: US2 conserva por separado el default, los valores validos y los errores existentes del parametro.
 
@@ -90,14 +90,14 @@
 
 ### Tests for User Story 3
 
-- [ ] T019 [P] [US3] Mantener o ampliar la regresion E2E de `POST /quotes/recalculate` sin API key para verificar `401` y ausencia de scraping en `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java`
-- [ ] T020 [P] [US3] Añadir pruebas unitarias para confirmar que `GET /quotes/scrape`, `POST /quotes/scrape/other` y otras rutas protegidas no quedan exentas en `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java`
-- [ ] T021 [P] [US3] Ampliar la prueba de contrato para confirmar que `POST /quotes/recalculate` conserva `ApiKeyAuth` y la clave no se elimina del esquema en `backend/app/src/test/java/com/dappunq/contract/ScrapingOpenApiContractTest.java`
+- [X] T019 [P] [US3] Mantener o ampliar la regresion E2E de `POST /quotes/recalculate` sin API key para verificar `401` y ausencia de scraping en `backend/app/src/test/java/com/dappunq/e2e/QuoteRecalculateE2ETest.java`
+- [X] T020 [P] [US3] Añadir pruebas unitarias para confirmar que `GET /quotes/scrape`, `POST /quotes/scrape/other` y otras rutas protegidas no quedan exentas en `backend/app/src/test/java/com/dappunq/security/ApiKeyAuthenticationFilterTest.java`
+- [X] T021 [P] [US3] Ampliar la prueba de contrato para confirmar que `POST /quotes/recalculate` conserva `ApiKeyAuth` y la clave no se elimina del esquema en `backend/app/src/test/java/com/dappunq/contract/ScrapingOpenApiContractTest.java`
 
 ### Implementation for User Story 3
 
-- [ ] T022 [US3] Revisar y preservar las reglas de `POST /quotes/recalculate`, otros metodos POST y `anyRequest()` en `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java`
-- [ ] T023 [US3] Revisar el flujo especial de recálculo y conservar su validacion 401/403/500 en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java`
+- [X] T022 [US3] Revisar y preservar las reglas de `POST /quotes/recalculate`, otros metodos POST y `anyRequest()` en `backend/app/src/main/java/com/dappunq/security/SecurityConfig.java`
+- [X] T023 [US3] Revisar el flujo especial de recálculo y conservar su validacion 401/403/500 en `backend/app/src/main/java/com/dappunq/security/ApiKeyAuthenticationFilter.java`
 
 **Checkpoint**: Todas las historias funcionan; la excepcion no se extiende a otros metodos ni rutas.
 
@@ -107,10 +107,10 @@
 
 **Purpose**: Validar integridad, documentacion y formato antes de entrega.
 
-- [ ] T024 [P] Ejecutar las pruebas focalizadas indicadas en `backend/specs/017-refactor-scraping/quickstart.md`: filtro, scraping E2E, recálculo E2E y contrato OpenAPI
-- [ ] T025 [P] Revisar el diff para confirmar que no hubo cambios en scraping, persistencia, firma del controlador ni modelos
-- [ ] T026 Actualizar o verificar la coleccion Postman relacionada con `POST /quotes/scrape` segun la entrega requerida por la constitucion
-- [ ] T027 Ejecutar compilacion local y pruebas relacionadas desde `backend` y registrar cualquier fallo en el resumen de validacion
+- [X] T024 [P] Ejecutar las pruebas focalizadas indicadas en `backend/specs/017-refactor-scraping/quickstart.md`: filtro, scraping E2E, recálculo E2E y contrato OpenAPI
+- [X] T025 [P] Revisar el diff para confirmar que no hubo cambios en scraping, persistencia, firma del controlador ni modelos
+- [X] T026 Actualizar o verificar la coleccion Postman relacionada con `POST /quotes/scrape` segun la entrega requerida por la constitucion
+- [X] T027 Ejecutar compilacion local y pruebas relacionadas desde `backend` y registrar cualquier fallo en el resumen de validacion
 
 ---
 
