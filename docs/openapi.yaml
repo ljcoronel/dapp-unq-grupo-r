@@ -123,7 +123,7 @@ paths:
       security: []
       parameters:
         - $ref: '#/components/parameters/PlayerId'
-        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/UserIdQuotes'
       responses:
         '200':
           description: Valuaciones del jugador para el usuario.
@@ -141,7 +141,7 @@ paths:
       security: []
       parameters:
         - $ref: '#/components/parameters/PlayerId'
-        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/UserIdQuotes'
         - name: date
           in: query
           required: true
@@ -163,7 +163,7 @@ paths:
       security: []
       parameters:
         - $ref: '#/components/parameters/PlayerId'
-        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/UserIdQuotes'
       responses:
         '200':
           description: Valuacion actual.
@@ -389,6 +389,14 @@ components:
   parameters:
     UserId:
       name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    UserIdQuotes:
+      name: userId
       in: path
       required: true
       schema:

@@ -43,6 +43,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     private PlayerResponse toResponse(PlayerEntity entity) {
         return new PlayerResponse(
+                entity.getId(),
                 entity.getExternalId(),
                 entity.getName(),
                 TeamResponse.from(entity.getTeam()),

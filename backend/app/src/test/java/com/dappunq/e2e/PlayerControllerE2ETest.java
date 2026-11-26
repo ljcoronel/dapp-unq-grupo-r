@@ -8,7 +8,6 @@ import com.dappunq.dto.TeamResponse;
 import com.dappunq.exception.CatalogUnavailableException;
 import com.dappunq.exception.InvalidPlayerIdException;
 import com.dappunq.exception.PlayerNotFoundException;
-import com.dappunq.service.HoldingsValuationService;
 import com.dappunq.service.PlayerServiceImpl;
 import com.dappunq.service.ValuationService;
 import org.junit.jupiter.api.Test;
@@ -34,6 +33,7 @@ class PlayerControllerE2ETest {
             .build();
 
         var first = new PlayerResponse(
+            1L,
             7L,
             "Jugador",
             new TeamResponse(12L, "Equipo"),
@@ -54,7 +54,7 @@ class PlayerControllerE2ETest {
             1
         );
         var second = new PlayerResponse(
-            42L,
+            2L, 42L,
             "Jugador 2",
             new TeamResponse(16L, "Equipo 2"),
             new LeagueResponse("SA", "Serie A", "Italia"),
@@ -80,6 +80,7 @@ class PlayerControllerE2ETest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[0].id").value(1))
             .andExpect(jsonPath("$[0].externalId").value(7))
             .andExpect(jsonPath("$[0].name").value("Jugador"))
             .andExpect(jsonPath("$[0].team.externalId").value(12))
@@ -100,7 +101,7 @@ class PlayerControllerE2ETest {
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
         var premierLeaguePlayer = new PlayerResponse(
-            7L,
+            null, 7L,
             "Jugador PL",
             new TeamResponse(17L, "Equipo PL"),
             new LeagueResponse("PL", "Premier League", "Inglaterra"),
@@ -120,7 +121,7 @@ class PlayerControllerE2ETest {
             null
         );
         var serieAPlayer = new PlayerResponse(
-            42L,
+            null, 42L,
             "Jugador SA",
             new TeamResponse(18L, "Equipo SA"),
             new LeagueResponse("SA", "Serie A", "Italia"),
@@ -161,7 +162,7 @@ class PlayerControllerE2ETest {
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
         when(playerService.getAll()).thenReturn(List.of(new PlayerResponse(
-            42L,
+            null, 42L,
             "Jugador",
             new TeamResponse(99L, "Equipo"),
             new LeagueResponse("PL", "Premier League", "Inglaterra"),
@@ -215,7 +216,7 @@ class PlayerControllerE2ETest {
             .setControllerAdvice(new com.dappunq.exception.GlobalExceptionHandler())
             .build();
         when(playerService.findPlayer(42L)).thenReturn(new PlayerResponse(
-                42L,
+            1L, 42L,
                 "Jugador",
                 new TeamResponse(7L, "Equipo"),
                 new LeagueResponse("PL", "Premier League", "Inglaterra"),
@@ -237,6 +238,7 @@ class PlayerControllerE2ETest {
 
         mockMvc.perform(get("/players/42"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.externalId").value(42))
                 .andExpect(jsonPath("$.name").value("Jugador"))
                 .andExpect(jsonPath("$.goals").value(3));
