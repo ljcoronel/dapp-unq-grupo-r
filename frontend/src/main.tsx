@@ -2,11 +2,17 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 
-import { AuthProvider } from './context/AuthContext.jsx'
-import App from './App.jsx'
+import { AuthProvider } from './context/AuthContext'
+import App from './App'
 import './index.css'
 
-createRoot(document.getElementById('root')).render(
+const rootElement = document.getElementById('root')
+
+if (!rootElement) {
+  throw new Error('No se encontró el elemento raíz de la aplicación.')
+}
+
+createRoot(rootElement).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>

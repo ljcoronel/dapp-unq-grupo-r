@@ -36,7 +36,7 @@ public class QuoteControllerRest {
 
     @PostMapping("/recalculate")
     public ResponseEntity<?> recalculate() {
-        log.info("Recibida peticion publica para recalculo manual de cotizaciones");
+        log.info("Recibida peticion administrativa para recalculo manual de cotizaciones");
         try {
             RecalculationSummary summary = weeklyValuationService.execute(ExecutionType.MANUAL);
             RecalculationResult result = valuationDtoMapper.toResponse(summary);

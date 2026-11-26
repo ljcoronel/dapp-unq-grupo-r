@@ -1,4 +1,4 @@
-export function validateNombre(nombre) {
+export const validateNombre = (nombre: string): string => {
   if (!nombre || !nombre.trim()) {
     return 'El nombre de usuario es obligatorio.'
   }
@@ -14,7 +14,7 @@ export function validateNombre(nombre) {
   return ''
 }
 
-export function validatePassword(password) {
+export const validatePassword = (password: string): string => {
   if (!password || !password.trim()) {
     return 'La contraseña es obligatoria.'
   }
@@ -26,7 +26,12 @@ export function validatePassword(password) {
   return ''
 }
 
-export function validateCredentials({ nombre, password }) {
+interface Credentials {
+  nombre: string
+  password: string
+}
+
+export const validateCredentials = ({ nombre, password }: Credentials) => {
   return {
     nombre: validateNombre(nombre),
     password: validatePassword(password),

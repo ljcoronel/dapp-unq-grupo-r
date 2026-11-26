@@ -1,6 +1,7 @@
 package com.dappunq.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,12 +24,16 @@ public class JwtService {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + expirationMs);
 
-        return Jwts.builder()
+        JwtBuilder token = Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(now)
-                .expiration(expiration)
-                .signWith(getSigningKey(), Jwts.SIG.HS256)
-                .compact();
+                .expiration(expiration);
+
+        if (userDetails instanceof UserPrincipal principal) {
+            token.claim("userId", principal.getUserId());
+        }
+
+        return token.signWith(getSigningKey(), Jwts.SIG.HS256).compact();
     }
 
     public String extractUsername(String token) {

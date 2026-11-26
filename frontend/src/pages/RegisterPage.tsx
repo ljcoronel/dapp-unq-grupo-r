@@ -1,13 +1,14 @@
 import { Link, useNavigate } from 'react-router'
+import type { MouseEvent } from 'react'
 
-import AuthForm from '../components/AuthForm.jsx'
-import { useAuth } from '../context/AuthContext.jsx'
+import AuthForm from '../components/AuthForm'
+import { useAuth } from '../context/AuthContext'
 
-export default function RegisterPage() {
+const RegisterPage = () => {
   const navigate = useNavigate()
   const { registration, isLoading, error, setError } = useAuth()
 
-  const handleLoginNavigation = (event) => {
+  const handleLoginNavigation = (event: MouseEvent<HTMLAnchorElement>) => {
     if (isLoading) {
       event.preventDefault()
       return
@@ -16,7 +17,7 @@ export default function RegisterPage() {
     setError('')
   }
 
-  const handleSubmit = async (nombre, password) => {
+  const handleSubmit = async (nombre: string, password: string) => {
     setError('')
 
     try {
@@ -54,3 +55,5 @@ export default function RegisterPage() {
     </div>
   )
 }
+
+export default RegisterPage

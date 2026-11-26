@@ -3,3 +3,16 @@
 
 # Ignore Gradle build output directory
 build
+**/build/
+
+# Java artifacts
+*.class
+*.jar
+
+# Logs and local configuration
+*.log
+.env
+.env.*
+.idea/
+.vscode/
+Thumbs.db

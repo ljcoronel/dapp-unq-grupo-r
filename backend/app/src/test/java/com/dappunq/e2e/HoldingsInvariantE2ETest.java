@@ -6,6 +6,7 @@ import com.dappunq.model.valuation.ExecutionType;
 import com.dappunq.model.valuation.StrategyStatus;
 import com.dappunq.model.valuation.StrategyType;
 import com.dappunq.persistence.*;
+import com.dappunq.service.ApiKeyService;
 import com.dappunq.security.JwtService;
 import com.dappunq.security.UserPrincipal;
 import com.dappunq.service.WhoScoredScrapingService;
@@ -87,9 +88,13 @@ class HoldingsInvariantE2ETest {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private ApiKeyService apiKeyService;
+
     private MockMvc mockMvc;
     private UserEntity user;
     private String token;
+    private String apiKey;
 
     @BeforeEach
     void setUp() {
@@ -107,6 +112,7 @@ class HoldingsInvariantE2ETest {
 
         user = userRepository.save(new UserEntity("invariant_user", passwordEncoder.encode("secret")));
         token = "Bearer " + jwtService.generateToken(new UserPrincipal(new User(user.getId(), user.getNombre(), user.getPasswordHash())));
+        apiKey = apiKeyService.rotateScrapingApiKey();
 
         TeamEntity team = teamRepository.save(new TeamEntity(1L, "Team Test"));
         LeagueEntity league = leagueRepository.save(new LeagueEntity(1L, "League Test", "Region Test"));
@@ -127,7 +133,7 @@ class HoldingsInvariantE2ETest {
     @Test
     void recalcularConservaCantidadDeTokensEInvariantesDeValor() throws Exception {
         // Primera ejecución de recalculo
-        mockMvc.perform(post("/quotes/recalculate"))
+        mockMvc.perform(post("/quotes/recalculate").header("X-API-Key", apiKey))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/users/" + user.getId() + "/holdings")
@@ -139,7 +145,7 @@ class HoldingsInvariantE2ETest {
                 .andExpect(jsonPath("$[0].valorTotal").exists());
 
         // Segunda ejecución de recalculo: la cantidad de tokens sigue siendo exactamente 100
-        mockMvc.perform(post("/quotes/recalculate"))
+        mockMvc.perform(post("/quotes/recalculate").header("X-API-Key", apiKey))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/users/" + user.getId() + "/holdings")

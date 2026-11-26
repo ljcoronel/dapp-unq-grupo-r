@@ -380,12 +380,19 @@
           "name": "Recalculo manual (POST)",
           "request": {
             "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/quotes/recalculate",
               "host": ["{{baseUrl}}"],
               "path": ["quotes", "recalculate"]
             },
-            "description": "Endpoint publico sin autenticacion. Ejecuta scraping de 50 jugadores, promueve estrategias pendientes y recalcula las tenencias de todos los usuarios.",
+            "description": "Endpoint administrativo protegido por X-API-Key. Requiere la API Key del permiso scraping; el JWT no sustituye esta credencial.",
             "event": [
               {
                 "listen": "test",

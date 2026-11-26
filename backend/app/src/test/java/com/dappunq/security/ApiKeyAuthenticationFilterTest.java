@@ -58,4 +58,67 @@ class ApiKeyAuthenticationFilterTest {
         assertThat(response.getStatus()).isEqualTo(401);
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
+
+    @Test
+    void shouldAuthenticateValidRecalculateKeyWithoutJwt() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/quotes/recalculate");
+        request.addHeader("X-API-Key", "validScrapingKey-1234567890");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = new MockFilterChain();
+
+        when(apiKeyService.validateRecalculateApiKey("validScrapingKey-1234567890"))
+                .thenReturn(ApiKeyService.RecalculateApiKeyResult.VALID);
+
+        filter.doFilter(request, response, chain);
+
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        assertThat(response.getStatus()).isEqualTo(200);
+    }
+
+    @Test
+    void shouldRejectMissingRecalculateKeyWith401() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/quotes/recalculate");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = new MockFilterChain();
+
+        when(apiKeyService.validateRecalculateApiKey(null))
+                .thenReturn(ApiKeyService.RecalculateApiKeyResult.HEADER_MISSING);
+
+        filter.doFilter(request, response, chain);
+
+        assertThat(response.getStatus()).isEqualTo(401);
+        assertThat(response.getContentAsString()).contains("No autorizado");
+    }
+
+    @Test
+    void shouldRejectInvalidRecalculateKeyWith403() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/quotes/recalculate");
+        request.addHeader("X-API-Key", "Invalid-Key");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = new MockFilterChain();
+
+        when(apiKeyService.validateRecalculateApiKey("Invalid-Key"))
+                .thenReturn(ApiKeyService.RecalculateApiKeyResult.INVALID);
+
+        filter.doFilter(request, response, chain);
+
+        assertThat(response.getStatus()).isEqualTo(403);
+        assertThat(response.getContentAsString()).contains("Acceso denegado");
+    }
+
+    @Test
+    void shouldRejectMissingRecalculateConfigurationWith500() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/quotes/recalculate");
+        request.addHeader("X-API-Key", "validScrapingKey-1234567890");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = new MockFilterChain();
+
+        when(apiKeyService.validateRecalculateApiKey("validScrapingKey-1234567890"))
+                .thenReturn(ApiKeyService.RecalculateApiKeyResult.ACTIVE_CREDENTIAL_MISSING);
+
+        filter.doFilter(request, response, chain);
+
+        assertThat(response.getStatus()).isEqualTo(500);
+        assertThat(response.getContentAsString()).contains("Error interno");
+    }
 }

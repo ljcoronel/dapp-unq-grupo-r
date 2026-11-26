@@ -59,7 +59,7 @@ class ValuationConfigurationE2ETest {
                 new QuoteControllerRest(weekly, scraping, mapper),
                 new HoldingControllerRest(holdings, mapper)).build();
 
-        mockMvc.perform(post("/quotes/recalculate"))
+        mockMvc.perform(post("/quotes/recalculate").header("X-API-Key", "validScrapingKey-1234567890"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("OK"))
                 .andExpect(jsonPath("$.recalculatedHoldings").value(1));

@@ -1,13 +1,28 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 
-import { login as loginRequest, register as registerRequest } from '../services/authService'
+import { login as loginRequest, register as registerRequest, type User } from '../api/auth'
+import { getUserFacingError } from '../api/client'
+import { getUserIdFromToken } from '../utils/jwt'
 
 const STORAGE_KEY = 'authToken'
 
-const AuthContext = createContext(null)
+interface AuthContextValue {
+  authToken: string | null
+  userId: number | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  error: string
+  login: (nombre: string, password: string) => Promise<User>
+  registration: (nombre: string, password: string) => Promise<User>
+  logout: () => void
+  setError: (message: string) => void
+}
 
-function getStoredToken() {
+const AuthContext = createContext<AuthContextValue | null>(null)
+
+const getStoredToken = (): string | null => {
   if (typeof window === 'undefined') {
     return null
   }
@@ -15,46 +30,20 @@ function getStoredToken() {
   return window.localStorage.getItem(STORAGE_KEY)
 }
 
-function getErrorMessage(error) {
-  if (!error) {
-    return 'Ocurrió un error inesperado.'
-  }
-
-  if (error.message === 'AUTH_TOKEN_INVALID') {
-    return 'No se pudo completar el inicio de sesión. Intente nuevamente.'
-  }
-
-  if (error.response?.data?.message) {
-    return error.response.data.message
-  }
-
-  if (error.response?.status === 401) {
-    return 'Nombre de usuario o contraseña incorrectos.'
-  }
-
-  if (
-    error.response?.status === 400 &&
-    error.response?.data?.message?.toLowerCase().includes('credencial')
-  ) {
-    return 'Nombre de usuario o contraseña incorrectos.'
-  }
-
-  if (error.request || error.code === 'ERR_NETWORK') {
-    return 'No se pudo conectar con el servidor. Intente nuevamente.'
-  }
-
-  return error.message || 'Ocurrió un error inesperado.'
+interface AuthProviderProps {
+  children: ReactNode
 }
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate()
   const [authToken, setAuthToken] = useState(() => getStoredToken())
+  const userId = getUserIdFromToken(authToken)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
   const isAuthenticated = Boolean(authToken)
 
-  const persistToken = (nextToken) => {
+  const persistToken = (nextToken: string | null) => {
     if (!nextToken) {
       window.localStorage.removeItem(STORAGE_KEY)
       return
@@ -69,7 +58,7 @@ export function AuthProvider({ children }) {
     persistToken(null)
   }, [])
 
-  const login = useCallback(async (nombre, password) => {
+  const login = useCallback(async (nombre: string, password: string) => {
     setIsLoading(true)
     setError('')
 
@@ -79,7 +68,7 @@ export function AuthProvider({ children }) {
       persistToken(token)
       return user
     } catch (requestError) {
-      const message = getErrorMessage(requestError)
+      const message = getUserFacingError(requestError, 'No se pudo iniciar sesión.')
       setError(message)
       throw requestError
     } finally {
@@ -87,7 +76,7 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  const registration = useCallback(async (nombre, password) => {
+  const registration = useCallback(async (nombre: string, password: string) => {
     setIsLoading(true)
     setError('')
 
@@ -95,7 +84,7 @@ export function AuthProvider({ children }) {
       const user = await registerRequest(nombre, password)
       return user
     } catch (requestError) {
-      const message = getErrorMessage(requestError)
+      const message = getUserFacingError(requestError, 'No se pudo crear la cuenta.')
       setError(message)
       throw requestError
     } finally {
@@ -111,6 +100,7 @@ export function AuthProvider({ children }) {
   const value = useMemo(
     () => ({
       authToken,
+      userId,
       isAuthenticated,
       isLoading,
       error,
@@ -119,14 +109,14 @@ export function AuthProvider({ children }) {
       logout,
       setError,
     }),
-    [authToken, isAuthenticated, isLoading, error, login, registration, logout],
+    [authToken, userId, isAuthenticated, isLoading, error, login, registration, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 /* eslint-disable react-refresh/only-export-components */
-export function useAuth() {
+export const useAuth = (): AuthContextValue => {
   const context = useContext(AuthContext)
 
   if (!context) {
