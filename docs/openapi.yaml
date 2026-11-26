@@ -10,6 +10,7 @@ tags:
   - name: Autenticacion
   - name: Usuarios
   - name: Jugadores
+  - name: Ranking
   - name: Ordenes
   - name: Estrategia
   - name: Tenencias
@@ -96,6 +97,65 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PlayerResponse'
+  /players/ranking:
+    get:
+      tags: [Ranking]
+      summary: Obtener ranking global paginado de jugadores
+      description: Consulta unicamente jugadores persistidos por el catalogo existente. No crea ni da de alta jugadores.
+      operationId: getPlayerRanking
+      security: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: league
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+        - name: team
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+        - name: position
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+      responses:
+        '200':
+          description: Ranking filtrado y paginado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RankingPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error interno al consultar el ranking.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
   /players/{id}:
     get:
       tags: [Jugadores]
@@ -524,6 +584,38 @@ components:
         passSuccessPercentage: {type: number, format: float}
         aerialsWon: {type: number, format: float}
         timesManOfTheMatch: {type: integer}
+    RankingPage:
+      type: object
+      required: [items, total, page, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RankingPlayer'
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+    RankingPlayer:
+      type: object
+      required: [position, playerId, name, team, league, positionInField, representativeValue, origin]
+      properties:
+        position: {type: integer, minimum: 1}
+        playerId: {type: integer, format: int64}
+        name: {type: string}
+        team: {type: string}
+        league: {type: string}
+        positionInField: {type: string}
+        representativeValue: {type: number, format: double, minimum: 0}
+        origin:
+          type: string
+          enum: [ESTRATEGIA_A, ESTRATEGIA_B, "Cotizacion base"]
     ValuationResponse:
       type: object
       properties:
