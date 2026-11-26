@@ -7,7 +7,7 @@
 
 ## Resumen
 
-Hacer público exclusivamente `POST /quotes/scrape`, sin validar ni requerir `X-API-Key`, conservando el flujo de scraping y el comportamiento del parámetro `numberOfPlayers`. El filtro existente debe omitir únicamente el método POST en la ruta exacta `/quotes/scrape`, y Spring Security debe permitir esa misma operación; el resto de rutas protegidas conserva sus reglas. OpenAPI debe declarar explícitamente que la operación no tiene requisitos de seguridad.
+Hacer público exclusivamente `POST /quotes/scrape`, sin validar ni requerir `X-API-Key`, conservando el flujo de scraping y el comportamiento del parámetro `numberOfPlayers`. El filtro existente debe omitir únicamente el método POST en la ruta exacta `/quotes/scrape`, y Spring Security debe permitir esa misma operación; el resto de rutas protegidas conserva sus reglas. Modificar directamente `docs/openapi.yaml` para declarar explícitamente que la operación no tiene requisitos de seguridad.
 
 La firma del controlador, la lógica de negocio y la persistencia no cambian. Se conserva el valor predeterminado actual `numberOfPlayers=50` cuando se omite; los valores no numéricos o no positivos continúan devolviendo 400. La especificación fue reconciliada con ese comportamiento existente.
 
@@ -25,6 +25,7 @@ La firma del controlador, la lógica de negocio y la persistencia no cambian. Se
 - La excepción de autenticación aplica solamente a `POST /quotes/scrape`; no usar coincidencias por sufijo ni ampliar el permiso a otras rutas/métodos.
 - El filtro debe ignorar el encabezado en esa operación, sin importar si está ausente, vacío, válido o inválido.
 - No modificar la autenticación por defecto ni las reglas de las demás operaciones.
+- Actualizar directamente el OpenAPI existente en `docs/openapi.yaml`; no crear otro archivo OpenAPI ni buscar la especificación en otras rutas.
 - No modificar la firma del controlador, el comportamiento de scraping ni el almacenamiento.
 - Mantener `numberOfPlayers=50` como default. El comportamiento actual valida enteros positivos; no existe un límite superior definido y este plan no agrega uno.
 - La rama Git activa no coincide con la rama del feature. Se generan los documentos en el directorio solicitado sin cambiar de rama.
@@ -51,7 +52,7 @@ Los artefactos mantienen los mismos límites: sin entidades ni migraciones, sin 
 1. **Filtro API key**: ajustar la exclusión para reconocer únicamente `POST` y la ruta exacta `/quotes/scrape`. El encabezado no se consulta ni valida en esa operación. Mantener el comportamiento vigente del filtro para las operaciones que protege.
 2. **Spring Security**: configurar únicamente `POST /quotes/scrape` como permitido sin autenticación. Omitir el filtro por sí solo no alcanza: la regla actual exige la autoridad `scraping`, lo que seguiría rechazando al cliente sin API key. Las reglas restantes permanecen intactas.
 3. **Controlador y validaciones**: no cambiar la firma `scrape(@RequestParam(defaultValue = "50") int numberOfPlayers)` ni el servicio. Ausencia usa 50; errores de conversión y valores no positivos resultan en 400 según el comportamiento actual.
-4. **OpenAPI**: declarar `security: []` en la operación `POST /quotes/scrape`; no eliminar ni alterar el esquema global de `ApiKeyAuth`, que continúa siendo usado por otras operaciones.
+4. **OpenAPI**: modificar directamente `docs/openapi.yaml` y declarar `security: []` en la operación `POST /quotes/scrape`; no crear otro archivo OpenAPI ni eliminar o alterar el esquema `ApiKeyAuth` usado por otras operaciones.
 5. **Pruebas**: ampliar la prueba E2E de scraping para cubrir ausencia, valor arbitrario/vacío de API key, default y errores de parámetro; conservar una regresión para una ruta protegida ajena. Añadir/actualizar pruebas focalizadas del filtro y el contrato.
 
 ## Estrategia de pruebas
@@ -87,10 +88,11 @@ backend/app/src/main/java/com/dappunq/
 ├── security/
 │   ├── ApiKeyAuthenticationFilter.java
 │   └── SecurityConfig.java
-├── controller/
-│   └── QuoteControllerRest.java             # sin cambios previstos
-└── resources/static/
-    └── openapi.yaml
+└── controller/
+    └── QuoteControllerRest.java             # sin cambios previstos
+
+docs/
+└── openapi.yaml                              # modificar este archivo existente
 
 backend/app/src/test/java/com/dappunq/
 ├── security/
@@ -107,7 +109,7 @@ backend/app/src/test/java/com/dappunq/
 ## Guía de implementación
 
 1. Aplicar primero la exclusión exacta en el filtro y el permiso exacto en Spring Security, sin cambiar las reglas de acceso generales.
-2. Expresar el acceso público en la operación OpenAPI sin tocar `ApiKeyAuth` usado por otras rutas.
+2. Modificar `docs/openapi.yaml` para expresar el acceso público en la operación, sin tocar `ApiKeyAuth` usado por otras rutas.
 3. Actualizar las pruebas E2E, del filtro y del contrato para cubrir los casos enumerados arriba.
 4. Ejecutar las pruebas focalizadas descritas en [quickstart.md](./quickstart.md), revisar el diff y confirmar que no hubo cambios de comportamiento en otras rutas.
 
