@@ -1,8 +1,25 @@
 import { useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
 
 import { validateNombre, validatePassword } from '../utils/validation'
 
-export default function AuthForm({
+interface AuthFormProps {
+  title: string
+  subtitle: string
+  submitLabel: string
+  isLoading?: boolean
+  error?: string
+  showCredentialRequirements?: boolean
+  showValidationErrors?: boolean
+  onSubmit: (nombre: string, password: string) => void | Promise<void>
+}
+
+interface AuthFormData {
+  nombre: string
+  password: string
+}
+
+const AuthForm = ({
   title,
   subtitle,
   submitLabel,
@@ -11,14 +28,14 @@ export default function AuthForm({
   showCredentialRequirements = true,
   showValidationErrors = true,
   onSubmit,
-}) {
-  const [formData, setFormData] = useState({ nombre: '', password: '' })
+}: AuthFormProps) => {
+  const [formData, setFormData] = useState<AuthFormData>({ nombre: '', password: '' })
 
   const nombreError = validateNombre(formData.nombre)
   const passwordError = validatePassword(formData.password)
   const isDisabled = isLoading || !!nombreError || !!passwordError || !formData.nombre || !formData.password
 
-  const handleChange = (event) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
     setFormData((current) => ({
       ...current,
@@ -26,7 +43,7 @@ export default function AuthForm({
     }))
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (isDisabled) {
@@ -107,3 +124,5 @@ export default function AuthForm({
     </div>
   )
 }
+
+export default AuthForm

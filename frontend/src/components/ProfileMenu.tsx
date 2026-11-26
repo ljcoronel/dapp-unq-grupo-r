@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 
-import { useAuth } from '../context/AuthContext.jsx'
+import { useAuth } from '../context/AuthContext'
 
-export default function ProfileMenu() {
+const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { logout } = useAuth()
+  const navigate = useNavigate()
 
   const handleLogout = () => {
     setIsOpen(false)
@@ -43,7 +45,10 @@ export default function ProfileMenu() {
             type="button"
             className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100"
             role="menuitem"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false)
+              navigate('/app/perfil')
+            }}
           >
             Ir a mi Perfil
           </button>
@@ -60,3 +65,5 @@ export default function ProfileMenu() {
     </div>
   )
 }
+
+export default ProfileMenu

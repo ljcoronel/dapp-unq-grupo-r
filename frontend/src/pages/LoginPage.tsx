@@ -1,13 +1,14 @@
 import { Link, useNavigate } from 'react-router'
+import type { MouseEvent } from 'react'
 
-import AuthForm from '../components/AuthForm.jsx'
-import { useAuth } from '../context/AuthContext.jsx'
+import AuthForm from '../components/AuthForm'
+import { useAuth } from '../context/AuthContext'
 
-export default function LoginPage() {
+const LoginPage = () => {
   const navigate = useNavigate()
   const { login, isLoading, error, setError } = useAuth()
 
-  const handleRegisterNavigation = (event) => {
+  const handleRegisterNavigation = (event: MouseEvent<HTMLAnchorElement>) => {
     if (isLoading) {
       event.preventDefault()
       return
@@ -16,12 +17,12 @@ export default function LoginPage() {
     setError('')
   }
 
-  const handleSubmit = async (nombre, password) => {
+  const handleSubmit = async (nombre: string, password: string) => {
     setError('')
 
     try {
       await login(nombre, password)
-      navigate('/home', { replace: true })
+      navigate('/app/catalogo', { replace: true })
     } catch {
       // The AuthContext already stores the user-facing error message.
     }
@@ -56,3 +57,5 @@ export default function LoginPage() {
     </div>
   )
 }
+
+export default LoginPage

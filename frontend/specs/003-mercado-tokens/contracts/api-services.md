@@ -2,209 +2,212 @@
 
 **Feature**: 003-mercado-tokens | **Phase**: 1 — Design | **Date**: 2026-11-16
 
-Este documento define el contrato público de los módulos de servicio que el frontend expone a los componentes. Cada función es la única interfaz permitida para consumir el backend (principio de Modular API Consumption de la constitución).
+Este documento define el contrato de los módulos de servicio que consumen el backend. Los componentes deben acceder a la API únicamente a través de estos servicios. El cliente compartido `openapi-fetch` y los tipos generados desde `docs/openapi.yaml` son la fuente de verdad para rutas, parámetros, cuerpos y respuestas.
 
----
+## Cliente HTTP compartido
 
-## apiClient.js (actualizado)
+El cliente vive en `src/api/client.ts`, usa `openapi-fetch` parametrizado con el tipo `paths` generado, y agrega el JWT mediante middleware de request. Los servicios reciben las respuestas discriminadas de `openapi-fetch` (`data`, `error` y `response`) y propagan errores explícitamente usando el helper `requireApiData` del cliente.
 
-Añadir interceptor de request para adjuntar JWT automáticamente:
+```ts
+// src/api/client.ts
+import createClient from 'openapi-fetch'
+import type { paths } from './schema'
 
-```js
-// src/services/apiClient.js
-import axios from 'axios'
+export const apiClient = createClient<paths>({
+  baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+})
 
-const apiClient = axios.create({
-  baseURL: 'http://localhost:8080',
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
+apiClient.use({
+  onRequest({ request }) {
+    const token = window.localStorage.getItem('authToken')
+    if (token) {
+      request.headers.set('Authorization', `Bearer ${token}`)
+    }
+    return request
   },
 })
-
-// Interceptor: adjuntar Authorization header si hay token en localStorage
-apiClient.interceptors.request.use((config) => {
-  const token = window.localStorage.getItem('authToken')
-  if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`
-  }
-  return config
-})
-
-export default apiClient
 ```
 
----
+`requireApiData<T>(data, error, response, fallbackMessage)` comprueba el estado HTTP y la presencia de datos, y lanza `ApiRequestError` ante respuestas fallidas o inesperadas. Para operaciones sin cuerpo de respuesta (por ejemplo, cancelar una orden), el servicio debe comprobar `error` y `response.ok` explícitamente. No se debe crear otro cliente HTTP ni realizar llamadas de red directamente desde componentes.
 
-## userService.js (NUEVO)
+> **Consistencia de tipos OpenAPI**: los nombres de `params.path` deben coincidir con los placeholders de cada ruta (`{id}`, `{playerId}`, `{userId}`, `{usuarioId}`). `GET /users/{id}` conserva su parámetro `id`; las valuaciones usan un parámetro dedicado `UserIdQuotes` cuyo nombre es `userId`. Regenerar `src/api/schema.d.ts` desde `docs/openapi.yaml` y no debilitar los tipos con casts.
 
-```js
-// src/services/userService.js
-import apiClient from './apiClient'
+## userService.ts
 
-/**
- * Obtiene el perfil de un usuario por ID.
- * @param {number} userId
- * @returns {Promise<{ nombre: string }>}
- */
-export const getUserProfile = async (userId) => {
-  const response = await apiClient.get(`/users/${userId}`)
-  return response.data
-}
-```
+```ts
+// src/services/userService.ts
+import type { components } from '../api/schema'
+import { apiClient, requireApiData } from '../api/client'
 
----
+type UserResponse = components['schemas']['UserResponse']
 
-## playerService.js (actualizado)
-
-Mantiene `fetchPlayers`/`getPlayers` existentes. Añade:
-
-```js
-// src/services/playerService.js — adiciones
-
-/**
- * Obtiene todas las valuaciones de un jugador para un usuario.
- * @param {number} playerId
- * @param {number} userId
- * @returns {Promise<ValuationResponse[]>}
- */
-export const getPlayerValuations = async (playerId, userId) => {
-  const response = await apiClient.get(`/players/${playerId}/quotes/${userId}`)
-  return response.data
-}
-
-/**
- * Obtiene la valuación actual de un jugador para un usuario.
- * @param {number} playerId
- * @param {number} userId
- * @returns {Promise<ValuationResponse>}
- */
-export const getCurrentValuation = async (playerId, userId) => {
-  const response = await apiClient.get(`/players/${playerId}/quotes/${userId}/current`)
-  return response.data
-}
-
-/**
- * Obtiene la valuación más cercana a una fecha.
- * @param {number} playerId
- * @param {number} userId
- * @param {string} date — ISO 8601 date-time string
- * @returns {Promise<ValuationResponse>}
- */
-export const getClosestValuation = async (playerId, userId, date) => {
-  const response = await apiClient.get(`/players/${playerId}/quotes/${userId}/closest`, {
-    params: { date },
+export const getUserProfile = async (userId: number): Promise<UserResponse> => {
+  const { data, error, response } = await apiClient.GET('/users/{id}', {
+    params: { path: { id: userId } },
   })
-  return response.data
+
+  return requireApiData(data, error, response, 'No se pudo obtener el perfil.')
 }
 ```
 
----
+## playerService.ts
 
-## orderService.js (NUEVO)
+Los métodos existentes de consulta de jugadores se conservan. Se agregan estas operaciones de valuación:
 
-```js
-// src/services/orderService.js
-import apiClient from './apiClient'
+```ts
+// src/services/playerService.ts — métodos de valuación
+import type { components } from '../api/schema'
+import { apiClient, requireApiData } from '../api/client'
 
-/**
- * Crea una orden de compra.
- * Requiere Authorization header (adjuntado por interceptor de apiClient).
- * @param {CrearOrdenRequest} orderData
- * @returns {Promise<OrdenResponse>}
- */
-export const createBuyOrder = async (orderData) => {
-  const response = await apiClient.post('/orders/buy', orderData)
-  return response.data
+type ValuationResponse = components['schemas']['ValuationResponse']
+
+export const getPlayerValuations = async (
+  playerId: number,
+  userId: number,
+): Promise<ValuationResponse[]> => {
+  const { data, error, response } = await apiClient.GET(
+    '/players/{playerId}/quotes/{userId}',
+    { params: { path: { playerId, userId } } },
+  )
+
+  return requireApiData(data, error, response, 'No se pudieron obtener las valuaciones.')
 }
 
-/**
- * Crea una orden de venta.
- * Requiere Authorization header (adjuntado por interceptor de apiClient).
- * @param {CrearOrdenRequest} orderData
- * @returns {Promise<OrdenResponse>}
- */
-export const createSellOrder = async (orderData) => {
-  const response = await apiClient.post('/orders/sell', orderData)
-  return response.data
+export const getCurrentValuation = async (
+  playerId: number,
+  userId: number,
+): Promise<ValuationResponse> => {
+  const { data, error, response } = await apiClient.GET(
+    '/players/{playerId}/quotes/{userId}/current',
+    { params: { path: { playerId, userId } } },
+  )
+
+  return requireApiData(data, error, response, 'No se pudo obtener la valuación actual.')
 }
 
-/**
- * Obtiene las órdenes pendientes de un usuario.
- * @param {number} userId
- * @returns {Promise<OrdenPendienteResponse[]>}
- */
-export const getPendingOrders = async (userId) => {
-  const response = await apiClient.get(`/users/${userId}/orders`)
-  return response.data
-}
+export const getClosestValuation = async (
+  playerId: number,
+  userId: number,
+  date: string,
+): Promise<ValuationResponse> => {
+  const { data, error, response } = await apiClient.GET(
+    '/players/{playerId}/quotes/{userId}/closest',
+    { params: { path: { playerId, userId }, query: { date } } },
+  )
 
-/**
- * Obtiene las transacciones ejecutadas de un usuario.
- * @param {number} userId
- * @returns {Promise<TransaccionEjecutadaResponse[]>}
- */
-export const getTransactions = async (userId) => {
-  const response = await apiClient.get(`/users/${userId}/transactions`)
-  return response.data
-}
-
-/**
- * Cancela una orden pendiente.
- * @param {number} orderId
- * @param {number} userId
- * @returns {Promise<void>}
- */
-export const cancelOrder = async (orderId, userId) => {
-  await apiClient.delete(`/orders/${orderId}`, { params: { usuarioId: userId } })
+  return requireApiData(data, error, response, 'No se pudo obtener la valuación solicitada.')
 }
 ```
 
----
+## orderService.ts
 
-## strategyService.js (NUEVO)
+```ts
+// src/services/orderService.ts
+import type { components } from '../api/schema'
+import { ApiRequestError, apiClient, requireApiData } from '../api/client'
 
-```js
-// src/services/strategyService.js
-import apiClient from './apiClient'
+type CrearOrdenRequest = components['schemas']['CrearOrdenRequest']
+type OrdenResponse = components['schemas']['OrdenResponse']
+type OrdenPendienteResponse = components['schemas']['OrdenPendienteResponse']
+type TransaccionEjecutadaResponse = components['schemas']['TransaccionEjecutadaResponse']
 
-/**
- * Obtiene el estado actual de la estrategia de valuación de un usuario.
- * @param {number} userId
- * @returns {Promise<StrategyStateResponse>}
- */
-export const getStrategy = async (userId) => {
-  const response = await apiClient.get(`/strategy/${userId}`)
-  return response.data
+export const createBuyOrder = async (
+  orderData: CrearOrdenRequest,
+): Promise<OrdenResponse> => {
+  const { data, error, response } = await apiClient.POST('/orders/buy', {
+    body: orderData,
+  })
+
+  return requireApiData(data, error, response, 'No se pudo crear la orden de compra.')
 }
 
-/**
- * Configura (crea o actualiza) la estrategia de valuación de un usuario.
- * @param {number} userId
- * @param {StrategyRequest} strategyData
- * @returns {Promise<StrategyStateResponse>}
- */
-export const configureStrategy = async (userId, strategyData) => {
-  const response = await apiClient.put(`/strategy/${userId}/configure`, strategyData)
-  return response.data
+export const createSellOrder = async (
+  orderData: CrearOrdenRequest,
+): Promise<OrdenResponse> => {
+  const { data, error, response } = await apiClient.POST('/orders/sell', {
+    body: orderData,
+  })
+
+  return requireApiData(data, error, response, 'No se pudo crear la orden de venta.')
+}
+
+export const getPendingOrders = async (
+  userId: number,
+): Promise<OrdenPendienteResponse[]> => {
+  const { data, error, response } = await apiClient.GET('/users/{usuarioId}/orders', {
+    params: { path: { usuarioId: userId } },
+  })
+
+  return requireApiData(data, error, response, 'No se pudieron obtener las órdenes.')
+}
+
+export const getTransactions = async (
+  userId: number,
+): Promise<TransaccionEjecutadaResponse[]> => {
+  const { data, error, response } = await apiClient.GET(
+    '/users/{usuarioId}/transactions',
+    { params: { path: { usuarioId: userId } } },
+  )
+
+  return requireApiData(data, error, response, 'No se pudieron obtener las transacciones.')
+}
+
+export const cancelOrder = async (orderId: number, userId: number): Promise<void> => {
+  const { error, response } = await apiClient.DELETE('/orders/{orderId}', {
+    params: { path: { orderId }, query: { usuarioId: userId } },
+  })
+
+  if (error || !response.ok) {
+    throw new ApiRequestError('No se pudo cancelar la orden.', response.status)
+  }
 }
 ```
 
----
+## strategyService.ts
 
-## holdingService.js (NUEVO)
+```ts
+// src/services/strategyService.ts
+import type { components } from '../api/schema'
+import { apiClient, requireApiData } from '../api/client'
 
-```js
-// src/services/holdingService.js
-import apiClient from './apiClient'
+type StrategyStateResponse = components['schemas']['StrategyStateResponse']
+type StrategyRequest = components['schemas']['StrategyRequest']
 
-/**
- * Obtiene las tenencias actuales de un usuario.
- * @param {number} userId
- * @returns {Promise<HoldingResponse[]>}
- */
-export const getHoldings = async (userId) => {
-  const response = await apiClient.get(`/users/${userId}/holdings`)
-  return response.data
+export const getStrategy = async (userId: number): Promise<StrategyStateResponse> => {
+  const { data, error, response } = await apiClient.GET('/strategy/{usuarioId}', {
+    params: { path: { usuarioId: userId } },
+  })
+
+  return requireApiData(data, error, response, 'No se pudo obtener la estrategia.')
+}
+
+export const configureStrategy = async (
+  userId: number,
+  strategyData: StrategyRequest,
+): Promise<StrategyStateResponse> => {
+  const { data, error, response } = await apiClient.PUT(
+    '/strategy/{usuarioId}/configure',
+    { params: { path: { usuarioId: userId } }, body: strategyData },
+  )
+
+  return requireApiData(data, error, response, 'No se pudo configurar la estrategia.')
+}
+```
+
+## holdingService.ts
+
+```ts
+// src/services/holdingService.ts
+import type { components } from '../api/schema'
+import { apiClient, requireApiData } from '../api/client'
+
+type HoldingResponse = components['schemas']['HoldingResponse']
+
+export const getHoldings = async (userId: number): Promise<HoldingResponse[]> => {
+  const { data, error, response } = await apiClient.GET('/users/{usuarioId}/holdings', {
+    params: { path: { usuarioId: userId } },
+  })
+
+  return requireApiData(data, error, response, 'No se pudieron obtener las tenencias.')
 }
 ```

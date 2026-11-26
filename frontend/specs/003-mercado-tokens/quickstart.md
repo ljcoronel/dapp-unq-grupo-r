@@ -9,9 +9,15 @@ Este documento describe los escenarios de validación end-to-end para verificar 
 ## Prerrequisitos
 
 1. **Backend corriendo** en `http://localhost:8080` con datos de jugadores y usuarios de prueba.
-2. **Frontend corriendo** con `pnpm dev` desde `frontend/`.
+2. **Frontend corriendo** con `npm run dev` desde `frontend/` (el repositorio versiona `package-lock.json`).
 3. **Dos usuarios de prueba** creados: `usuarioA` y `usuarioB` (con contraseña válida).
-4. `recharts` instalado (`pnpm add recharts` desde `frontend/`).
+4. `recharts` instalado (`npm install` desde `frontend/`).
+
+## Notas de contrato
+
+- El JWT conserva el nombre de usuario en `sub` y agrega el identificador numérico en `userId`, que consume `AuthContext`.
+- El backend serializa operaciones como `COMPRA` y `VENTA`; el frontend también acepta las etiquetas de negocio `BUY` y `SELL` para conservar compatibilidad.
+- El saldo de créditos no está expuesto por la API. El backend valida los fondos al crear la orden y el frontend presenta el error recibido si no hay fondos suficientes.
 
 ---
 

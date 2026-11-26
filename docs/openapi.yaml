@@ -1,0 +1,633 @@
+openapi: 3.0.3
+info:
+  title: SDD Project API
+  version: 1.0.0
+  description: Contrato publico de los endpoints expuestos por los Controllers REST.
+servers:
+  - url: /
+    description: Mismo origen donde se sirve la API.
+tags:
+  - name: Autenticacion
+  - name: Usuarios
+  - name: Jugadores
+  - name: Ordenes
+  - name: Estrategia
+  - name: Tenencias
+  - name: Cotizaciones
+paths:
+  /login:
+    post:
+      tags: [Autenticacion]
+      summary: Iniciar sesion
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: Sesion iniciada. El JWT se devuelve en Authorization.
+          headers:
+            Authorization:
+              schema:
+                type: string
+                example: Bearer eyJ...
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /register:
+    post:
+      tags: [Autenticacion]
+      summary: Registrar usuario
+      operationId: register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: Usuario registrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /users/{id}:
+    get:
+      tags: [Usuarios]
+      summary: Obtener perfil de usuario
+      operationId: getUserProfile
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Perfil encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /players:
+    get:
+      tags: [Jugadores]
+      summary: Obtener todos los jugadores
+      operationId: getPlayers
+      security: []
+      responses:
+        '200':
+          description: Jugadores persistidos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerResponse'
+  /players/{id}:
+    get:
+      tags: [Jugadores]
+      summary: Obtener jugador por identificador
+      operationId: getPlayer
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+      responses:
+        '200':
+          description: Jugador encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /players/{playerId}/quotes/{userId}:
+    get:
+      tags: [Jugadores]
+      summary: Obtener todas las valuaciones de un jugador
+      operationId: getAllValuationsFromPlayer
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+        - $ref: '#/components/parameters/UserIdQuotes'
+      responses:
+        '200':
+          description: Valuaciones del jugador para el usuario.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ValuationResponse'
+  /players/{playerId}/quotes/{userId}/closest:
+    get:
+      tags: [Jugadores]
+      summary: Obtener la valuacion mas cercana a una fecha
+      operationId: getClosestValuationFromPlayer
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+        - $ref: '#/components/parameters/UserIdQuotes'
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Valuacion mas cercana.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValuationResponse'
+  /players/{playerId}/quotes/{userId}/current:
+    get:
+      tags: [Jugadores]
+      summary: Obtener la valuacion actual
+      operationId: getCurrentValuationFromPlayer
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/PlayerId'
+        - $ref: '#/components/parameters/UserIdQuotes'
+      responses:
+        '200':
+          description: Valuacion actual.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValuationResponse'
+  /orders/buy:
+    post:
+      tags: [Ordenes]
+      summary: Crear orden de compra
+      operationId: buy
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearOrdenRequest'
+      responses:
+        '201':
+          description: Orden creada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /orders/sell:
+    post:
+      tags: [Ordenes]
+      summary: Crear orden de venta
+      operationId: sell
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearOrdenRequest'
+      responses:
+        '201':
+          description: Orden creada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /users/{usuarioId}/orders:
+    get:
+      tags: [Ordenes]
+      summary: Consultar ordenes pendientes
+      operationId: pending
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserIdUsuario'
+      responses:
+        '200':
+          description: Ordenes pendientes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdenPendienteResponse'
+  /users/{usuarioId}/transactions:
+    get:
+      tags: [Ordenes]
+      summary: Consultar transacciones ejecutadas
+      operationId: transactions
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserIdUsuario'
+      responses:
+        '200':
+          description: Transacciones ejecutadas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransaccionEjecutadaResponse'
+  /orders/{orderId}:
+    delete:
+      tags: [Ordenes]
+      summary: Cancelar orden
+      operationId: cancel
+      security: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: usuarioId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+      responses:
+        '204':
+          description: Orden cancelada.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /strategy/{usuarioId}/configure:
+    put:
+      tags: [Estrategia]
+      summary: Configurar estrategia
+      operationId: configure
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserIdUsuario'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyRequest'
+      responses:
+        '200':
+          description: Estrategia configurada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrategyStateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /strategy/{usuarioId}:
+    get:
+      tags: [Estrategia]
+      summary: Consultar estrategia
+      operationId: getStrategy
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserIdUsuario'
+      responses:
+        '200':
+          description: Estado de la estrategia.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StrategyStateResponse'
+  /users/{usuarioId}/holdings:
+    get:
+      tags: [Tenencias]
+      summary: Consultar tenencias
+      operationId: holdings
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/UserIdUsuario'
+      responses:
+        '200':
+          description: Tenencias actuales.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HoldingResponse'
+  /quotes/recalculate:
+    post:
+      tags: [Cotizaciones]
+      summary: Recalcular cotizaciones
+      operationId: recalculate
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Recalculo completado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecalculationResult'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          description: No se pudo completar el recalculo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+  /quotes/scrape:
+    post:
+      tags: [Cotizaciones]
+      summary: Ejecutar scraping
+      operationId: scrape
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/NumberOfPlayers'
+      responses:
+        '200':
+          description: Scraping completado.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  parameters:
+    UserId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    UserIdQuotes:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    UserIdUsuario:
+      name: usuarioId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    PlayerId:
+      name: playerId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    NumberOfPlayers:
+      name: numberOfPlayers
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        minimum: 1
+  responses:
+    BadRequest:
+      description: Datos invalidos.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MessageError'
+    Unauthorized:
+      description: No autorizado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MessageError'
+    Forbidden:
+      description: Credencial invalida o rechazada.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MessageError'
+    InternalServerError:
+      description: Credencial administrativa activa no configurada.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MessageError'
+    NotFound:
+      description: Recurso inexistente.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MessageError'
+  schemas:
+    UserRequest:
+      type: object
+      required: [nombre, password]
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          example: usuario1
+        password:
+          type: string
+          format: password
+          minLength: 4
+          maxLength: 16
+          example: secreto123
+    UserResponse:
+      type: object
+      required: [nombre]
+      properties:
+        nombre:
+          type: string
+    MessageError:
+      type: object
+      properties:
+        message:
+          type: string
+        mensaje:
+          type: string
+    TeamResponse:
+      type: object
+      properties:
+        externalId:
+          type: integer
+          format: int64
+        name:
+          type: string
+    LeagueResponse:
+      type: object
+      properties:
+        codigo:
+          type: string
+        nombre:
+          type: string
+        pais:
+          type: string
+    PlayerResponse:
+      type: object
+      properties:
+        id: {type: integer, format: int64}
+        externalId: {type: integer, format: int64}
+        name: {type: string}
+        team: {$ref: '#/components/schemas/TeamResponse'}
+        league: {$ref: '#/components/schemas/LeagueResponse'}
+        age: {type: integer}
+        heightCM: {type: integer}
+        weightKG: {type: integer}
+        position: {type: string}
+        appearances: {type: integer}
+        minutesPlayed: {type: integer}
+        goals: {type: integer}
+        assists: {type: integer}
+        yellowCards: {type: integer}
+        redCards: {type: integer}
+        avgShotsPerGame: {type: number, format: float}
+        passSuccessPercentage: {type: number, format: float}
+        aerialsWon: {type: number, format: float}
+        timesManOfTheMatch: {type: integer}
+    ValuationResponse:
+      type: object
+      properties:
+        usuarioId: {type: integer, format: int64}
+        jugadorId: {type: integer, format: int64}
+        valorUnitario: {type: number, format: double}
+        tipoEstrategia: {type: string, enum: [ESTRATEGIA_A, ESTRATEGIA_B]}
+        ejecutadoEn: {type: string, format: date-time}
+        tipoEjecucion: {type: string, enum: [DOMINICAL, MANUAL]}
+    CrearOrdenRequest:
+      type: object
+      required: [usuarioId, playerId, quantity, price, tolerance]
+      properties:
+        usuarioId: {type: integer, format: int64, minimum: 1}
+        playerId: {type: integer, format: int64, minimum: 1}
+        quantity: {type: integer, minimum: 1}
+        price: {type: number, format: double, minimum: 0}
+        tolerance: {type: number, format: double, minimum: 0}
+    OrdenResponse:
+      type: object
+      properties:
+        orderId: {type: integer, format: int64}
+        userId: {type: integer, format: int64}
+        playerId: {type: integer, format: int64}
+        operation: {type: string}
+        quantity: {type: integer}
+        price: {type: number, format: double}
+        tolerance: {type: number, format: double}
+        status: {type: string}
+        issuedAt: {type: string, format: date-time}
+        executedAt: {type: string, format: date-time, nullable: true}
+        cancelledAt: {type: string, format: date-time, nullable: true}
+        settledPrice: {type: number, format: double, nullable: true}
+        buyerId: {type: integer, format: int64, nullable: true}
+        sellerId: {type: integer, format: int64, nullable: true}
+    OrdenPendienteResponse:
+      type: object
+      properties:
+        orderId: {type: integer, format: int64}
+        operation: {type: string}
+        playerId: {type: integer, format: int64}
+        quantity: {type: integer}
+        price: {type: number, format: double}
+        tolerance: {type: number, format: double}
+        status: {type: string}
+        issuedAt: {type: string, format: date-time}
+    TransaccionEjecutadaResponse:
+      type: object
+      properties:
+        orderId: {type: integer, format: int64}
+        operation: {type: string}
+        playerId: {type: integer, format: int64}
+        quantity: {type: integer}
+        settledPrice: {type: number, format: double, nullable: true}
+        buyerId: {type: integer, format: int64, nullable: true}
+        sellerId: {type: integer, format: int64, nullable: true}
+        issuedAt: {type: string, format: date-time}
+        executedAt: {type: string, format: date-time, nullable: true}
+    StrategyRequest:
+      type: object
+      required: [tipo, pesos]
+      properties:
+        tipo:
+          type: string
+          enum: [ESTRATEGIA_A, ESTRATEGIA_B]
+        pesos:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+            minimum: 0
+    StrategyConfig:
+      type: object
+      properties:
+        estrategia: {type: string, enum: [ESTRATEGIA_A, ESTRATEGIA_B]}
+        pesos:
+          type: object
+          additionalProperties: {type: number, format: double}
+        vigenteDesde: {type: string, format: date-time}
+    StrategyStateResponse:
+      type: object
+      properties:
+        estrategia: {type: string, enum: [ESTRATEGIA_A, ESTRATEGIA_B], nullable: true}
+        pesos:
+          type: object
+          additionalProperties: {type: number, format: double}
+        estado: {type: string}
+        vigenteDesde: {type: string, format: date-time, nullable: true}
+        actual: {$ref: '#/components/schemas/StrategyConfig'}
+        pendiente: {$ref: '#/components/schemas/StrategyConfig'}
+    HoldingResponse:
+      type: object
+      properties:
+        id: {type: integer, format: int64}
+        usuarioId: {type: integer, format: int64}
+        jugadorId: {type: integer, format: int64}
+        tokens: {type: integer}
+        valorTotal: {type: number, format: double}
+        valorUnitario: {type: number, format: double}
+    RecalculationResult:
+      type: object
+      properties:
+        status: {type: string}
+        playersScraped: {type: integer}
+        recalculatedHoldings: {type: integer}
+        executedAt: {type: string, format: date-time}

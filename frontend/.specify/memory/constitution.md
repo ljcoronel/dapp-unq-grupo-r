@@ -1,18 +1,15 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 -> 2.0.0
+- Version change: 2.0.0 -> 3.0.0
 - Modified principles:
-  - Responsabilidad Unica por Componente -> Single Responsibility per Component
-  - Modularizacion del Consumo de API -> Modular API Consumption
-  - Robustez de Requests y Manejo de Fallos -> Request Robustness and Failure Handling
-  - Feedback de Estado para el Usuario -> User State Feedback
-  - Estandares de Codigo y Estilo -> Code and Style Standards
+  - Request Robustness and Failure Handling: Axios -> openapi-fetch
+  - Code and Style Standards: TypeScript is mandatory
 - Added sections:
-  - Responsive Web Application (new principle)
+  - None
 - Removed sections:
   - None
 - Follow-up TODOs:
-  - TODO(RATIFICATION_DATE): confirm initial ratification date if it differs from the current date.
+  - TODO(RATIFICATION_DATE): confirm the initial ratification date.
 -->
 # Frontend Constitution
 
@@ -45,11 +42,11 @@ Rationale: centralizes network contracts, reduces duplication, and improves
 change traceability.
 
 ### Request Robustness and Failure Handling
-All API requests MUST be made using Axios. Each request MUST include explicit
-handling of network errors, failed responses, and null-data scenarios according
-to the expected contract.
-Rationale: prevents silent failures and establishes consistent behavior during
-incidents.
+All API requests MUST be made using openapi-fetch. Each request MUST include
+explicit handling of network errors, failed responses, and null-data scenarios
+according to the expected contract.
+Rationale: keeps HTTP requests aligned with the API contract while preventing
+silent failures and establishing consistent behavior during incidents.
 
 ### User State Feedback
 The interface MUST communicate loading, error, and null-data states in a
@@ -60,16 +57,17 @@ Rationale: improves the user experience and reduces ambiguity in critical flows.
 
 ### Code and Style Standards
 Styling MUST be implemented with TailwindCSS. Indentation MUST be 2 spaces.
-Frontend JavaScript/TypeScript code MUST favor arrow functions, object
-destructuring, and async/await where applicable.
+Frontend application code MUST be written in TypeScript. React components and
+modules MUST use `.tsx` and `.ts` files as appropriate. Code MUST favor arrow
+functions, object destructuring, and async/await where applicable.
 Rationale: standardizes readability and reduces collaboration friction within
 the team.
 
 ## Technology Stack
 
-The official frontend of this project MUST be built with React.js. Routing MUST
-be implemented with React Router. The HTTP client MUST be Axios and the styling
-system MUST be TailwindCSS.
+The official frontend of this project MUST be built with React and TypeScript.
+Routing MUST be implemented with React Router. The HTTP client MUST be
+openapi-fetch and the styling system MUST be TailwindCSS.
 
 Introducing alternative libraries for these responsibilities is not permitted
 without an explicit amendment to this constitution.
@@ -102,4 +100,4 @@ Compliance:
   exception.
 - A periodic compliance review at release milestones is recommended.
 
-**Version**: 2.0.0 | **Ratified**: TODO(RATIFICATION_DATE): confirm initial date | **Last Amended**: 2026-11-08
+**Version**: 3.0.0 | **Ratified**: TODO(RATIFICATION_DATE): confirm initial date | **Last Amended**: 2026-11-25
