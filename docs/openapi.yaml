@@ -506,6 +506,7 @@ components:
     PlayerResponse:
       type: object
       properties:
+        id: {type: integer, format: int64}
         externalId: {type: integer, format: int64}
         name: {type: string}
         team: {$ref: '#/components/schemas/TeamResponse'}
